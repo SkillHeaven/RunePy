@@ -4,15 +4,20 @@ from direct.interval.IntervalGlobal import *
 
 class Character:
 
-    def __init__(self, render, loader, position=Vec3(0, 0, 0), scale=1):
+    def __init__(self, render, loader, position=Vec3(0, 0, 0), scale=1, debug=False):
+        self.debug = debug
         self.model = loader.loadModel("models/smiley")
         self.model.reparentTo(render)
         self.model.setPos(position)
         self.model.setScale(scale)
         self.walking_speed = 1.0
 
+    def log(self, *args, **kwargs):
+        if self.debug:
+            print(*args, **kwargs)
+
     def move_to(self, target_pos):
-        print(f"Inside move_to. Target: {target_pos}")
+        self.log(f"Inside move_to. Target: {target_pos}")
         start_pos = self.model.getPos()
         distance = (target_pos - start_pos).length()  # Calculate the distance to the target
         duration = distance / self.walking_speed      # Calculate the time it will take

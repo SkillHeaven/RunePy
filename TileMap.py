@@ -1,5 +1,14 @@
 #TileMap.py
-from panda3d.core import *
+from panda3d.core import (
+    BitMask32,
+    CardMaker,
+    CollisionNode,
+    CollisionPlane,
+    ModifierButtons,
+    Plane,
+    Point3,
+    Vec3,
+)
 from direct.showbase.ShowBase import ShowBase
 import random
 from direct.interval.IntervalGlobal import Sequence, Func

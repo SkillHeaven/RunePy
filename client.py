@@ -1,6 +1,7 @@
 from panda3d.core import ModifierButtons, Vec3
 from direct.showbase.ShowBase import ShowBase
 from direct.interval.IntervalGlobal import Sequence, Func
+import math
 
 from Character import Character
 from DebugInfo import DebugInfo
@@ -101,15 +102,19 @@ class Client(ShowBase):
 
                 if path:
                     intervals = []
+                    prev_world_x, prev_world_y = current_x, current_y
                     for step in path:
                         world_x = step[0] - self.map_radius
                         world_y = step[1] - self.map_radius
                         self.log(f"Moving character to {(world_x, world_y)}")
-                        move_interval = self.character.move_to(Vec3(world_x, world_y, 0.5))
+                        distance = math.sqrt((world_x - prev_world_x) ** 2 + (world_y - prev_world_y) ** 2)
+                        duration = distance / self.character.speed
+                        move_interval = self.character.move_to(Vec3(world_x, world_y, 0.5), duration)
                         intervals.append(move_interval)
+                        prev_world_x, prev_world_y = world_x, world_y
 
                     move_sequence = Sequence(*intervals, Func(self.camera_control.update_camera_focus))
-                    move_sequence.start()
+                    self.character.start_sequence(move_sequence)
                     self.log(f"Moved to {(world_x, world_y)}")
 
                 self.log(f"After Update: Camera Hpr: {self.camera.getHpr()}")

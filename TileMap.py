@@ -136,6 +136,8 @@ class TileMap(ShowBase):
                         move_interval = self.character.move_to(Vec3(step[0], step[1], 0.5))
                         intervals.append(move_interval)
 
+                    # Build one sequence from all intervals and start once
+
                     move_sequence = Sequence(*intervals, Func(self.camera_control.update_camera_focus))
                     move_sequence.start()
                     print(f"Moved to {step}")

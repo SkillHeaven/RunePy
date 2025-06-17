@@ -1,6 +1,6 @@
 # pathfinding.py
 
-from queue import PriorityQueue
+import heapq
 
 
 class Node:
@@ -25,14 +25,14 @@ def a_star(grid, start, end):
     start_node = Node(start)
     end_node = Node(end)
 
-    open_list = []
+    open_list = []  # This will function as a heap
     closed_list = []
 
-    open_list.append(start_node)
+    heapq.heappush(open_list, start_node)
 
     while open_list:
-        # Get the current node
-        current_node = open_list.pop(0)
+        # Get the current node with the lowest f value
+        current_node = heapq.heappop(open_list)
 
         # Add the current node to the closed list
         closed_list.append(current_node)
@@ -71,7 +71,7 @@ def a_star(grid, start, end):
             # Only add the neighbor if it doesn't exist in the open list with
             # a lower cost
             if add_to_open(open_list, neighbor):
-                open_list.append(neighbor)
+                heapq.heappush(open_list, neighbor)
 
 
 def add_to_open(open_list, neighbor):

@@ -10,27 +10,33 @@ class Character:
         self.model.reparentTo(render)
         self.model.setPos(position)
         self.model.setScale(scale)
-        self.walking_speed = 1.0
+
+        # Base movement speed in tiles per second
+        self.speed = 1.0
+
+        self._active_sequence = None
 
     def log(self, *args, **kwargs):
         if self.debug:
             print(*args, **kwargs)
 
-    def move_to(self, target_pos):
-        self.log(f"Inside move_to. Target: {target_pos}")
-        start_pos = self.model.getPos()
-        distance = (target_pos - start_pos).length()  # Calculate the distance to the target
-        duration = distance / self.walking_speed      # Calculate the time it will take
+    def move_to(self, target_pos, duration):
+        """Create a movement interval towards ``target_pos`` taking ``duration`` seconds."""
+        self.log(f"Inside move_to. Target: {target_pos} Duration: {duration}")
 
-        move_sequence = Sequence(
-            LerpPosInterval(self.model, duration=duration, pos=target_pos),
-            Func(self.stop)
-        )
-
-        return move_sequence
+        move_interval = LerpPosInterval(self.model, duration=duration, pos=target_pos)
+        return Sequence(move_interval, Func(self.stop))
 
     def get_position(self):
         return self.model.getPos()
 
     def stop(self):
-        pass
+        self.log("Movement finished")
+
+    def start_sequence(self, sequence):
+        """Start a new movement sequence, cancelling any existing one."""
+        if self._active_sequence is not None and not self._active_sequence.isStopped():
+            self._active_sequence.finish()
+        self._active_sequence = sequence
+        sequence.start()
+

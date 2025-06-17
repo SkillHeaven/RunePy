@@ -35,8 +35,14 @@ pip install panda3d
 
 ## Running the example
 
-After installing the requirements, launch the program by executing:
+After installing the requirements, launch the program using one of the following commands:
 
+**Windows PowerShell**
+```powershell
+./run.ps1
+```
+
+**Direct Python**
 ```bash
 python TileMap.py
 ```

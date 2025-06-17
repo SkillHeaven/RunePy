@@ -68,12 +68,10 @@ def a_star(grid, start, end):
                 neighbor.position[1] - end_node.position[1])
             neighbor.f = neighbor.g + neighbor.h
 
-            # Neighbor is already in the open list and has a lower g value
+            # Only add the neighbor if it doesn't exist in the open list with
+            # a lower cost
             if add_to_open(open_list, neighbor):
-                continue
-
-            # Add the neighbor to the open list
-            open_list.append(neighbor)
+                open_list.append(neighbor)
 
 
 def add_to_open(open_list, neighbor):

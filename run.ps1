@@ -1,12 +1,12 @@
 # PowerShell entry point for RunePyv3.1
-# Sets working directory to the script's location and runs the main TileMap program.
+# Sets working directory to the script's location and runs the game client.
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Set-Location $scriptDir
 
 # Prefer py launcher if available, fallback to python
 if (Get-Command py -ErrorAction SilentlyContinue) {
-    py TileMap.py
+    py client.py
 } else {
-    python TileMap.py
+    python client.py
 }

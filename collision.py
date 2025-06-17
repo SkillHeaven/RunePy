@@ -31,4 +31,6 @@ class CollisionControl:
             return None, None
 
     def cleanup(self):
-        self.pickerNP.removeNode()
+        """Reset the collision handler for the next ray cast without removing
+        the collision node itself."""
+        self.handler.clearEntries()

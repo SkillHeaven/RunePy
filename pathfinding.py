@@ -1,6 +1,6 @@
 # pathfinding.py
 
-from queue import PriorityQueue
+import heapq
 
 
 class Node:
@@ -31,20 +31,31 @@ def a_star(grid, start, end):
     start_node = Node(start)
     end_node = Node(end)
 
+    # Initialize the start node's heuristic
+    start_node.h = abs(start_node.position[0] - end_node.position[0]) + abs(
+        start_node.position[1] - end_node.position[1])
+    start_node.f = start_node.h
+
     height = len(grid)
     width = len(grid[0]) if height > 0 else 0
 
-    open_list = []
-    closed_list = []
+    open_heap = []
+    open_dict = {}
+    closed_set = set()
 
-    open_list.append(start_node)
+    heapq.heappush(open_heap, (start_node.f, start_node))
+    open_dict[start_node.position] = start_node
 
-    while open_list:
-        # Get the current node
-        current_node = open_list.pop(0)
-
-        # Add the current node to the closed list
-        closed_list.append(current_node)
+    while open_heap:
+        # Get the current node with the lowest f value
+        _, current_node = heapq.heappop(open_heap)
+        if current_node.position in closed_set:
+            continue
+        # This node may have been superseded by a better path
+        if open_dict.get(current_node.position) is not current_node:
+            continue
+        del open_dict[current_node.position]
+        closed_set.add(current_node.position)
 
         # Check if we've reached our destination
         if current_node == end_node:
@@ -74,8 +85,8 @@ def a_star(grid, start, end):
 
         # Loop through the neighbors
         for neighbor in neighbors:
-            # Neighbor is on the closed list
-            if neighbor in closed_list:
+            # Skip if the neighbor was already evaluated
+            if neighbor.position in closed_set:
                 continue
 
             # Create the f, g, and h values
@@ -84,15 +95,15 @@ def a_star(grid, start, end):
                 neighbor.position[1] - end_node.position[1])
             neighbor.f = neighbor.g + neighbor.h
 
-            # Only add the neighbor if it doesn't exist in the open list with
-            # a lower cost
-            if add_to_open(open_list, neighbor):
-                open_list.append(neighbor)
+            # Only add the neighbor if it improves a known path
+            if add_to_open(open_dict, neighbor):
+                heapq.heappush(open_heap, (neighbor.f, neighbor))
 
 
-def add_to_open(open_list, neighbor):
-    for node in open_list:
-        if neighbor == node and neighbor.g > node.g:
-            return False
+def add_to_open(open_dict, neighbor):
+    existing = open_dict.get(neighbor.position)
+    if existing is not None and neighbor.g >= existing.g:
+        return False
+    open_dict[neighbor.position] = neighbor
     return True
 

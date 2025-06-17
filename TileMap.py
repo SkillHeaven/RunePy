@@ -15,7 +15,8 @@ from collision import CollisionControl
 
 
 class TileMap(ShowBase):
-    def __init__(self):
+    def __init__(self, debug=False):
+        self.debug = debug
         ShowBase.__init__(self)
         self.disableMouse()
         self.debug_info = DebugInfo()
@@ -33,7 +34,7 @@ class TileMap(ShowBase):
         self.buttonThrowers[0].node().set_modifier_buttons(ModifierButtons())
 
         tile_fit_scale = tile_size * 0.5  # Scale the model to 50% of the tile size for some padding
-        self.character = Character(self.render, self.loader, Vec3(0, 0, 0.5), scale=tile_fit_scale)
+        self.character = Character(self.render, self.loader, Vec3(0, 0, 0.5), scale=tile_fit_scale, debug=self.debug)
         self.camera_control = CameraControl(self.camera, self.render, self.character)
         self.controls = Controls(self, self.camera_control, self.character)
         self.collision_control = CollisionControl(self.camera, self.render)
@@ -63,6 +64,10 @@ class TileMap(ShowBase):
         # self.taskMgr.add(self.controls.middle_mouse_drag_event, 'middleMouseTask')
 
         self.taskMgr.add(self.update_tile_hover, 'updateTileHoverTask')
+
+    def log(self, *args, **kwargs):
+        if self.debug:
+            print(*args, **kwargs)
 
     def create_tile(self, position, size):
         card_maker = CardMaker("tile")
@@ -107,26 +112,26 @@ class TileMap(ShowBase):
         return task.cont
 
     def tile_click_event(self):
-        print("Tile clicked!")
+        self.log("Tile clicked!")
         if self.mouseWatcherNode.hasMouse():
             mpos = self.mouseWatcherNode.getMouse()
-            print(f"Mouse position detected: {mpos}")
+            self.log(f"Mouse position detected: {mpos}")
         else:
-            print("No mouse detected.")
+            self.log("No mouse detected.")
             return
 
         self.camera.setH(0)
 
         # Update ray with current mouse position
         self.collision_control.update_ray(self.camNode, mpos)
-        print("Before traversing for collisions...")
+        self.log("Before traversing for collisions...")
         self.collision_control.traverser.traverse(self.render)
-        print("After traversing for collisions.")
+        self.log("After traversing for collisions.")
 
         collided_obj, pickedPos = self.collision_control.get_collided_object(self.render)
 
         if collided_obj:
-            print("Collided with:", collided_obj.getName())
+            self.log("Collided with:", collided_obj.getName())
 
             snapped_x = round(pickedPos.getX())
             snapped_y = round(pickedPos.getY())
@@ -140,14 +145,14 @@ class TileMap(ShowBase):
                 end_idx = (snapped_x + self.map_radius, snapped_y + self.map_radius)
 
                 path = a_star(self.grid, start_idx, end_idx)
-                print("Calculated Path:", path)
+                self.log("Calculated Path:", path)
 
                 if path:
                     intervals = []
                     for step in path:
                         world_x = step[0] - self.map_radius
                         world_y = step[1] - self.map_radius
-                        print(f"Moving character to {(world_x, world_y)}")
+                        self.log(f"Moving character to {(world_x, world_y)}")
                         move_interval = self.character.move_to(Vec3(world_x, world_y, 0.5))
                         intervals.append(move_interval)
 
@@ -155,10 +160,10 @@ class TileMap(ShowBase):
 
                     move_sequence = Sequence(*intervals, Func(self.camera_control.update_camera_focus))
                     move_sequence.start()
-                    print(f"Moved to {(world_x, world_y)}")
+                    self.log(f"Moved to {(world_x, world_y)}")
 
-                print(f"After Update: Camera Hpr: {self.camera.getHpr()}")
-                print(f"After Update: Character Pos: {self.character.get_position()}")
+                self.log(f"After Update: Camera Hpr: {self.camera.getHpr()}")
+                self.log(f"After Update: Character Pos: {self.character.get_position()}")
 
         self.collision_control.cleanup()
 

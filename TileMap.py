@@ -22,6 +22,7 @@ class TileMap(ShowBase):
         tile_size = 1
         map_radius = 5  # Number of tiles from the center to the edge, not including center
         map_width = map_height = map_radius * 2 + 1
+        self.map_radius = map_radius
         self.tiles = []
         self.grid = [[1 for _ in range(map_width)] for _ in range(map_height)]
 
@@ -126,19 +127,24 @@ class TileMap(ShowBase):
                 current_pos = self.character.get_position()
                 current_x, current_y = int(current_pos.getX()), int(current_pos.getY())
 
-                path = a_star(self.grid, (current_x, current_y), (snapped_x, snapped_y))
+                start_idx = (current_x + self.map_radius, current_y + self.map_radius)
+                end_idx = (snapped_x + self.map_radius, snapped_y + self.map_radius)
+
+                path = a_star(self.grid, start_idx, end_idx)
                 print("Calculated Path:", path)
 
                 if path:
                     intervals = []
                     for step in path:
-                        print(f"Moving character to {step}")
-                        move_interval = self.character.move_to(Vec3(step[0], step[1], 0.5))
+                        world_x = step[0] - self.map_radius
+                        world_y = step[1] - self.map_radius
+                        print(f"Moving character to {(world_x, world_y)}")
+                        move_interval = self.character.move_to(Vec3(world_x, world_y, 0.5))
                         intervals.append(move_interval)
 
                     move_sequence = Sequence(*intervals, Func(self.camera_control.update_camera_focus))
                     move_sequence.start()
-                    print(f"Moved to {step}")
+                    print(f"Moved to {(world_x, world_y)}")
 
                 print(f"After Update: Camera Hpr: {self.camera.getHpr()}")
                 print(f"After Update: Character Pos: {self.character.get_position()}")

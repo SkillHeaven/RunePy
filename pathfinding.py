@@ -19,11 +19,20 @@ class Node:
 
 
 def a_star(grid, start, end):
-    """Perform A* Pathfinding."""
+    """Perform A* pathfinding on a grid using 0 based indices.
+
+    ``grid`` is expected to be a list-of-lists where ``1`` indicates a
+    walkable tile. ``start`` and ``end`` should already be translated into
+    grid coordinates starting at ``(0, 0)``. Negative coordinates are not
+    considered valid and will be ignored.
+    """
 
     # Create start and end node
     start_node = Node(start)
     end_node = Node(end)
+
+    height = len(grid)
+    width = len(grid[0]) if height > 0 else 0
 
     open_list = []
     closed_list = []
@@ -48,7 +57,14 @@ def a_star(grid, start, end):
         # Get the neighbors
         neighbors = []
         for new_position in [(0, -1), (1, 0), (0, 1), (-1, 0), (-1, -1), (1, 1), (-1, 1), (1, -1)]:
-            node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
+            node_position = (
+                current_node.position[0] + new_position[0],
+                current_node.position[1] + new_position[1],
+            )
+
+            # Skip positions outside the grid
+            if not (0 <= node_position[0] < width and 0 <= node_position[1] < height):
+                continue
 
             # Check if the position is walkable
             if grid[node_position[1]][node_position[0]] == 0:

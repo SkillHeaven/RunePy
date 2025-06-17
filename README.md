@@ -47,3 +47,13 @@ A window will open containing a grid of tiles. Clicking on a tile moves the smil
 
 This project is provided as a minimal example without any specific license. Feel free to reuse the code for your own experiments with Panda3D.
 
+
+## Utilities
+
+The repository includes a helper PowerShell script `AutoMergeAndCleanup.ps1`. The script merges a specified branch into `main`, pushes the merge, and removes the merged branch locally and on the remote. Invoke it with the branch name:
+
+```powershell
+./AutoMergeAndCleanup.ps1 -BranchName feature-branch
+```
+
+The optional parameters `-Remote` and `-MainBranch` default to `origin` and `main` respectively.

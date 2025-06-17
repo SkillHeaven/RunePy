@@ -14,7 +14,9 @@ RunePyv3.1 is a small demonstration project built with [Panda3D](https://www.pan
 
 | File | Description |
 |------|-------------|
-| `TileMap.py` | Entry point that builds the world and handles input. |
+| `client.py` | Entry point that opens the window. |
+| `world.py` | Map generation logic. |
+| `map_editor.py` | Utilities for editing tiles. |
 | `Character.py` | Represents the player model and movement logic. |
 | `Camera.py` | Manages the camera position and orientation. |
 | `Controls.py` | Handles mouse wheel zooming and other input bindings. |
@@ -44,7 +46,7 @@ After installing the requirements, launch the program using one of the following
 
 **Direct Python**
 ```bash
-python TileMap.py
+python client.py
 ```
 
 A window will open containing a grid of tiles. Clicking on a tile moves the smiley‑face character to that location using pathfinding. Use the mouse wheel to zoom the camera in or out.

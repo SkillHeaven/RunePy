@@ -43,6 +43,16 @@ python TileMap.py
 
 A window will open containing a grid of tiles. Clicking on a tile moves the smiley‑face character to that location using pathfinding. Use the mouse wheel to zoom the camera in or out.
 
+## Windows PowerShell
+
+For Windows users a `run.ps1` script is provided. Execute it from PowerShell to launch the project:
+
+```powershell
+./run.ps1
+```
+
+The script attempts to use the `py` launcher or `python` from your `PATH` and prints an error message if neither is available.
+
 ## License
 
 This project is provided as a minimal example without any specific license. Feel free to reuse the code for your own experiments with Panda3D.

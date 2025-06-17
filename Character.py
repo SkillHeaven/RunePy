@@ -21,7 +21,8 @@ class Character:
             LerpPosInterval(self.model, duration=duration, pos=target_pos),
             Func(self.stop)
         )
-        move_sequence.start()
+
+        return move_sequence
 
     def get_position(self):
         return self.model.getPos()

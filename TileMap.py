@@ -26,6 +26,9 @@ class TileMap(ShowBase):
         self.tiles = []
         self.grid = [[1 for _ in range(map_width)] for _ in range(map_height)]
 
+        # Parent node for all tiles so we can flatten them into a single Geom
+        self.tile_root = self.render.attachNewNode("tile_root")
+
         self.mouseWatcherNode.set_modifier_buttons(ModifierButtons())
         self.buttonThrowers[0].node().set_modifier_buttons(ModifierButtons())
 
@@ -44,6 +47,12 @@ class TileMap(ShowBase):
                 tile.setColor(random_color)
                 tile.setName(f"tile_{x}_{y}")
 
+        # Flatten the tile geometry into a single node to reduce draw calls
+        self.tile_root.flattenStrong()
+
+        # Single collision plane for the entire grid
+        self.create_collision_plane()
+
 
         self.accept('mouse1', self.tile_click_event)
 
@@ -58,20 +67,20 @@ class TileMap(ShowBase):
     def create_tile(self, position, size):
         card_maker = CardMaker("tile")
         card_maker.setFrame(-size / 2, size / 2, -size / 2, size / 2)  # size of the card
-        tile = self.render.attachNewNode(card_maker.generate())
+        tile = self.tile_root.attachNewNode(card_maker.generate())
         tile.setPos(*position)
         tile.setHpr(0, -90, 0)
 
-        # Create a collision solid for this tile
-        c_node = CollisionNode(f"coll_tile_{position[0]}_{position[1]}")
-        c_node.addSolid(CollisionPolygon(Point3(-size / 2, -size / 2, 0),
-                                         Point3(size / 2, -size / 2, 0),
-                                         Point3(size / 2, size / 2, 0),
-                                         Point3(-size / 2, size / 2, 0)))
-        tile.attachNewNode(c_node)
-        c_node.set_into_collide_mask(BitMask32.all_on())
-
+        # No per-tile collision geometry; a single plane is used instead
         return tile
+
+    def create_collision_plane(self):
+        """Create one collision plane representing the entire grid."""
+        plane = CollisionPlane(Plane(Vec3(0, 0, 1), Point3(0, 0, 0)))
+        c_node = CollisionNode("grid_plane")
+        c_node.addSolid(plane)
+        c_node.set_into_collide_mask(BitMask32.all_on())
+        self.render.attachNewNode(c_node)
 
     def get_mouse_tile_coords(self):
         if self.mouseWatcherNode.hasMouse():

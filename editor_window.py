@@ -55,6 +55,20 @@ class EditorWindow(ShowBase):
         self.camera.setPos(0, 0, 10)
         self.camera.lookAt(0, 0, 0)
 
+    def get_mouse_tile_coords(self):
+        """Return the mouse position and snapped tile coordinates."""
+        if self.mouseWatcherNode.hasMouse():
+            mpos = self.mouseWatcherNode.getMouse()
+            tile_x = round(mpos.getX() * 10)
+            tile_y = round(mpos.getY() * 10)
+            return mpos, tile_x, tile_y
+        return None, None, None
+
+    def get_tile_from_mouse(self):
+        """Return just the tile coordinates from the mouse position."""
+        _, tile_x, tile_y = self.get_mouse_tile_coords()
+        return tile_x, tile_y
+
     def save_map(self):
         self.editor.save_map("map.json")
         print("Map saved to map.json")

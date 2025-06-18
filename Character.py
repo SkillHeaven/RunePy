@@ -33,10 +33,14 @@ class Character:
     def stop(self):
         self.log("Movement finished")
 
+    def cancel_movement(self):
+        """Stop the current movement without jumping to the end position."""
+        if self._active_sequence is not None and not self._active_sequence.isStopped():
+            self._active_sequence.pause()
+        self._active_sequence = None
+
     def start_sequence(self, sequence):
         """Start a new movement sequence, cancelling any existing one."""
-        if self._active_sequence is not None and not self._active_sequence.isStopped():
-            self._active_sequence.finish()
+        self.cancel_movement()
         self._active_sequence = sequence
         sequence.start()
-

@@ -91,6 +91,8 @@ class Client(ShowBase):
             target_pos = Vec3(snapped_x, snapped_y, 0.5)
 
             if (self.character.get_position() - target_pos).length() > 0.1:
+                # Stop any ongoing movement so the path starts from the exact current position
+                self.character.cancel_movement()
                 current_pos = self.character.get_position()
                 current_x, current_y = int(current_pos.getX()), int(current_pos.getY())
 

@@ -11,7 +11,7 @@ from Controls import Controls
 from world import World
 from pathfinding import a_star
 from collision import CollisionControl
-from map_editor import MapEditor
+from options_menu import KeyBindingManager, OptionsMenu
 
 
 class Client(ShowBase):
@@ -35,9 +35,10 @@ class Client(ShowBase):
         self.camera_control = CameraControl(self.camera, self.render, self.character)
         self.controls = Controls(self, self.camera_control, self.character)
         self.collision_control = CollisionControl(self.camera, self.render)
-        self.editor = MapEditor(self, self.world)
-        self.editor.save_callback = self.save_map
-        self.editor.load_callback = self.load_map
+        self.key_manager = KeyBindingManager(self, {"open_menu": "escape"})
+        self.options_menu = OptionsMenu(self, self.key_manager)
+        self.key_manager.bind("open_menu", self.options_menu.toggle)
+
 
         self.accept("mouse1", self.tile_click_event)
 
@@ -150,6 +151,7 @@ class Client(ShowBase):
         """Load a map from ``filename`` and rebuild the world."""
         self.editor.load_map(filename)
         print(f"Map loaded from {filename}")
+
 
 
 if __name__ == "__main__":

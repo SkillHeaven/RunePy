@@ -4,20 +4,14 @@ class MapEditor:
     def __init__(self, client, world):
         self.client = client
         self.world = world
-        client.accept("mouse3", self.toggle_tile)
-        client.accept("i", self.toggle_interactable)
 
-        # Convenience keybindings for saving/loading the map when running the
-        # editor as a standalone application. These will simply print an error
-        # if invoked when the client does not provide the corresponding methods.
-        client.accept("s", self._hotkey_save)
-        client.accept("l", self._hotkey_load)
+    def register_bindings(self, key_manager):
+        """Register editor actions with ``key_manager``."""
+        key_manager.bind("toggle_tile", self.toggle_tile)
+        key_manager.bind("toggle_interactable", self.toggle_interactable)
+        key_manager.bind("save_map", self._hotkey_save)
+        key_manager.bind("load_map", self._hotkey_load)
 
-        # Convenience keybindings for saving/loading the map when running the
-        # editor as a standalone application. These will simply print an error
-        # if invoked when the client does not provide the corresponding methods.
-        client.accept("s", self._hotkey_save)
-        client.accept("l", self._hotkey_load)
 
     def toggle_tile(self):
         tile_x, tile_y = self.client.get_tile_from_mouse()
@@ -54,6 +48,7 @@ class MapEditor:
     def save_map(self, filename):
         """Write the current grid to ``filename`` as JSON."""
         import json
+
         def serialize(tile):
             return {
                 "walkable": tile.walkable,

@@ -57,6 +57,8 @@ python client.py --mode editor
 
 A window will open containing a grid of tiles. Clicking on a tile moves the smiley‑face character to that location using pathfinding. Use the mouse wheel to zoom the camera in or out.
 
+Press ``Esc`` in either mode to open an options menu where you can rebind any of the controls, including the editor's WASD movement and save/load shortcuts.
+
 ## License
 
 This project is provided as a minimal example without any specific license. Feel free to reuse the code for your own experiments with Panda3D.

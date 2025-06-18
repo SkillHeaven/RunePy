@@ -61,6 +61,7 @@ class World:
                 tile = self._create_tile((x * self.tile_size, y * self.tile_size, 0), self.tile_size)
                 tile_data = self.grid[y + self.radius][x + self.radius]
                 tile.setColor(self._tile_color(tile_data))
+
                 tile.setName(f"tile_{x}_{y}")
                 self.tiles[(x, y)] = tile
 

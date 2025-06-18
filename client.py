@@ -35,10 +35,10 @@ class Client(ShowBase):
         self.camera_control = CameraControl(self.camera, self.render, self.character)
         self.controls = Controls(self, self.camera_control, self.character)
         self.collision_control = CollisionControl(self.camera, self.render)
-
         self.key_manager = KeyBindingManager(self, {"open_menu": "escape"})
         self.options_menu = OptionsMenu(self, self.key_manager)
         self.key_manager.bind("open_menu", self.options_menu.toggle)
+
 
         self.accept("mouse1", self.tile_click_event)
 
@@ -138,6 +138,19 @@ class Client(ShowBase):
                 self.log(f"After Update: Character Pos: {self.character.get_position()}")
 
         self.collision_control.cleanup()
+
+    # ------------------------------------------------------------------
+    # Editor helpers
+    # ------------------------------------------------------------------
+    def save_map(self, filename="map.json"):
+        """Save the current world grid to ``filename``."""
+        self.editor.save_map(filename)
+        print(f"Map saved to {filename}")
+
+    def load_map(self, filename="map.json"):
+        """Load a map from ``filename`` and rebuild the world."""
+        self.editor.load_map(filename)
+        print(f"Map loaded from {filename}")
 
 
 

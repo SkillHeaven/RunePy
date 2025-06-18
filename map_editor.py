@@ -12,6 +12,7 @@ class MapEditor:
         key_manager.bind("save_map", self._hotkey_save)
         key_manager.bind("load_map", self._hotkey_load)
 
+
     def toggle_tile(self):
         tile_x, tile_y = self.client.get_tile_from_mouse()
         if tile_x is None:

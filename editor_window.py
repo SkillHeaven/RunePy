@@ -5,6 +5,7 @@ from Camera import FreeCameraControl
 from options_menu import KeyBindingManager, OptionsMenu
 
 
+
 class EditorWindow(ShowBase):
     """Standalone application providing a minimal tile editor."""
 
@@ -50,6 +51,7 @@ class EditorWindow(ShowBase):
                               lambda: self.camera_control.set_move("right", False))
 
         self.setBackgroundColor(0.9, 0.9, 0.9)
+
         self.camera.setPos(0, 0, 10)
         self.camera.lookAt(0, 0, 0)
 

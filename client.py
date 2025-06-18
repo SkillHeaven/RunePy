@@ -101,8 +101,18 @@ class Client(ShowBase):
                 self.log("Calculated Path:", path)
 
                 if path:
+                    # Skip the starting tile so movement begins from the
+                    # character's actual position without resetting to the
+                    # rounded tile coordinate.
+                    if path and path[0] == start_idx:
+                        path = path[1:]
+
+                    if not path:
+                        self.log("Already at destination")
+                        return
+
                     intervals = []
-                    prev_world_x, prev_world_y = current_x, current_y
+                    prev_world_x, prev_world_y = current_pos.getX(), current_pos.getY()
                     for step in path:
                         world_x = step[0] - self.map_radius
                         world_y = step[1] - self.map_radius

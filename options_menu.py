@@ -60,7 +60,7 @@ class OptionsMenu:
         y = 0.5
         self.entries = {}
         for action, key in self.manager.bindings.items():
-            DirectLabel(text=action, pos=(-0.6, 0, y), scale=0.05, parent=self.frame, align=TextNode.ALeft)
+            DirectLabel(text=action, pos=(-0.6, 0, y), scale=0.05, parent=self.frame, text_align=TextNode.ALeft)
             entry = DirectEntry(initialText=key, pos=(0.0, 0, y), scale=0.05, width=10, numLines=1, focus=0, parent=self.frame)
             self.entries[action] = entry
             y -= 0.1

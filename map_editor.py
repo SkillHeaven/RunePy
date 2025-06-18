@@ -13,6 +13,12 @@ class MapEditor:
         client.accept("s", self._hotkey_save)
         client.accept("l", self._hotkey_load)
 
+        # Convenience keybindings for saving/loading the map when running the
+        # editor as a standalone application. These will simply print an error
+        # if invoked when the client does not provide the corresponding methods.
+        client.accept("s", self._hotkey_save)
+        client.accept("l", self._hotkey_load)
+
     def toggle_tile(self):
         tile_x, tile_y = self.client.get_tile_from_mouse()
         if tile_x is None:
@@ -48,7 +54,6 @@ class MapEditor:
     def save_map(self, filename):
         """Write the current grid to ``filename`` as JSON."""
         import json
-
         def serialize(tile):
             return {
                 "walkable": tile.walkable,

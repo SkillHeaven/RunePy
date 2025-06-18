@@ -49,7 +49,15 @@ After installing the requirements, launch the program using one of the following
 python client.py
 ```
 
+To launch the map editor instead of the game, run:
+
+```bash
+python client.py --mode editor
+```
+
 A window will open containing a grid of tiles. Clicking on a tile moves the smiley‑face character to that location using pathfinding. Use the mouse wheel to zoom the camera in or out.
+
+Press ``Esc`` in either mode to open an options menu where you can rebind any of the controls, including the editor's WASD movement and save/load shortcuts.
 
 ## License
 

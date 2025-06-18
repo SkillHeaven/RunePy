@@ -7,7 +7,6 @@ from panda3d.core import (
     Point3,
     Vec3,
 )
-import random
 
 
 class World:
@@ -37,8 +36,9 @@ class World:
         for x in range(-self.radius, self.radius + 1):
             for y in range(-self.radius, self.radius + 1):
                 tile = self._create_tile((x * self.tile_size, y * self.tile_size, 0), self.tile_size)
-                random_color = (random.random(), random.random(), random.random(), 1)
-                tile.setColor(random_color)
+                grid_val = self.grid[y + self.radius][x + self.radius]
+                color = (1, 1, 1, 1) if grid_val else (0.2, 0.2, 0.2, 1)
+                tile.setColor(color)
                 tile.setName(f"tile_{x}_{y}")
                 self.tiles[(x, y)] = tile
 

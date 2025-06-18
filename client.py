@@ -2,6 +2,7 @@ from panda3d.core import ModifierButtons, Vec3
 from direct.showbase.ShowBase import ShowBase
 from direct.interval.IntervalGlobal import Sequence, Func
 import math
+import argparse
 
 from Character import Character
 from DebugInfo import DebugInfo
@@ -14,7 +15,7 @@ from map_editor import MapEditor
 
 
 class Client(ShowBase):
-    """Application entry point that opens the window."""
+    """Application entry point that opens the game window."""
 
     def __init__(self, debug=False):
         super().__init__()
@@ -35,10 +36,12 @@ class Client(ShowBase):
         self.controls = Controls(self, self.camera_control, self.character)
         self.collision_control = CollisionControl(self.camera, self.render)
         self.editor = MapEditor(self, self.world)
+        self.editor.save_callback = self.save_map
+        self.editor.load_callback = self.load_map
 
         self.accept("mouse1", self.tile_click_event)
 
-        self.setBackgroundColor(0.5, 0.5, 0.5)
+        self.setBackgroundColor(0.9, 0.9, 0.9)
         self.camera.setPos(0, 0, 10)
         self.camera.lookAt(0, 0, 0)
 
@@ -99,7 +102,8 @@ class Client(ShowBase):
                 start_idx = (current_x + self.map_radius, current_y + self.map_radius)
                 end_idx = (snapped_x + self.map_radius, snapped_y + self.map_radius)
 
-                path = a_star(self.grid, start_idx, end_idx)
+                walkable_grid = [[1 if t.walkable else 0 for t in row] for row in self.grid]
+                path = a_star(walkable_grid, start_idx, end_idx)
                 self.log("Calculated Path:", path)
 
                 if path:
@@ -134,7 +138,34 @@ class Client(ShowBase):
 
         self.collision_control.cleanup()
 
+    # ------------------------------------------------------------------
+    # Editor helpers
+    # ------------------------------------------------------------------
+    def save_map(self, filename="map.json"):
+        """Save the current world grid to ``filename``."""
+        self.editor.save_map(filename)
+        print(f"Map saved to {filename}")
+
+    def load_map(self, filename="map.json"):
+        """Load a map from ``filename`` and rebuild the world."""
+        self.editor.load_map(filename)
+        print(f"Map loaded from {filename}")
+
 
 if __name__ == "__main__":
-    app = Client()
+    parser = argparse.ArgumentParser(description="RunePy client")
+    parser.add_argument(
+        "--mode",
+        choices=["game", "editor"],
+        default="game",
+        help="Start in regular game mode or map editor",
+    )
+    args = parser.parse_args()
+
+    if args.mode == "editor":
+        from editor_window import EditorWindow
+
+        app = EditorWindow()
+    else:
+        app = Client()
     app.run()

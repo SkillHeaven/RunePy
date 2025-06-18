@@ -44,4 +44,3 @@ class Character:
         self.cancel_movement()
         self._active_sequence = sequence
         sequence.start()
-

@@ -17,7 +17,8 @@ class EditorWindow(ShowBase):
         self.accept("s", self.save_map)
         self.accept("l", self.load_map)
 
-        self.setBackgroundColor(0.5, 0.5, 0.5)
+        self.setBackgroundColor(0.9, 0.9, 0.9)
+        
         self.camera.setPos(0, 0, 10)
         self.camera.lookAt(0, 0, 0)
 

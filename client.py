@@ -41,7 +41,7 @@ class Client(ShowBase):
 
         self.accept("mouse1", self.tile_click_event)
 
-        self.setBackgroundColor(0.5, 0.5, 0.5)
+        self.setBackgroundColor(0.9, 0.9, 0.9)
         self.camera.setPos(0, 0, 10)
         self.camera.lookAt(0, 0, 0)
 
@@ -102,7 +102,8 @@ class Client(ShowBase):
                 start_idx = (current_x + self.map_radius, current_y + self.map_radius)
                 end_idx = (snapped_x + self.map_radius, snapped_y + self.map_radius)
 
-                path = a_star(self.grid, start_idx, end_idx)
+                walkable_grid = [[1 if t.walkable else 0 for t in row] for row in self.grid]
+                path = a_star(walkable_grid, start_idx, end_idx)
                 self.log("Calculated Path:", path)
 
                 if path:

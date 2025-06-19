@@ -13,6 +13,7 @@ from runepy.world import World
 from runepy.pathfinding import a_star
 from runepy.collision import CollisionControl
 from runepy.options_menu import KeyBindingManager, OptionsMenu
+from runepy.loading_screen import LoadingScreen
 
 
 class Client(ShowBase):
@@ -21,17 +22,23 @@ class Client(ShowBase):
     def __init__(self, debug=False):
         super().__init__()
         self.debug = debug
+        # Show a loading screen while the game initializes
+        self.loading_screen = LoadingScreen(self)
+        self.loading_screen.update(0, "Initializing")
+
         self.disableMouse()
         self.debug_info = DebugInfo()
 
         self.mouseWatcherNode.set_modifier_buttons(ModifierButtons())
         self.buttonThrowers[0].node().set_modifier_buttons(ModifierButtons())
 
+        self.loading_screen.update(20, "Generating world")
         self.world = World(self.render, debug=debug)
         self.grid = self.world.grid
         self.map_radius = self.world.radius
 
         tile_fit_scale = self.world.tile_size * 0.5
+        self.loading_screen.update(50, "Loading character")
         self.character = Character(self.render, self.loader, Vec3(0, 0, 0.5), scale=tile_fit_scale, debug=debug)
         self.camera_control = CameraControl(self.camera, self.render, self.character)
         self.controls = Controls(self, self.camera_control, self.character)
@@ -43,11 +50,15 @@ class Client(ShowBase):
 
         self.accept("mouse1", self.tile_click_event)
 
+        self.loading_screen.update(80, "Finalizing")
+
         self.setBackgroundColor(0.9, 0.9, 0.9)
         self.camera.setPos(0, 0, 10)
         self.camera.lookAt(0, 0, 0)
 
         self.taskMgr.add(self.update_tile_hover, "updateTileHoverTask")
+        self.loading_screen.update(100, "Done")
+        self.taskMgr.doMethodLater(1.0, self._remove_loading_screen, "hideLoading")
 
     def log(self, *args, **kwargs):
         if self.debug:
@@ -66,6 +77,12 @@ class Client(ShowBase):
         else:
             self.world.clear_highlight()
         return task.cont
+
+    def _remove_loading_screen(self, task):
+        if hasattr(self, "loading_screen") and self.loading_screen:
+            self.loading_screen.destroy()
+            self.loading_screen = None
+        return task.done
 
     def tile_click_event(self):
         if self.options_menu.visible:

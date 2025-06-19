@@ -1,5 +1,7 @@
-from panda3d.core import Vec3
-from Controls import Controls
+from panda3d.core import Vec3, ClockObject
+
+# Initialize the global clock for time-based movement
+globalClock = ClockObject.getGlobalClock()
 
 class CameraControl:
 

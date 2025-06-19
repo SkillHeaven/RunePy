@@ -17,3 +17,27 @@ def test_a_star_blocked_goal():
     ]
     path = pathfinding.a_star(grid, (0, 0), (1, 1))
     assert path is None
+
+
+def test_a_star_four_directional():
+    grid = [
+        [1, 1],
+        [1, 1],
+    ]
+    offsets = [(0, -1), (1, 0), (0, 1), (-1, 0)]
+    path = pathfinding.a_star(grid, (0, 0), (1, 1), neighbor_offsets=offsets)
+    assert path == [(0, 0), (1, 0), (1, 1)] or path == [(0, 0), (0, 1), (1, 1)]
+
+
+def test_a_star_weighted_tiles():
+    grid = [
+        [1, 1, 1],
+        [1, 5, 1],
+        [1, 1, 1],
+    ]
+    offsets = [(0, -1), (1, 0), (0, 1), (-1, 0)]
+    path = pathfinding.a_star(
+        grid, (0, 1), (2, 1), neighbor_offsets=offsets, weighted=True
+    )
+    assert path[0] == (0, 1) and path[-1] == (2, 1)
+    assert (1, 1) not in path

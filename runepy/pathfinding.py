@@ -8,18 +8,23 @@ from dataclasses import dataclass
 class Node:
     position: tuple
     parent: "Node" = None
-    g: int = 0  # Cost from start to current node
-    h: int = 0  # Estimated cost from current node to goal
-    f: int = 0  # Total cost (g + h)
+    g: float = 0  # Cost from start to current node
+    h: float = 0  # Estimated cost from current node to goal
+    f: float = 0  # Total cost (g + h)
 
 
-def a_star(grid, start, end):
+def a_star(grid, start, end, neighbor_offsets=None, weighted=False):
     """Perform A* pathfinding on a grid using 0 based indices.
 
     ``grid`` is expected to be a list-of-lists where ``1`` indicates a
     walkable tile. ``start`` and ``end`` should already be translated into
     grid coordinates starting at ``(0, 0)``. Negative coordinates are not
     considered valid and will be ignored.
+
+    ``neighbor_offsets`` allows customizing movement directions. It should
+    be a list of ``(dx, dy)`` tuples. If omitted, movement is allowed in all
+    8 directions. When ``weighted`` is ``True`` the values in ``grid`` are
+    treated as movement costs instead of booleans.
     """
 
     # Create start and end node
@@ -33,6 +38,18 @@ def a_star(grid, start, end):
 
     height = len(grid)
     width = len(grid[0]) if height > 0 else 0
+
+    if neighbor_offsets is None:
+        neighbor_offsets = [
+            (0, -1),
+            (1, 0),
+            (0, 1),
+            (-1, 0),
+            (-1, -1),
+            (1, 1),
+            (-1, 1),
+            (1, -1),
+        ]
 
     open_heap = []
     open_dict = {}
@@ -62,10 +79,10 @@ def a_star(grid, start, end):
 
         # Get the neighbors
         neighbors = []
-        for new_position in [(0, -1), (1, 0), (0, 1), (-1, 0), (-1, -1), (1, 1), (-1, 1), (1, -1)]:
+        for offset in neighbor_offsets:
             node_position = (
-                current_node.position[0] + new_position[0],
-                current_node.position[1] + new_position[1],
+                current_node.position[0] + offset[0],
+                current_node.position[1] + offset[1],
             )
 
             # Skip positions outside the grid
@@ -73,19 +90,21 @@ def a_star(grid, start, end):
                 continue
 
             # Check if the position is walkable
-            if grid[node_position[1]][node_position[0]] == 0:
+            tile_value = grid[node_position[1]][node_position[0]]
+            if tile_value == 0:
                 continue
 
-            neighbors.append(Node(node_position, current_node))
+            neighbors.append((Node(node_position, current_node), tile_value))
 
         # Loop through the neighbors
-        for neighbor in neighbors:
+        for neighbor, tile_value in neighbors:
             # Skip if the neighbor was already evaluated
             if neighbor.position in closed_set:
                 continue
 
             # Create the f, g, and h values
-            neighbor.g = current_node.g + 1
+            step_cost = tile_value if weighted else 1
+            neighbor.g = current_node.g + step_cost
             neighbor.h = abs(neighbor.position[0] - end_node.position[0]) + abs(
                 neighbor.position[1] - end_node.position[1])
             neighbor.f = neighbor.g + neighbor.h

@@ -23,7 +23,7 @@ RunePy is a small demonstration project built with [Panda3D](https://www.panda3d
 | `runepy/camera.py` | Manages the camera position and orientation. |
 | `runepy/controls.py` | Handles mouse wheel zooming and other input bindings. |
 | `runepy/collision.py` | Utilities for ray casting with Panda3D's collision system. |
-| `runepy/pathfinding.py` | Implementation of a basic A* search. |
+| `runepy/pathfinding.py` | Implementation of a basic A* search with optional weighted costs and movement patterns. |
 | `runepy/debuginfo.py` | Draws onscreen debug text such as mouse and tile coordinates. |
 | `runepy/utils.py` | Shared helpers like `get_mouse_tile_coords`. |
 
@@ -87,5 +87,5 @@ Run the test suite with `pytest -q` from the repository root:
 pytest -q
 ```
 
-All tests should pass. There are currently two tests covering the A* pathfinding
-implementation.
+All tests should pass. There are currently four tests covering the A* pathfinding
+implementation including optional movement offsets and weighted tiles.

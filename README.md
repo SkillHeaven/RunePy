@@ -57,7 +57,9 @@ python client.py --mode editor
 
 A window will open containing a grid of tiles. Clicking on a tile moves the smiley‑face character to that location using pathfinding. Use the mouse wheel to zoom the camera in or out.
 
-Press ``Esc`` in either mode to open an options menu where you can rebind any of the controls, including the editor's WASD movement and save/load shortcuts.
+Zooming is always handled by the mouse wheel and cannot be changed. In the editor the camera's forward/back movement is fixed to ``W`` and ``S`` while the ``A`` and ``D`` keys remain rebindable.
+
+Press ``Esc`` in either mode to open an options menu where you can rebind the available controls, including the editor's side movement and save/load shortcuts. When this menu is visible, gameplay clicks are ignored so you can't interact with the world through the menu.
 
 ## License
 

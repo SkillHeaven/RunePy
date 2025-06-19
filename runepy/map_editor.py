@@ -19,7 +19,9 @@ class MapEditor:
     def toggle_tile(self):
         if self.client.options_menu.visible:
             return
-        tile_x, tile_y = get_tile_from_mouse(self.client.mouseWatcherNode)
+        tile_x, tile_y = get_tile_from_mouse(
+            self.client.mouseWatcherNode, self.client.camera, self.client.render
+        )
         if tile_x is None:
             return
         grid_x = tile_x + self.world.radius
@@ -35,7 +37,9 @@ class MapEditor:
     def toggle_interactable(self):
         if self.client.options_menu.visible:
             return
-        tile_x, tile_y = get_tile_from_mouse(self.client.mouseWatcherNode)
+        tile_x, tile_y = get_tile_from_mouse(
+            self.client.mouseWatcherNode, self.client.camera, self.client.render
+        )
         if tile_x is None:
             return
         grid_x = tile_x + self.world.radius

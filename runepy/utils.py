@@ -1,18 +1,37 @@
 # Utility functions shared across modules
-from panda3d.core import MouseWatcher
+from panda3d.core import MouseWatcher, Plane, Point3, Vec3
 
 
-def get_mouse_tile_coords(mouse_watcher: "MouseWatcher"):
-    """Return the mouse position and snapped tile coordinates."""
+def get_mouse_tile_coords(
+    mouse_watcher: "MouseWatcher",
+    camera,
+    render,
+) -> tuple:
+    """Return the mouse position and world tile coordinates.
+
+    ``camera`` and ``render`` should be the current camera node and the
+    render root so the mouse ray can be projected into world space.
+    """
     if mouse_watcher and mouse_watcher.hasMouse():
+        if not camera or not render:
+            return None, None, None
         mpos = mouse_watcher.getMouse()
-        tile_x = round(mpos.getX() * 10)
-        tile_y = round(mpos.getY() * 10)
-        return mpos, tile_x, tile_y
+        lens = camera.node().getLens()
+        near = Point3()
+        far = Point3()
+        lens.extrude(mpos, near, far)
+        near_world = render.getRelativePoint(camera, near)
+        far_world = render.getRelativePoint(camera, far)
+        plane = Plane(Vec3(0, 0, 1), Point3(0, 0, 0))
+        intersection = Point3()
+        if plane.intersectsLine(intersection, near_world, far_world):
+            tile_x = round(intersection.getX())
+            tile_y = round(intersection.getY())
+            return mpos, tile_x, tile_y
     return None, None, None
 
 
-def get_tile_from_mouse(mouse_watcher: "MouseWatcher"):
+def get_tile_from_mouse(mouse_watcher: "MouseWatcher", camera, render):
     """Return just the tile coordinates from the mouse position."""
-    _, tile_x, tile_y = get_mouse_tile_coords(mouse_watcher)
+    _, tile_x, tile_y = get_mouse_tile_coords(mouse_watcher, camera, render)
     return tile_x, tile_y

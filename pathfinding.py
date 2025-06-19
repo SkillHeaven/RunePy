@@ -1,21 +1,16 @@
 # pathfinding.py
 
 import heapq
+from dataclasses import dataclass
 
 
+@dataclass(order=True)
 class Node:
-    def __init__(self, position, parent=None):
-        self.position = position
-        self.parent = parent
-        self.g = 0  # Cost from start to current node
-        self.h = 0  # Estimated cost from current node to goal
-        self.f = 0  # Total cost (g + h)
-
-    def __eq__(self, other):
-        return self.position == other.position
-
-    def __lt__(self, other):
-        return self.f < other.f
+    position: tuple
+    parent: "Node" = None
+    g: int = 0  # Cost from start to current node
+    h: int = 0  # Estimated cost from current node to goal
+    f: int = 0  # Total cost (g + h)
 
 
 def a_star(grid, start, end):
@@ -58,7 +53,7 @@ def a_star(grid, start, end):
         closed_set.add(current_node.position)
 
         # Check if we've reached our destination
-        if current_node == end_node:
+        if current_node.position == end_node.position:
             path = []
             while current_node:
                 path.append(current_node.position)

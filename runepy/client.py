@@ -1,9 +1,10 @@
 from panda3d.core import ModifierButtons, Vec3
 from runepy.utils import get_mouse_tile_coords, get_tile_from_mouse
-from direct.showbase.ShowBase import ShowBase
 from direct.interval.IntervalGlobal import Sequence, Func
 import math
 import argparse
+
+from runepy.base_app import BaseApp
 
 from runepy.character import Character
 from runepy.debuginfo import DebugInfo
@@ -16,21 +17,15 @@ from runepy.options_menu import KeyBindingManager, OptionsMenu
 from runepy.loading_screen import LoadingScreen
 
 
-class Client(ShowBase):
+class Client(BaseApp):
     """Application entry point that opens the game window."""
 
     def __init__(self, debug=False):
-        super().__init__()
         self.debug = debug
-        # Show a loading screen immediately then perform heavy setup
-        self.loading_screen = LoadingScreen(self)
-        self.loading_screen.update(0, "Initializing")
-        # Defer the rest of initialization so the loading screen can render first
-        self.taskMgr.doMethodLater(0, self._init_game, "initGame")
+        super().__init__()
 
-    def _init_game(self, task):
-        """Heavy initialization broken out so the loading screen appears first."""
-        self.disableMouse()
+    def initialize(self):
+        """Perform heavy initialization for the game mode."""
         self.debug_info = DebugInfo()
 
         self.mouseWatcherNode.set_modifier_buttons(ModifierButtons())
@@ -60,9 +55,6 @@ class Client(ShowBase):
         self.camera.lookAt(0, 0, 0)
 
         self.taskMgr.add(self.update_tile_hover, "updateTileHoverTask")
-        self.loading_screen.update(100, "Done")
-        self.taskMgr.doMethodLater(1.0, self._remove_loading_screen, "hideLoading")
-        return task.done
 
     def log(self, *args, **kwargs):
         if self.debug:
@@ -82,11 +74,6 @@ class Client(ShowBase):
             self.world.clear_highlight()
         return task.cont
 
-    def _remove_loading_screen(self, task):
-        if hasattr(self, "loading_screen") and self.loading_screen:
-            self.loading_screen.destroy()
-            self.loading_screen = None
-        return task.done
 
     def tile_click_event(self):
         if self.options_menu.visible:

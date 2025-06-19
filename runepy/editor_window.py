@@ -1,4 +1,4 @@
-from direct.showbase.ShowBase import ShowBase
+from runepy.base_app import BaseApp
 from runepy.world import World
 from runepy.map_editor import MapEditor
 from runepy.camera import FreeCameraControl
@@ -8,13 +8,13 @@ from runepy.utils import get_mouse_tile_coords, get_tile_from_mouse
 
 
 
-class EditorWindow(ShowBase):
+class EditorWindow(BaseApp):
     """Standalone application providing a minimal tile editor."""
 
     def __init__(self):
         super().__init__()
-        self.disableMouse()
 
+    def initialize(self):
         self.world = World(self.render)
         self.editor = MapEditor(self, self.world)
         self.editor.save_callback = self.save_map
@@ -38,12 +38,16 @@ class EditorWindow(ShowBase):
 
         self.key_manager.bind("open_menu", self.options_menu.toggle)
         self.editor.register_bindings(self.key_manager)
-        self.key_manager.bind("move_left",
-                              lambda: self.camera_control.set_move("left", True),
-                              lambda: self.camera_control.set_move("left", False))
-        self.key_manager.bind("move_right",
-                              lambda: self.camera_control.set_move("right", True),
-                              lambda: self.camera_control.set_move("right", False))
+        self.key_manager.bind(
+            "move_left",
+            lambda: self.camera_control.set_move("left", True),
+            lambda: self.camera_control.set_move("left", False),
+        )
+        self.key_manager.bind(
+            "move_right",
+            lambda: self.camera_control.set_move("right", True),
+            lambda: self.camera_control.set_move("right", False),
+        )
 
         # Bind forward/back movement directly so W/S are fixed keys
         self.accept("w", lambda: self.camera_control.set_move("forward", True))

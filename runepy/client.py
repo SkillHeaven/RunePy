@@ -57,6 +57,12 @@ class Client(ShowBase):
         mpos, tile_x, tile_y = get_mouse_tile_coords(self.mouseWatcherNode)
         if mpos:
             self.debug_info.update_tile_info(mpos, tile_x, tile_y)
+            if (tile_x, tile_y) in self.world.tiles:
+                self.world.highlight_tile(tile_x, tile_y)
+            else:
+                self.world.clear_highlight()
+        else:
+            self.world.clear_highlight()
         return task.cont
 
     def tile_click_event(self):

@@ -3,6 +3,7 @@ from world import World
 from map_editor import MapEditor
 from Camera import FreeCameraControl
 from options_menu import KeyBindingManager, OptionsMenu
+from Controls import Controls
 
 
 
@@ -20,6 +21,7 @@ class EditorWindow(ShowBase):
 
         self.camera_control = FreeCameraControl(self.camera)
         self.camera_control.start(self)
+        self.controls = Controls(self, self.camera_control, None)
 
         default_keys = {
             "open_menu": "escape",

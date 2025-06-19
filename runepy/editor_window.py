@@ -56,6 +56,19 @@ class EditorWindow(ShowBase):
         self.camera.setPos(0, 0, 10)
         self.camera.lookAt(0, 0, 0)
 
+        self.taskMgr.add(self.update_tile_hover, "updateTileHoverTask")
+
+    def update_tile_hover(self, task):
+        mpos, tile_x, tile_y = get_mouse_tile_coords(self.mouseWatcherNode)
+        if mpos:
+            if (tile_x, tile_y) in self.world.tiles:
+                self.world.highlight_tile(tile_x, tile_y)
+            else:
+                self.world.clear_highlight()
+        else:
+            self.world.clear_highlight()
+        return task.cont
+
     def save_map(self):
         self.editor.save_map("map.json")
         print("Map saved to map.json")

@@ -77,8 +77,12 @@ class World:
 
         self._generate_tiles()
         self._create_grid_lines()
-        self.tile_root.flattenStrong()
+        # Flattening tiles would merge them into a single node which prevents
+        # per-tile color adjustments. Keep tiles separate so each can be
+        # highlighted individually. Grid lines remain flattened for performance.
         self.grid_lines.flattenStrong()
+
+        self._hovered = None
 
     def save_map(self, filename):
         """Write the current grid to ``filename`` as JSON."""
@@ -143,6 +147,25 @@ class World:
         node = lines.create()
         self.grid_lines.attachNewNode(node)
 
+    def highlight_tile(self, x: int, y: int, scale: float = 0.8):
+        """Darken the tile at ``(x, y)`` to indicate a hover state."""
+        coord = (x, y)
+        if self._hovered == coord:
+            return
+        if self._hovered in self.tiles:
+            self.tiles[self._hovered].clearColorScale()
+            self._hovered = None
+        tile = self.tiles.get(coord)
+        if tile:
+            tile.setColorScale(scale, scale, scale, 1)
+            self._hovered = coord
+
+    def clear_highlight(self):
+        """Remove any hover highlight from the map."""
+        if self._hovered in self.tiles:
+            self.tiles[self._hovered].clearColorScale()
+        self._hovered = None
+
     def _create_collision_plane(self):
         plane = CollisionPlane(Plane(Vec3(0, 0, 1), Point3(0, 0, 0)))
         c_node = CollisionNode("grid_plane")
@@ -178,7 +201,8 @@ class World:
         self.tiles = {}
         self._generate_tiles()
         self._create_grid_lines()
-        self.tile_root.flattenStrong()
+        # Keep tiles un-flattened so hover highlighting works on individual
+        # nodes. Grid lines can still be flattened for efficiency.
         self.grid_lines.flattenStrong()
 
 

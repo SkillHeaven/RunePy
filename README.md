@@ -11,6 +11,7 @@ RunePy is a small demonstration project built with [Panda3D](https://www.panda3d
 - Simple collision and ray casting
 - Camera zoom limits keep the view between a minimum and maximum height
 - Built-in map editor with hotkeys for saving and loading maps
+- Tiles support custom metadata loaded from map files
 
 ## Repository Layout
 

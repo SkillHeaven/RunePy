@@ -1,10 +1,10 @@
 from direct.showbase.ShowBase import ShowBase
-from world import World
-from map_editor import MapEditor
-from Camera import FreeCameraControl
-from options_menu import KeyBindingManager, OptionsMenu
-from Controls import Controls
-from utils import get_mouse_tile_coords, get_tile_from_mouse
+from runepy.world import World
+from runepy.map_editor import MapEditor
+from runepy.camera import FreeCameraControl
+from runepy.options_menu import KeyBindingManager, OptionsMenu
+from runepy.controls import Controls
+from runepy.utils import get_mouse_tile_coords, get_tile_from_mouse
 
 
 

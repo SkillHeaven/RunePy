@@ -1,9 +1,4 @@
-import os
-import sys
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-
-import pathfinding
+from runepy import pathfinding
 
 
 def test_a_star_open_grid():

@@ -17,9 +17,25 @@ class Controls(DirectObject):
         # self.base.taskMgr.add(self.middle_mouse_drag_event, 'middleMouseTask')
 
     def zoom(self, direction):
+        """Zoom the camera while clamping the minimum height."""
         zoom_speed = 10
-        cam_vec = self.base.render.getRelativeVector(self.camera_control.camera, Vec3(0, 1, 0))
-        self.camera_control.camera.setPos(self.camera_control.camera.getPos() - cam_vec * direction * zoom_speed)
+        cam_vec = self.base.render.getRelativeVector(
+            self.camera_control.camera, Vec3(0, 1, 0)
+        )
+
+        # Calculate the camera's new position in world space
+        current_world_pos = self.camera_control.camera.getPos(self.base.render)
+        new_world_pos = current_world_pos - cam_vec * direction * zoom_speed
+
+        # Prevent the camera from moving below the map plane
+        min_z = 1.0
+        if new_world_pos.getZ() < min_z:
+            new_world_pos.setZ(min_z)
+
+        # Convert back to the camera's parent space before applying
+        parent = self.camera_control.camera.getParent()
+        new_local_pos = parent.getRelativePoint(self.base.render, new_world_pos)
+        self.camera_control.camera.setPos(new_local_pos)
 
     # def middle_mouse_down_event(self):
     #     self.middle_mouse_down = True

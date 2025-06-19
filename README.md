@@ -63,7 +63,7 @@ Press ``Esc`` in either mode to open an options menu where you can rebind the av
 
 ## License
 
-This project is provided as a minimal example without any specific license. Feel free to reuse the code for your own experiments with Panda3D.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 
 ## Utilities

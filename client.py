@@ -13,6 +13,7 @@ from world import World
 from pathfinding import a_star
 from collision import CollisionControl
 from options_menu import KeyBindingManager, OptionsMenu
+from config import load_key_bindings
 
 
 class Client(ShowBase):
@@ -36,7 +37,8 @@ class Client(ShowBase):
         self.camera_control = CameraControl(self.camera, self.render, self.character)
         self.controls = Controls(self, self.camera_control, self.character)
         self.collision_control = CollisionControl(self.camera, self.render)
-        self.key_manager = KeyBindingManager(self, {"open_menu": "escape"})
+        bindings = load_key_bindings()
+        self.key_manager = KeyBindingManager(self, bindings if bindings else {"open_menu": "escape"})
         self.options_menu = OptionsMenu(self, self.key_manager)
         self.key_manager.bind("open_menu", self.options_menu.toggle)
 

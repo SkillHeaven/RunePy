@@ -74,3 +74,14 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 `utils.py` contains small helper functions used throughout the project. In particular
 `get_mouse_tile_coords` and `get_tile_from_mouse` simplify working with the map
 editor by translating the mouse position into tile coordinates.
+
+## Tests
+
+Run the test suite with `pytest -q` from the repository root:
+
+```bash
+pytest -q
+```
+
+All tests should pass. There are currently two tests covering the A* pathfinding
+implementation.

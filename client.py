@@ -1,19 +1,18 @@
 from panda3d.core import ModifierButtons, Vec3
-from utils import get_mouse_tile_coords, get_tile_from_mouse
+from runepy.utils import get_mouse_tile_coords, get_tile_from_mouse
 from direct.showbase.ShowBase import ShowBase
 from direct.interval.IntervalGlobal import Sequence, Func
 import math
 import argparse
 
-from Character import Character
-from DebugInfo import DebugInfo
-from Camera import CameraControl
-from Controls import Controls
-from world import World
-from pathfinding import a_star
-from collision import CollisionControl
-from options_menu import KeyBindingManager, OptionsMenu
-from config import load_key_bindings
+from runepy.character import Character
+from runepy.debuginfo import DebugInfo
+from runepy.camera import CameraControl
+from runepy.controls import Controls
+from runepy.world import WorldAdd commentMore actions
+from runepy.pathfinding import a_star
+from runepy.collision import CollisionControl
+from runepy.options_menu import KeyBindingManager, OptionsMenu
 
 
 class Client(ShowBase):
@@ -160,7 +159,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.mode == "editor":
-        from editor_window import EditorWindow
+        from runepy.editor_window import EditorWindow
 
         app = EditorWindow()
     else:

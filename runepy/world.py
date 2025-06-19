@@ -77,7 +77,9 @@ class World:
 
         self._generate_tiles()
         self._create_grid_lines()
-        self.tile_root.flattenStrong()
+        # Flattening tiles would merge them into a single node which prevents
+        # per-tile color adjustments. Keep tiles separate so each can be
+        # highlighted individually. Grid lines remain flattened for performance.
         self.grid_lines.flattenStrong()
 
         self._hovered = None
@@ -199,7 +201,8 @@ class World:
         self.tiles = {}
         self._generate_tiles()
         self._create_grid_lines()
-        self.tile_root.flattenStrong()
+        # Keep tiles un-flattened so hover highlighting works on individual
+        # nodes. Grid lines can still be flattened for efficiency.
         self.grid_lines.flattenStrong()
 
 

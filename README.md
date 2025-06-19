@@ -12,6 +12,8 @@ RunePy is a small demonstration project built with [Panda3D](https://www.panda3d
 - Camera zoom limits keep the view between a minimum and maximum height
 - Built-in map editor with hotkeys for saving and loading maps
 - Tiles support custom metadata loaded from map files
+- Individual tiles darken slightly when hovered to show the current mouse
+  position
 
 ## Repository Layout
 
@@ -77,8 +79,9 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 ## Utilities
 
 `utils.py` contains small helper functions used throughout the project. In particular
-`get_mouse_tile_coords` and `get_tile_from_mouse` simplify working with the map
-editor by translating the mouse position into tile coordinates.
+`get_mouse_tile_coords` and `get_tile_from_mouse` translate the mouse position into
+tile coordinates using the camera and render nodes. Pass the current camera and
+`render` root when calling these helpers.
 
 ## Tests
 

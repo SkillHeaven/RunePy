@@ -54,7 +54,9 @@ class Client(ShowBase):
             print(*args, **kwargs)
 
     def update_tile_hover(self, task):
-        mpos, tile_x, tile_y = get_mouse_tile_coords(self.mouseWatcherNode)
+        mpos, tile_x, tile_y = get_mouse_tile_coords(
+            self.mouseWatcherNode, self.camera, self.render
+        )
         if mpos:
             self.debug_info.update_tile_info(mpos, tile_x, tile_y)
             if (tile_x, tile_y) in self.world.tiles:
@@ -71,7 +73,9 @@ class Client(ShowBase):
         self.log("Tile clicked!")
         if self.mouseWatcherNode.hasMouse():
             mpos = self.mouseWatcherNode.getMouse()
-            tile_x, tile_y = get_tile_from_mouse(self.mouseWatcherNode)
+            tile_x, tile_y = get_tile_from_mouse(
+                self.mouseWatcherNode, self.camera, self.render
+            )
             self.log(f"Mouse position detected: {mpos}")
             self.log(f"Clicked tile coords: {(tile_x, tile_y)}")
         else:

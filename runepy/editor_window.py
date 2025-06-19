@@ -59,7 +59,9 @@ class EditorWindow(ShowBase):
         self.taskMgr.add(self.update_tile_hover, "updateTileHoverTask")
 
     def update_tile_hover(self, task):
-        mpos, tile_x, tile_y = get_mouse_tile_coords(self.mouseWatcherNode)
+        mpos, tile_x, tile_y = get_mouse_tile_coords(
+            self.mouseWatcherNode, self.camera, self.render
+        )
         if mpos:
             if (tile_x, tile_y) in self.world.tiles:
                 self.world.highlight_tile(tile_x, tile_y)

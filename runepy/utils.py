@@ -16,7 +16,14 @@ def get_mouse_tile_coords(
         if not camera or not render:
             return None, None, None
         mpos = mouse_watcher.getMouse()
-        lens = camera.node().getLens()
+        node = camera.node()
+        if hasattr(node, "getLens"):
+            lens = node.getLens()
+        else:
+            cam = camera.find("**/+Camera")
+            if cam.isEmpty():
+                return None, None, None
+            lens = cam.node().getLens()
         near = Point3()
         far = Point3()
         lens.extrude(mpos, near, far)

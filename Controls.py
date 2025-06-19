@@ -28,7 +28,7 @@ class Controls(DirectObject):
         new_world_pos = current_world_pos - cam_vec * direction * zoom_speed
 
         # Prevent the camera from moving below the map plane
-        min_z = 1.0
+        min_z = 5.0
         if new_world_pos.getZ() < min_z:
             new_world_pos.setZ(min_z)
 

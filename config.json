@@ -1,0 +1,11 @@
+{
+  "key_bindings": {
+    "open_menu": "escape",
+    "save_map": "control-s",
+    "load_map": "control-l",
+    "toggle_tile": "mouse3",
+    "toggle_interactable": "i",
+    "move_left": "a",
+    "move_right": "d"
+  }
+}

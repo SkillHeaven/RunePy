@@ -1,4 +1,5 @@
 from panda3d.core import ModifierButtons, Vec3
+from utils import get_mouse_tile_coords, get_tile_from_mouse
 from direct.showbase.ShowBase import ShowBase
 from direct.interval.IntervalGlobal import Sequence, Func
 import math
@@ -52,20 +53,8 @@ class Client(ShowBase):
         if self.debug:
             print(*args, **kwargs)
 
-    def get_mouse_tile_coords(self):
-        if self.mouseWatcherNode.hasMouse():
-            mpos = self.mouseWatcherNode.getMouse()
-            tile_x = round(mpos.getX() * 10)
-            tile_y = round(mpos.getY() * 10)
-            return mpos, tile_x, tile_y
-        return None, None, None
-
-    def get_tile_from_mouse(self):
-        _, tile_x, tile_y = self.get_mouse_tile_coords()
-        return tile_x, tile_y
-
     def update_tile_hover(self, task):
-        mpos, tile_x, tile_y = self.get_mouse_tile_coords()
+        mpos, tile_x, tile_y = get_mouse_tile_coords(self.mouseWatcherNode)
         if mpos:
             self.debug_info.update_tile_info(mpos, tile_x, tile_y)
         return task.cont
@@ -76,7 +65,9 @@ class Client(ShowBase):
         self.log("Tile clicked!")
         if self.mouseWatcherNode.hasMouse():
             mpos = self.mouseWatcherNode.getMouse()
+            tile_x, tile_y = get_tile_from_mouse(self.mouseWatcherNode)
             self.log(f"Mouse position detected: {mpos}")
+            self.log(f"Clicked tile coords: {(tile_x, tile_y)}")
         else:
             self.log("No mouse detected.")
             return

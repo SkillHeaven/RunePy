@@ -22,10 +22,14 @@ class Client(ShowBase):
     def __init__(self, debug=False):
         super().__init__()
         self.debug = debug
-        # Show a loading screen while the game initializes
+        # Show a loading screen immediately then perform heavy setup
         self.loading_screen = LoadingScreen(self)
         self.loading_screen.update(0, "Initializing")
+        # Defer the rest of initialization so the loading screen can render first
+        self.taskMgr.doMethodLater(0, self._init_game, "initGame")
 
+    def _init_game(self, task):
+        """Heavy initialization broken out so the loading screen appears first."""
         self.disableMouse()
         self.debug_info = DebugInfo()
 
@@ -33,20 +37,19 @@ class Client(ShowBase):
         self.buttonThrowers[0].node().set_modifier_buttons(ModifierButtons())
 
         self.loading_screen.update(20, "Generating world")
-        self.world = World(self.render, debug=debug)
+        self.world = World(self.render, debug=self.debug)
         self.grid = self.world.grid
         self.map_radius = self.world.radius
 
         tile_fit_scale = self.world.tile_size * 0.5
         self.loading_screen.update(50, "Loading character")
-        self.character = Character(self.render, self.loader, Vec3(0, 0, 0.5), scale=tile_fit_scale, debug=debug)
+        self.character = Character(self.render, self.loader, Vec3(0, 0, 0.5), scale=tile_fit_scale, debug=self.debug)
         self.camera_control = CameraControl(self.camera, self.render, self.character)
         self.controls = Controls(self, self.camera_control, self.character)
         self.collision_control = CollisionControl(self.camera, self.render)
         self.key_manager = KeyBindingManager(self, {"open_menu": "escape"})
         self.options_menu = OptionsMenu(self, self.key_manager)
         self.key_manager.bind("open_menu", self.options_menu.toggle)
-
 
         self.accept("mouse1", self.tile_click_event)
 
@@ -59,6 +62,7 @@ class Client(ShowBase):
         self.taskMgr.add(self.update_tile_hover, "updateTileHoverTask")
         self.loading_screen.update(100, "Done")
         self.taskMgr.doMethodLater(1.0, self._remove_loading_screen, "hideLoading")
+        return task.done
 
     def log(self, *args, **kwargs):
         if self.debug:

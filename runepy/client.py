@@ -9,7 +9,7 @@ from runepy.character import Character
 from runepy.debuginfo import DebugInfo
 from runepy.camera import CameraControl
 from runepy.controls import Controls
-from runepy.world import WorldAdd commentMore actions
+from runepy.world import World
 from runepy.pathfinding import a_star
 from runepy.collision import CollisionControl
 from runepy.options_menu import KeyBindingManager, OptionsMenu
@@ -36,8 +36,7 @@ class Client(ShowBase):
         self.camera_control = CameraControl(self.camera, self.render, self.character)
         self.controls = Controls(self, self.camera_control, self.character)
         self.collision_control = CollisionControl(self.camera, self.render)
-        bindings = load_key_bindings()
-        self.key_manager = KeyBindingManager(self, bindings if bindings else {"open_menu": "escape"})
+        self.key_manager = KeyBindingManager(self, {"open_menu": "escape"})
         self.options_menu = OptionsMenu(self, self.key_manager)
         self.key_manager.bind("open_menu", self.options_menu.toggle)
 

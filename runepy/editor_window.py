@@ -1,3 +1,12 @@
+from direct.showbase.ShowBase import ShowBase
+from runepy.world import World
+from runepy.map_editor import MapEditor
+from runepy.camera import FreeCameraControl
+from runepy.options_menu import KeyBindingManager, OptionsMenu
+from runepy.controls import Controls
+from runepy.utils import get_mouse_tile_coords, get_tile_from_mouse
+
+
 
 class EditorWindow(ShowBase):
     """Standalone application providing a minimal tile editor."""
@@ -15,7 +24,15 @@ class EditorWindow(ShowBase):
         self.camera_control.start(self)
         self.controls = Controls(self, self.camera_control, None)
 
-        default_keys = load_key_bindings()
+        default_keys = {
+            "open_menu": "escape",
+            "save_map": "control-s",
+            "load_map": "control-l",
+            "toggle_tile": "mouse3",
+            "toggle_interactable": "i",
+            "move_left": "a",
+            "move_right": "d",
+        }
         self.key_manager = KeyBindingManager(self, default_keys)
         self.options_menu = OptionsMenu(self, self.key_manager)
 

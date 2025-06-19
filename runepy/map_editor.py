@@ -1,4 +1,4 @@
-from utils import get_tile_from_mouse
+from runepy.utils import get_tile_from_mouse
 
 
 class MapEditor:
@@ -83,7 +83,7 @@ class MapEditor:
         self.world.tile_size = data.get("tile_size", self.world.tile_size)
 
         def deserialize(d):
-            from world import TileData
+            from runepy.world import TileData
 
             return TileData(
                 walkable=d.get("walkable", True),

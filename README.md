@@ -16,16 +16,16 @@ RunePyv3.1 is a small demonstration project built with [Panda3D](https://www.pan
 
 | File | Description |
 |------|-------------|
-| `client.py` | Entry point that opens the window. |
-| `world.py` | Map generation logic. |
-| `map_editor.py` | Utilities for editing tiles. |
-| `Character.py` | Represents the player model and movement logic. |
-| `Camera.py` | Manages the camera position and orientation. |
-| `Controls.py` | Handles mouse wheel zooming and other input bindings. |
-| `collision.py` | Utilities for ray casting with Panda3D's collision system. |
-| `pathfinding.py` | Implementation of a basic A* search. |
-| `DebugInfo.py` | Draws onscreen debug text such as mouse and tile coordinates. |
-| `utils.py` | Shared helpers like `get_mouse_tile_coords`. |
+| `runepy/client.py` | Entry point that opens the window. |
+| `runepy/world.py` | Map generation logic. |
+| `runepy/map_editor.py` | Utilities for editing tiles. |
+| `runepy/character.py` | Represents the player model and movement logic. |
+| `runepy/camera.py` | Manages the camera position and orientation. |
+| `runepy/controls.py` | Handles mouse wheel zooming and other input bindings. |
+| `runepy/collision.py` | Utilities for ray casting with Panda3D's collision system. |
+| `runepy/pathfinding.py` | Implementation of a basic A* search. |
+| `runepy/debuginfo.py` | Draws onscreen debug text such as mouse and tile coordinates. |
+| `runepy/utils.py` | Shared helpers like `get_mouse_tile_coords`. |
 
 ## Requirements
 
@@ -49,13 +49,13 @@ After installing the requirements, launch the program using one of the following
 
 **Direct Python**
 ```bash
-python client.py
+python -m runepy
 ```
 
 To launch the map editor instead of the game, run:
 
 ```bash
-python client.py --mode editor
+python -m runepy --mode editor
 ```
 
 A window will open containing a grid of tiles. Clicking on a tile moves the smiley‑face character to that location using pathfinding. Use the mouse wheel to zoom the camera in or out.

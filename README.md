@@ -9,6 +9,8 @@ RunePyv3.1 is a small demonstration project built with [Panda3D](https://www.pan
 - Top‑down camera with zoom controls
 - Debug overlay displaying tile information
 - Simple collision and ray casting
+- Camera zoom limits keep the view between a minimum and maximum height
+- Built-in map editor with hotkeys for saving and loading maps
 
 ## Repository Layout
 
@@ -23,6 +25,7 @@ RunePyv3.1 is a small demonstration project built with [Panda3D](https://www.pan
 | `collision.py` | Utilities for ray casting with Panda3D's collision system. |
 | `pathfinding.py` | Implementation of a basic A* search. |
 | `DebugInfo.py` | Draws onscreen debug text such as mouse and tile coordinates. |
+| `utils.py` | Shared helpers like `get_mouse_tile_coords`. |
 
 ## Requirements
 
@@ -68,10 +71,6 @@ This project is provided as a minimal example without any specific license. Feel
 
 ## Utilities
 
-The repository includes a helper PowerShell script `AutoMergeAndCleanup.ps1`. The script merges a specified branch into `main`, pushes the merge, and removes the merged branch locally and on the remote. Invoke it with the branch name:
-
-```powershell
-./AutoMergeAndCleanup.ps1 -BranchName feature-branch
-```
-
-The optional parameters `-Remote` and `-MainBranch` default to `origin` and `main` respectively.
+`utils.py` contains small helper functions used throughout the project. In particular
+`get_mouse_tile_coords` and `get_tile_from_mouse` simplify working with the map
+editor by translating the mouse position into tile coordinates.

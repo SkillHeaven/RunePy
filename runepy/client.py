@@ -143,6 +143,9 @@ class Client(ShowBase):
     def load_map(self, filename="map.json"):
         """Load a map from ``filename`` and rebuild the world."""
         self.editor.load_map(filename)
+        # Update cached references since the world may have changed size
+        self.grid = self.world.grid
+        self.map_radius = self.world.radius
         print(f"Map loaded from {filename}")
 
 

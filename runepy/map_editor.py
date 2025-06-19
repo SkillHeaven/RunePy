@@ -54,58 +54,11 @@ class MapEditor:
     # ------------------------------------------------------------------
     def save_map(self, filename):
         """Write the current grid to ``filename`` as JSON."""
-        import json
-
-        def serialize(tile):
-            return {
-                "walkable": tile.walkable,
-                "clickable": tile.clickable,
-                "description": tile.description,
-                "tags": tile.tags,
-            }
-
-        data = {
-            "radius": self.world.radius,
-            "tile_size": self.world.tile_size,
-            "grid": [[serialize(t) for t in row] for row in self.world.grid],
-        }
-        with open(filename, "w") as f:
-            json.dump(data, f)
+        self.world.save_map(filename)
 
     def load_map(self, filename):
         """Load ``filename`` and rebuild the world's tiles."""
-        import json
-
-        with open(filename, "r") as f:
-            data = json.load(f)
-
-        self.world.radius = data.get("radius", self.world.radius)
-        self.world.tile_size = data.get("tile_size", self.world.tile_size)
-
-        def deserialize(d):
-            from runepy.world import TileData
-
-            return TileData(
-                walkable=d.get("walkable", True),
-                clickable=d.get("clickable", True),
-                description=d.get("description", ""),
-                tags=d.get("tags", []),
-            )
-
-        loaded_grid = data.get("grid", [])
-        if loaded_grid:
-            self.world.grid = [[deserialize(t) for t in row] for row in loaded_grid]
-
-        # Rebuild tiles from the loaded grid
-        self.world.tile_root.removeNode()
-        self.world.grid_lines.removeNode()
-        self.world.tile_root = self.world.render.attachNewNode("tile_root")
-        self.world.grid_lines = self.world.render.attachNewNode("grid_lines")
-        self.world.tiles = {}
-        self.world._generate_tiles()
-        self.world._create_grid_lines()
-        self.world.tile_root.flattenStrong()
-        self.world.grid_lines.flattenStrong()
+        self.world.load_map(filename)
 
     # ------------------------------------------------------------------
     # Hotkeys used when running the editor standalone

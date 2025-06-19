@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Dict, Any
 
 
 @dataclass
@@ -10,6 +10,36 @@ class TileData:
     clickable: bool = True
     description: str = ""
     tags: List[str] = field(default_factory=list)
+    properties: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Serialize this ``TileData`` into a dictionary."""
+        data = {
+            "walkable": self.walkable,
+            "clickable": self.clickable,
+            "description": self.description,
+            "tags": self.tags,
+        }
+        data.update(self.properties)
+        return data
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "TileData":
+        """Create a ``TileData`` instance from ``data``."""
+        known = {
+            "walkable": data.get("walkable", True),
+            "clickable": data.get("clickable", True),
+            "description": data.get("description", ""),
+            "tags": data.get("tags", []),
+        }
+        extras = {
+            k: v
+            for k, v in data.items()
+            if k not in {"walkable", "clickable", "description", "tags"}
+        }
+        tile = cls(**known)
+        tile.properties.update(extras)
+        return tile
 
 from panda3d.core import (
     BitMask32,
@@ -26,7 +56,7 @@ from panda3d.core import (
 class World:
     """Generate and display a simple grid-based world."""
 
-    def __init__(self, render, radius=5, tile_size=1, debug=False):
+    def __init__(self, render, radius=5, tile_size=1, debug=False, map_file=None):
         self.render = render
         self.radius = radius
         self.tile_size = tile_size
@@ -34,6 +64,12 @@ class World:
 
         width = height = radius * 2 + 1
         self.grid = [[TileData() for _ in range(width)] for _ in range(height)]
+
+        if map_file:
+            try:
+                self.load_map(map_file)
+            except Exception as exc:
+                self.log(f"Failed to load map '{map_file}': {exc}")
 
         self.tile_root = self.render.attachNewNode("tile_root")
         self.tiles = {}
@@ -43,7 +79,18 @@ class World:
         self._create_grid_lines()
         self.tile_root.flattenStrong()
         self.grid_lines.flattenStrong()
-        self._create_collision_plane()
+
+    def save_map(self, filename):
+        """Write the current grid to ``filename`` as JSON."""
+        import json
+
+        data = {
+            "radius": self.radius,
+            "tile_size": self.tile_size,
+            "grid": [[tile.to_dict() for tile in row] for row in self.grid],
+        }
+        with open(filename, "w") as f:
+            json.dump(data, f)
 
     def log(self, *args, **kwargs):
         if self.debug:
@@ -102,4 +149,36 @@ class World:
         c_node.addSolid(plane)
         c_node.set_into_collide_mask(BitMask32.all_on())
         self.render.attachNewNode(c_node)
+
+    # ------------------------------------------------------------------
+    # Persistence helpers
+    # ------------------------------------------------------------------
+    def load_map(self, filename):
+        """Load ``filename`` and rebuild this world's tiles."""
+        import json
+
+        with open(filename, "r") as f:
+            data = json.load(f)
+
+        self.radius = data.get("radius", self.radius)
+        self.tile_size = data.get("tile_size", self.tile_size)
+
+        loaded_grid = data.get("grid", [])
+        if loaded_grid:
+            self.grid = [
+                [TileData.from_dict(t) for t in row]
+                for row in loaded_grid
+            ]
+
+        # Rebuild tile nodes from loaded grid
+        self.tile_root.removeNode()
+        self.grid_lines.removeNode()
+        self.tile_root = self.render.attachNewNode("tile_root")
+        self.grid_lines = self.render.attachNewNode("grid_lines")
+        self.tiles = {}
+        self._generate_tiles()
+        self._create_grid_lines()
+        self.tile_root.flattenStrong()
+        self.grid_lines.flattenStrong()
+
 

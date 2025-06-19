@@ -1,11 +1,3 @@
-from runepy.world import World
-from runepy.map_editor import MapEditorAdd commentMore actions
-from runepy.camera import FreeCameraControl
-from runepy.options_menu import KeyBindingManager, OptionsMenu
-from runepy.controls import Controls
-from runepy.utils import get_mouse_tile_coords, get_tile_from_mouse
-
-
 
 class EditorWindow(ShowBase):
     """Standalone application providing a minimal tile editor."""

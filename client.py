@@ -71,6 +71,8 @@ class Client(ShowBase):
         return task.cont
 
     def tile_click_event(self):
+        if self.options_menu.visible:
+            return
         self.log("Tile clicked!")
         if self.mouseWatcherNode.hasMouse():
             mpos = self.mouseWatcherNode.getMouse()

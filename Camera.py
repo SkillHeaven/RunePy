@@ -46,6 +46,12 @@ class FreeCameraControl:
         if self.move["right"]:
             vec.x += self.speed * dt
         if vec.length_squared() > 0:
-            self.camera.setPos(self.camera, vec)
+            # Move relative to the world axes to avoid changing height so
+            # W/S pan the camera instead of zooming in and out.
+            self.camera.setPos(
+                self.camera.getX() + vec.x,
+                self.camera.getY() + vec.y,
+                self.camera.getZ(),
+            )
         return task.cont
 

@@ -27,8 +27,6 @@ class EditorWindow(ShowBase):
             "load_map": "control-l",
             "toggle_tile": "mouse3",
             "toggle_interactable": "i",
-            "move_forward": "w",
-            "move_back": "s",
             "move_left": "a",
             "move_right": "d",
         }
@@ -37,18 +35,18 @@ class EditorWindow(ShowBase):
 
         self.key_manager.bind("open_menu", self.options_menu.toggle)
         self.editor.register_bindings(self.key_manager)
-        self.key_manager.bind("move_forward",
-                              lambda: self.camera_control.set_move("forward", True),
-                              lambda: self.camera_control.set_move("forward", False))
-        self.key_manager.bind("move_back",
-                              lambda: self.camera_control.set_move("back", True),
-                              lambda: self.camera_control.set_move("back", False))
         self.key_manager.bind("move_left",
                               lambda: self.camera_control.set_move("left", True),
                               lambda: self.camera_control.set_move("left", False))
         self.key_manager.bind("move_right",
                               lambda: self.camera_control.set_move("right", True),
                               lambda: self.camera_control.set_move("right", False))
+
+        # Bind forward/back movement directly so W/S are fixed keys
+        self.accept("w", lambda: self.camera_control.set_move("forward", True))
+        self.accept("w-up", lambda: self.camera_control.set_move("forward", False))
+        self.accept("s", lambda: self.camera_control.set_move("back", True))
+        self.accept("s-up", lambda: self.camera_control.set_move("back", False))
 
         self.setBackgroundColor(0.9, 0.9, 0.9)
 

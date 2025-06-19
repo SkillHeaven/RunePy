@@ -14,6 +14,8 @@ class MapEditor:
 
 
     def toggle_tile(self):
+        if self.client.options_menu.visible:
+            return
         tile_x, tile_y = self.client.get_tile_from_mouse()
         if tile_x is None:
             return
@@ -28,6 +30,8 @@ class MapEditor:
             tile.setColor(self.world._tile_color(tile_data))
 
     def toggle_interactable(self):
+        if self.client.options_menu.visible:
+            return
         tile_x, tile_y = self.client.get_tile_from_mouse()
         if tile_x is None:
             return

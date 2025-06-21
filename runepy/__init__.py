@@ -1,7 +1,12 @@
 """RunePy package."""
 
 from . import pathfinding
-from .base_app import BaseApp
+from .array_map import RegionArrays
 
-__all__ = ["pathfinding", "BaseApp"]
+try:
+    from .base_app import BaseApp
+except Exception:
+    BaseApp = None  # Panda3D may not be available during tests
+
+__all__ = ["pathfinding", "BaseApp", "RegionArrays"]
 

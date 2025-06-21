@@ -8,7 +8,7 @@ class BaseApp(ShowBase):
 
     def __init__(self):
         # Set a consistent default window size before ShowBase initializes
-        loadPrcFileData("", "win-size 800 600")
+        loadPrcFileData("", "win-size 1150 800")
         super().__init__()
         self.loading_screen = LoadingScreen(self)
         self.loading_screen.update(0, "Initializing")

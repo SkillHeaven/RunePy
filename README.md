@@ -75,6 +75,21 @@ Default key bindings are defined in ``config.json`` at the repository root. Edit
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
+## Numeric map layers
+
+`array_map.py` contains a `RegionArrays` helper for storing map data in
+efficient `numpy` arrays. Each layer (height, terrain, overlay and collision)
+is saved to a single `.npz` archive:
+
+```python
+from runepy.array_map import RegionArrays
+
+region = RegionArrays.empty((64, 64))
+region.save("region_01.npz")
+loaded = RegionArrays.load("region_01.npz")
+```
+
+
 
 ## Utilities
 

@@ -41,16 +41,20 @@ class TileData:
         tile.properties.update(extras)
         return tile
 
-from panda3d.core import (
-    BitMask32,
-    CardMaker,
-    CollisionNode,
-    CollisionPlane,
-    Plane,
-    Point3,
-    Vec3,
-    LineSegs,
-)
+try:
+    from panda3d.core import (
+        BitMask32,
+        CardMaker,
+        CollisionNode,
+        CollisionPlane,
+        Plane,
+        Point3,
+        Vec3,
+        LineSegs,
+    )
+except Exception:  # pragma: no cover - Panda3D may be missing during tests
+    BitMask32 = CardMaker = CollisionNode = CollisionPlane = Plane = None
+    Point3 = Vec3 = LineSegs = None
 
 
 class World:

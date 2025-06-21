@@ -1,4 +1,5 @@
 from direct.showbase.ShowBase import ShowBase
+from panda3d.core import loadPrcFileData
 from runepy.loading_screen import LoadingScreen
 
 
@@ -6,6 +7,8 @@ class BaseApp(ShowBase):
     """Application base that shows a loading screen and defers setup."""
 
     def __init__(self):
+        # Set a consistent default window size before ShowBase initializes
+        loadPrcFileData("", "win-size 800 600")
         super().__init__()
         self.loading_screen = LoadingScreen(self)
         self.loading_screen.update(0, "Initializing")

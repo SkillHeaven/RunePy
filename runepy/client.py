@@ -15,6 +15,8 @@ from runepy.pathfinding import a_star
 from runepy.collision import CollisionControl
 from runepy.options_menu import KeyBindingManager, OptionsMenu
 from runepy.loading_screen import LoadingScreen
+from config import load_state, save_state
+import atexit
 
 
 class Client(BaseApp):
@@ -23,6 +25,7 @@ class Client(BaseApp):
     def __init__(self, debug=False):
         self.debug = debug
         super().__init__()
+        atexit.register(self._save_state)
 
     def initialize(self):
         """Perform heavy initialization for the game mode."""
@@ -40,6 +43,16 @@ class Client(BaseApp):
         self.loading_screen.update(50, "Loading character")
         self.character = Character(self.render, self.loader, Vec3(0, 0, 0.5), scale=tile_fit_scale, debug=self.debug)
         self.camera_control = CameraControl(self.camera, self.render, self.character)
+
+        # Load persisted state if available
+        state = load_state()
+        char_pos = state.get("character_pos")
+        if isinstance(char_pos, list) and len(char_pos) == 3:
+            self.character.model.setPos(*char_pos)
+        cam_h = state.get("camera_height")
+        if cam_h is not None:
+            self.camera.setZ(cam_h)
+            self.camera_control.update_camera_focus()
         self.controls = Controls(self, self.camera_control, self.character)
         self.collision_control = CollisionControl(self.camera, self.render)
         self.key_manager = KeyBindingManager(self, {"open_menu": "escape"})
@@ -51,7 +64,8 @@ class Client(BaseApp):
         self.loading_screen.update(80, "Finalizing")
 
         self.setBackgroundColor(0.9, 0.9, 0.9)
-        self.camera.setPos(0, 0, 10)
+        if cam_h is None:
+            self.camera.setPos(0, 0, 10)
         self.camera.lookAt(0, 0, 0)
 
         self.taskMgr.add(self.update_tile_hover, "updateTileHoverTask")
@@ -165,6 +179,23 @@ class Client(BaseApp):
         self.grid = self.world.grid
         self.map_radius = self.world.radius
         print(f"Map loaded from {filename}")
+
+    # ------------------------------------------------------------------
+    # State persistence
+    # ------------------------------------------------------------------
+    def _save_state(self):
+        """Save camera height and character position."""
+        if not hasattr(self, "character"):
+            return
+        state = {
+            "camera_height": float(self.camera.getZ()),
+            "character_pos": [
+                float(self.character.model.getX()),
+                float(self.character.model.getY()),
+                float(self.character.model.getZ()),
+            ],
+        }
+        save_state(state)
 
 
 

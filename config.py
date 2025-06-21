@@ -2,6 +2,7 @@ import json
 import os
 
 DEFAULT_CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.json")
+DEFAULT_STATE_PATH = os.path.join(os.path.dirname(__file__), "state.json")
 
 
 def load_config(path: str = DEFAULT_CONFIG_PATH) -> dict:
@@ -22,3 +23,20 @@ def load_key_bindings(path: str = DEFAULT_CONFIG_PATH) -> dict:
     if isinstance(bindings, dict):
         return bindings
     return {}
+
+
+def load_state(path: str = DEFAULT_STATE_PATH) -> dict:
+    """Load persistent game state such as camera or character position."""
+    if not os.path.exists(path):
+        return {}
+    with open(path, "r") as f:
+        try:
+            return json.load(f)
+        except json.JSONDecodeError:
+            return {}
+
+
+def save_state(state: dict, path: str = DEFAULT_STATE_PATH) -> None:
+    """Write ``state`` to ``path`` as JSON."""
+    with open(path, "w") as f:
+        json.dump(state, f)

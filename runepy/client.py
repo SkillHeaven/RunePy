@@ -38,8 +38,6 @@ class Client(BaseApp):
         def world_progress(frac, text):
             self.loading_screen.update(20 + int(30 * frac), text)
         self.world = World(self.render, debug=self.debug, progress_callback=world_progress)
-        self.grid = self.world.grid
-        self.map_radius = self.world.radius
 
         tile_fit_scale = self.world.tile_size * 0.5
         self.loading_screen.update(50, "Loading character")
@@ -129,11 +127,11 @@ class Client(BaseApp):
                 current_pos = self.character.get_position()
                 current_x, current_y = int(current_pos.getX()), int(current_pos.getY())
 
-                start_idx = (current_x + self.map_radius, current_y + self.map_radius)
-                end_idx = (snapped_x + self.map_radius, snapped_y + self.map_radius)
+                stitched, off_x, off_y = self.world.walkable_window(current_x, current_y)
+                start_idx = (current_x - off_x, current_y - off_y)
+                end_idx = (snapped_x - off_x, snapped_y - off_y)
 
-                walkable_grid = [[1 if t.walkable else 0 for t in row] for row in self.grid]
-                path = a_star(walkable_grid, start_idx, end_idx)
+                path = a_star(stitched.tolist(), start_idx, end_idx)
                 self.log("Calculated Path:", path)
 
                 if path:
@@ -150,8 +148,8 @@ class Client(BaseApp):
                     intervals = []
                     prev_world_x, prev_world_y = current_pos.getX(), current_pos.getY()
                     for step in path:
-                        world_x = step[0] - self.map_radius
-                        world_y = step[1] - self.map_radius
+                        world_x = step[0] + off_x
+                        world_y = step[1] + off_y
                         self.log(f"Moving character to {(world_x, world_y)}")
                         distance = math.sqrt((world_x - prev_world_x) ** 2 + (world_y - prev_world_y) ** 2)
                         duration = distance / self.character.speed
@@ -179,9 +177,8 @@ class Client(BaseApp):
     def load_map(self, filename="map.json"):
         """Load a map from ``filename`` and rebuild the world."""
         self.editor.load_map(filename)
-        # Update cached references since the world may have changed size
-        self.grid = self.world.grid
-        self.map_radius = self.world.radius
+        # World size may change during map load but pathfinding now stitches
+        # regions dynamically so no cached grid is needed.
         print(f"Map loaded from {filename}")
 
     # ------------------------------------------------------------------

@@ -20,7 +20,7 @@ class EditorWindow(BaseApp):
         self.editor.save_callback = self.save_map
         self.editor.load_callback = self.load_map
 
-        self.camera_control = FreeCameraControl(self.camera)
+        self.camera_control = FreeCameraControl(self.camera, world=self.world)
         self.camera_control.start(self)
         self.controls = Controls(self, self.camera_control, None)
 

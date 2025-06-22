@@ -341,6 +341,31 @@ class World:
         lx, ly = local_tile(x, y)
         return not bool(region.flags[ly, lx] & FLAG_BLOCKED)
 
+    def walkable_window(self, center_x: int, center_y: int) -> tuple[np.ndarray, int, int]:
+        """Return a ``(192, 192)`` walkability matrix around ``center_x, center_y``.
+
+        The matrix is stitched together from the 3 × 3 loaded regions surrounding
+        the provided coordinates. The accompanying offsets translate local path
+        coordinates back into world space.
+        """
+        rx, ry = world_to_region(center_x, center_y)
+        # Ensure regions around the center are present
+        self.region_manager.ensure(center_x, center_y)
+
+        stitched = np.block(
+            [
+                [
+                    ((self.region_manager.loaded[(rx + i, ry + j)].flags & FLAG_BLOCKED) == 0)
+                    for i in (-1, 0, 1)
+                ]
+                for j in (-1, 0, 1)
+            ]
+        )
+
+        offset_x = (rx - 1) * REGION_SIZE
+        offset_y = (ry - 1) * REGION_SIZE
+        return stitched.astype(int), offset_x, offset_y
+
     def shutdown(self) -> None:
         """Shut down the underlying :class:`RegionManager`."""
         self.region_manager.shutdown()

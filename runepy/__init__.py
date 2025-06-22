@@ -2,6 +2,7 @@
 
 from . import pathfinding
 from .array_map import RegionArrays
+from .map_manager import MapManager
 from .terrain import TerrainTile, FLAG_BLOCKED
 
 try:
@@ -9,5 +10,12 @@ try:
 except Exception:
     BaseApp = None  # Panda3D may not be available during tests
 
-__all__ = ["pathfinding", "BaseApp", "RegionArrays", "TerrainTile", "FLAG_BLOCKED"]
+__all__ = [
+    "pathfinding",
+    "BaseApp",
+    "RegionArrays",
+    "MapManager",
+    "TerrainTile",
+    "FLAG_BLOCKED",
+]
 

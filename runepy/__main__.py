@@ -2,6 +2,7 @@ import argparse
 from runepy.client import Client
 from runepy.editor_window import EditorWindow
 
+from runepy.debug import get_debug
 
 def main():
     parser = argparse.ArgumentParser(description="RunePy client")
@@ -17,6 +18,8 @@ def main():
         app = EditorWindow()
     else:
         app = Client()
+    from direct.showbase.ShowBaseGlobal import base
+    get_debug().attach(base)
     app.run()
 
 

@@ -1,6 +1,6 @@
 # RunePy
 
-RunePy is a small demonstration project built with [Panda3D](https://www.panda3d.org/). The code creates a grid of tiles and lets a simple character move across the map using A* pathfinding. It provides a basic camera and control system to experiment with Panda3D's API.
+RunePy is a small demonstration project built with [Panda3D](https://www.panda3d.org/). It generates a tiled world where a simple character moves using A* pathfinding. Regions stream in dynamically as you explore and the project provides a basic camera and control system to experiment with Panda3D's API.
 
 ## Features
 
@@ -14,6 +14,9 @@ RunePy is a small demonstration project built with [Panda3D](https://www.panda3d
 - Tiles support custom metadata loaded from map files
 - Individual tiles darken slightly when hovered to show the current mouse position
 - Loading screen displays progress messages during startup
+- Map regions stream in on demand as the player moves
+- F1 debug window with live stats and tweakable sliders
+- Optional UI editor (F2) for rearranging and saving the debug layout
 
 ## Repository Layout
 
@@ -29,6 +32,9 @@ RunePy is a small demonstration project built with [Panda3D](https://www.panda3d
 | `runepy/pathfinding.py` | Implementation of a basic A* search with optional weighted costs and movement patterns. |
 | `runepy/debuginfo.py` | Draws onscreen debug text such as mouse and tile coordinates. |
 | `runepy/utils.py` | Shared helpers like `get_mouse_tile_coords`. |
+| `runepy/debug/manager.py` | Toggleable debug window and related tools. |
+| `runepy/ui/builder.py` | Constructs GUI widgets from layout dictionaries. |
+| `runepy/ui/editor` | Package providing the simple UI editor. |
 
 ## Requirements
 
@@ -66,6 +72,11 @@ A window will open containing a grid of tiles. By default the world spans 1000×
 Zooming is always handled by the mouse wheel and cannot be changed. In the editor the camera pans up/down with ``W`` and ``S`` while the ``A`` and ``D`` keys for left/right movement remain rebindable.
 
 Press ``Esc`` in either mode to open an options menu where you can rebind the available controls, including the editor's side movement and save/load shortcuts. When this menu is visible, gameplay clicks are ignored so you can't interact with the world through the menu.
+
+Press ``F1`` at any time to toggle the debug window. This overlay shows live
+statistics and provides sliders for tweaking speeds. With the debug window
+visible you can press ``F2`` to enter a simple editor mode for rearranging the
+widgets and saving the layout.
 
 ## Configuration
 
@@ -125,5 +136,5 @@ pip install -r requirements.txt
 pytest -q
 ```
 
-All tests should pass. There are currently four tests covering the A* pathfinding
-implementation including optional movement offsets and weighted tiles.
+All tests should pass. The suite includes checks for pathfinding, region
+streaming and the debug utilities.

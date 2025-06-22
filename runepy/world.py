@@ -69,11 +69,13 @@ try:
         LineSegs,
         NodePath,
     )
+    from direct.showbase.ShowBaseGlobal import base
 except Exception:  # pragma: no cover - Panda3D may be missing during tests
     BitMask32 = CardMaker = CollisionNode = CollisionPlane = Plane = None
     Point3 = Vec3 = LineSegs = NodePath = None
     Geom = GeomNode = GeomTriangles = None
     GeomVertexData = GeomVertexFormat = GeomVertexWriter = None
+    base = None
 
 
 class World:
@@ -109,6 +111,8 @@ class World:
         if self.render is not None:
             self.tile_root = self.render.attachNewNode("tile_root")
             self.grid_lines = self.render.attachNewNode("grid_lines")
+            if base is not None:
+                base.tile_root = self.tile_root
 
             self._generate_tiles()
             self._create_grid_lines()
@@ -307,6 +311,8 @@ class World:
         self.grid_lines.removeNode()
         self.tile_root = self.render.attachNewNode("tile_root")
         self.grid_lines = self.render.attachNewNode("grid_lines")
+        if base is not None:
+            base.tile_root = self.tile_root
         self._generate_tiles()
         self._create_grid_lines()
         # Keep tiles un-flattened so hover highlighting works on individual
@@ -462,6 +468,10 @@ class RegionManager:
             if future.done():
                 region = future.result()
                 region.make_mesh()
+                if region.node is not None and base is not None and getattr(base, "render", None) is not None:
+                    parent = getattr(base, "tile_root", base.render)
+                    region.node.reparentTo(parent)
+                    region.node.setPos(region.rx * REGION_SIZE, region.ry * REGION_SIZE, 0)
                 self.loaded[key] = region
                 self._pending.pop(key)
         for key in want - self.loaded.keys() - self._pending.keys():
@@ -470,6 +480,10 @@ class RegionManager:
             else:
                 region = Region.load(*key)
                 region.make_mesh()
+                if region.node is not None and base is not None and getattr(base, "render", None) is not None:
+                    parent = getattr(base, "tile_root", base.render)
+                    region.node.reparentTo(parent)
+                    region.node.setPos(region.rx * REGION_SIZE, region.ry * REGION_SIZE, 0)
                 self.loaded[key] = region
 
     def shutdown(self) -> None:

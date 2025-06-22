@@ -1,5 +1,5 @@
 from constants import REGION_SIZE
-from world.coords import world_to_region, local_tile
+from runepy.world import world_to_region, local_tile
 
 
 def round_trip(x, y):

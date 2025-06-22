@@ -1,5 +1,15 @@
+from __future__ import annotations
+
+from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
-from typing import List, Dict, Any
+from pathlib import Path
+from typing import Any, ClassVar, Dict, List, Set, Tuple
+
+import gzip
+import numpy as np
+
+from constants import REGION_SIZE, VIEW_RADIUS
+from runepy.terrain import FLAG_BLOCKED
 
 
 @dataclass
@@ -57,10 +67,11 @@ try:
         Point3,
         Vec3,
         LineSegs,
+        NodePath,
     )
 except Exception:  # pragma: no cover - Panda3D may be missing during tests
     BitMask32 = CardMaker = CollisionNode = CollisionPlane = Plane = None
-    Point3 = Vec3 = LineSegs = None
+    Point3 = Vec3 = LineSegs = NodePath = None
     Geom = GeomNode = GeomTriangles = None
     GeomVertexData = GeomVertexFormat = GeomVertexWriter = None
 
@@ -70,20 +81,23 @@ class World:
 
     def __init__(
         self,
-        render,
+        render=None,
         radius=500,
         tile_size=1,
         debug=False,
         map_file=None,
         progress_callback=None,
+        view_radius=1,
     ):
-
         self.render = render
         self.radius = radius
         self.tile_size = tile_size
         self.debug = debug
         self.progress_callback = progress_callback
 
+        self.region_manager = RegionManager(view_radius=view_radius)
+        self.manager = self.region_manager
+        self._current_region: Tuple[int, int] | None = None
         width = height = radius * 2 + 1
         self.grid = [[TileData() for _ in range(width)] for _ in range(height)]
 
@@ -92,22 +106,23 @@ class World:
                 self.load_map(map_file)
             except Exception as exc:
                 self.log(f"Failed to load map '{map_file}': {exc}")
+        if self.render is not None:
+            self.tile_root = self.render.attachNewNode("tile_root")
+            self.grid_lines = self.render.attachNewNode("grid_lines")
 
-        self.tile_root = self.render.attachNewNode("tile_root")
-        self.grid_lines = self.render.attachNewNode("grid_lines")
+            self._generate_tiles()
+            self._create_grid_lines()
+            self._create_subfloor()
+            if self.progress_callback:
+                self.progress_callback(1.0, "World ready")
 
-        self._generate_tiles()
-        self._create_grid_lines()
-        self._create_subfloor()
-        if self.progress_callback:
-            self.progress_callback(1.0, "World ready")
-
-        # Highlight quad reused for hover effects
-        self.highlight_quad = self._create_highlight_quad()
-        # Flattening tiles would merge them into a single node which prevents
-        # per-tile color adjustments. Keep tiles separate so each can be
-        # highlighted individually. Grid lines remain flattened for performance.
-        self.grid_lines.flattenStrong()
+            # Highlight quad reused for hover effects
+            self.highlight_quad = self._create_highlight_quad()
+            self.grid_lines.flattenStrong()
+        else:
+            self.tile_root = None
+            self.grid_lines = None
+            self.highlight_quad = None
 
         self._hovered = None
 
@@ -297,3 +312,168 @@ class World:
         # Keep tiles un-flattened so hover highlighting works on individual
         # nodes. Grid lines can still be flattened for efficiency.
         self.grid_lines.flattenStrong()
+
+    # ------------------------------------------------------------------
+    # Region streaming helpers
+    # ------------------------------------------------------------------
+    def update_streaming(self, player_x: int, player_y: int) -> None:
+        """Ensure surrounding regions for ``(player_x, player_y)`` are loaded."""
+        rx, ry = world_to_region(player_x, player_y)
+        if self._current_region != (rx, ry):
+            self._current_region = (rx, ry)
+            self.region_manager.ensure(player_x, player_y)
+
+    def is_walkable(self, x: int, y: int) -> bool:
+        """Return ``True`` if tile ``(x, y)`` is not flagged as blocked."""
+        rx, ry = world_to_region(x, y)
+        region = self.region_manager.loaded.get((rx, ry))
+        if region is None:
+            self.region_manager.ensure(x, y)
+            region = self.region_manager.loaded.get((rx, ry))
+            if region is None:
+                return False
+        lx, ly = local_tile(x, y)
+        return not bool(region.flags[ly, lx] & FLAG_BLOCKED)
+
+    def shutdown(self) -> None:
+        """Shut down the underlying :class:`RegionManager`."""
+        self.region_manager.shutdown()
+
+
+# ----------------------------------------------------------------------
+# Region data structures
+# ----------------------------------------------------------------------
+
+def world_to_region(x: int, y: int) -> Tuple[int, int]:
+    """Return ``(rx, ry)`` region coordinates for world position ``(x, y)``."""
+    return x // REGION_SIZE, y // REGION_SIZE
+
+
+def local_tile(x: int, y: int) -> Tuple[int, int]:
+    """Return local tile indices within a region for world position ``(x, y)``."""
+    return x % REGION_SIZE, y % REGION_SIZE
+
+
+@dataclass
+class Region:
+    """Container for region tile data."""
+
+    rx: int
+    ry: int
+    height: np.ndarray
+    base: np.ndarray
+    overlay: np.ndarray
+    flags: np.ndarray
+    node: "NodePath" | None = None
+
+    FILE_VERSION: ClassVar[int] = 1
+
+    @classmethod
+    def load(cls, rx: int, ry: int) -> "Region":
+        """Load region ``(rx, ry)`` from disk or create a new one."""
+        path = Path("maps") / f"region_{rx}_{ry}.bin"
+        size = REGION_SIZE * REGION_SIZE
+        if path.exists():
+            with gzip.open(path, "rb") as f:
+                version = int.from_bytes(f.read(2), "little")
+                if version != cls.FILE_VERSION:
+                    raise ValueError(f"Unsupported region version {version}")
+                height = np.frombuffer(f.read(size * 2), dtype=np.int16).reshape(REGION_SIZE, REGION_SIZE).copy()
+                base = np.frombuffer(f.read(size), dtype=np.uint8).reshape(REGION_SIZE, REGION_SIZE).copy()
+                overlay = np.frombuffer(f.read(size), dtype=np.uint8).reshape(REGION_SIZE, REGION_SIZE).copy()
+                flags = np.frombuffer(f.read(size), dtype=np.uint8).reshape(REGION_SIZE, REGION_SIZE).copy()
+        else:
+            height = np.zeros((REGION_SIZE, REGION_SIZE), dtype=np.int16)
+            base = np.zeros((REGION_SIZE, REGION_SIZE), dtype=np.uint8)
+            overlay = np.zeros((REGION_SIZE, REGION_SIZE), dtype=np.uint8)
+            flags = np.zeros((REGION_SIZE, REGION_SIZE), dtype=np.uint8)
+        return cls(rx, ry, height, base, overlay, flags)
+
+    def save(self) -> None:
+        """Write this region back to disk."""
+        path = Path("maps") / f"region_{self.rx}_{self.ry}.bin"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with gzip.open(path, "wb") as f:
+            f.write(self.FILE_VERSION.to_bytes(2, "little"))
+            f.write(self.height.astype(np.int16).tobytes())
+            f.write(self.base.astype(np.uint8).tobytes())
+            f.write(self.overlay.astype(np.uint8).tobytes())
+            f.write(self.flags.astype(np.uint8).tobytes())
+
+    def make_mesh(self):
+        """Create or refresh a mesh for this region."""
+        if GeomVertexFormat is None:
+            return None
+        if self.node is not None:
+            self.node.removeNode()
+            self.node = None
+        format = GeomVertexFormat.get_v3()
+        vdata = GeomVertexData("region", format, Geom.UHStatic)
+        vertex = GeomVertexWriter(vdata, "vertex")
+        tris = GeomTriangles(Geom.UHStatic)
+        index = 0
+        for y in range(REGION_SIZE):
+            for x in range(REGION_SIZE):
+                z = float(self.height[y, x])
+                vertex.addData3(x, y, z)
+                vertex.addData3(x + 1, y, z)
+                vertex.addData3(x + 1, y + 1, z)
+                vertex.addData3(x, y + 1, z)
+                tris.addVertices(index, index + 1, index + 2)
+                tris.addVertices(index, index + 2, index + 3)
+                index += 4
+        geom = Geom(vdata)
+        geom.addPrimitive(tris)
+        node = GeomNode("region")
+        node.addGeom(geom)
+        self.node = NodePath(node)
+        return self.node
+
+
+class RegionManager:
+    """Manage loading and unloading of :class:`Region` objects around a player."""
+
+    def __init__(self, view_radius: int = VIEW_RADIUS, async_load: bool = False) -> None:
+        self.loaded: Dict[Tuple[int, int], Region] = {}
+        self.view_radius = view_radius
+        self.async_load = async_load
+        self._executor: ThreadPoolExecutor | None = None
+        self._pending: Dict[Tuple[int, int], Future[Region]] = {}
+        if async_load:
+            self._executor = ThreadPoolExecutor(max_workers=1)
+
+    def _wanted(self, rx: int, ry: int) -> Set[Tuple[int, int]]:
+        r = range(-self.view_radius, self.view_radius + 1)
+        return {(rx + i, ry + j) for i in r for j in r}
+
+    def ensure(self, player_x: int, player_y: int) -> None:
+        """Ensure regions around ``(player_x, player_y)`` are loaded."""
+        rx, ry = world_to_region(player_x, player_y)
+        want = self._wanted(rx, ry)
+
+        for key in set(self.loaded) - want:
+            region = self.loaded.pop(key)
+            if region.node is not None:
+                region.node.removeNode()
+        for key in set(self._pending) - want:
+            future = self._pending.pop(key)
+            future.cancel()
+        for key, future in list(self._pending.items()):
+            if future.done():
+                region = future.result()
+                region.make_mesh()
+                self.loaded[key] = region
+                self._pending.pop(key)
+        for key in want - self.loaded.keys() - self._pending.keys():
+            if self.async_load and self._executor is not None:
+                self._pending[key] = self._executor.submit(Region.load, *key)
+            else:
+                region = Region.load(*key)
+                region.make_mesh()
+                self.loaded[key] = region
+
+    def shutdown(self) -> None:
+        """Clean up any executor threads used for async loading."""
+        if self._executor is not None:
+            self._executor.shutdown(wait=False)
+            self._executor = None

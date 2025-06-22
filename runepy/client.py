@@ -19,6 +19,7 @@ from runepy.pathfinding import a_star
 from runepy.collision import CollisionControl
 from runepy.options_menu import KeyBindingManager, OptionsMenu
 from runepy.loading_screen import LoadingScreen
+from runepy.debug import get_debug
 from config import load_state, save_state
 import atexit
 
@@ -42,6 +43,7 @@ class Client(BaseApp):
         def world_progress(frac, text):
             self.loading_screen.update(20 + int(30 * frac), text)
         self.world = World(self.render, debug=self.debug, progress_callback=world_progress)
+        get_debug().attach(self)
 
         tile_fit_scale = self.world.tile_size * 0.5
         self.loading_screen.update(50, "Loading character")

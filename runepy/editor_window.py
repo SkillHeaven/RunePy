@@ -55,7 +55,8 @@ class EditorWindow(BaseApp):
         self.accept("s", lambda: self.camera_control.set_move("back", True))
         self.accept("s-up", lambda: self.camera_control.set_move("back", False))
 
-        self.setBackgroundColor(0.9, 0.9, 0.9)
+        # Editor uses the same sky blue background as the game
+        self.setBackgroundColor(0.53, 0.81, 0.92)
 
         self.camera.setPos(0, 0, 10)
         self.camera.lookAt(0, 0, 0)

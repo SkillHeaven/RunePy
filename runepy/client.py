@@ -63,7 +63,8 @@ class Client(BaseApp):
 
         self.loading_screen.update(80, "Finalizing")
 
-        self.setBackgroundColor(0.9, 0.9, 0.9)
+        # Set a pleasant sky blue background
+        self.setBackgroundColor(0.53, 0.81, 0.92)
         if cam_h is None:
             self.camera.setPos(0, 0, 10)
         self.camera.lookAt(0, 0, 0)

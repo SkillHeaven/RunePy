@@ -43,7 +43,6 @@ class Client(BaseApp):
         def world_progress(frac, text):
             self.loading_screen.update(20 + int(30 * frac), text)
         self.world = World(self.render, debug=self.debug, progress_callback=world_progress)
-        get_debug().attach(self)
 
         tile_fit_scale = self.world.tile_size * 0.5
         self.loading_screen.update(50, "Loading character")

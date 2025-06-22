@@ -11,11 +11,6 @@ import datetime
 
 from typing import Optional, Any
 
-try:
-    from .gui import DebugWindow  # type: ignore
-except Exception:  # pragma: no cover - GUI components may not be present
-    DebugWindow = None  # type: ignore
-
 class NullDebugManager:
     """Fallback manager used when Panda3D is unavailable."""
 
@@ -49,21 +44,8 @@ class DebugManager:
 
     def __init__(self) -> None:
         self.log_file: Optional[Path] = None
-        self.window: Optional[DebugWindow] = None
-        if DebugWindow is not None:
-            try:
-                self.window = DebugWindow(self)
-                try:
-                    from direct.showbase.ShowBaseGlobal import base
-                    from direct.gui.DirectGui import DirectGuiGlobals as DGG
-                    base.accept('f1', self.window.toggleVisible)
-                    self.window.bind(DGG.B1PRESS, self._start_drag)
-                    self.window.bind(DGG.B1RELEASE, self._end_drag)
-                except Exception:
-                    pass
-            except Exception:
-                # Failed to initialize debug window (likely no Panda3D)
-                self.window = None
+        self.window = None
+        self.base = None
         self._drag_start = None
         self._orig_pos = None
 
@@ -187,7 +169,33 @@ class DebugManager:
             pass
 
     def attach(self, base: Any) -> None:
-        """Hook the debug window into the running ShowBase instance."""
+        """Bind the debug GUI to an existing ShowBase instance.
+
+        Safe to call multiple times; only the first call does the work.
+        """
+        if self.base:
+            return
+        self.base = base
+
+        # 1. Create the window lazily to avoid Panda3D dependency during tests
+        from .gui import DebugWindow
+        try:
+            self.window = DebugWindow(self)
+        except Exception:
+            self.window = None
+            return
+
+        # 2. Register key events (lower-case names!)
+        try:
+            self.base.accept('f1', self.window.toggleVisible)
+            self.base.accept('f1-up', lambda: None)
+        except Exception:
+            pass
+
+        # 3. Optional debug echo
+        if __debug__:
+            print('[DebugManager] F1 bound – press to toggle debug window')
+
         self.enable()
 
 _debug_instance: Optional[DebugManager] = None
@@ -197,13 +205,11 @@ def get_debug() -> DebugManager:
     """Return the shared :class:`DebugManager` instance."""
     global _debug_instance
     if _debug_instance is None:
-        if DebugWindow is None:
+        try:
+            from direct.gui import DirectGui  # noqa: F401 - probe for Panda3D
+            _debug_instance = DebugManager()
+        except Exception:
             _debug_instance = NullDebugManager()  # type: ignore[assignment]
-        else:
-            try:
-                _debug_instance = DebugManager()
-            except Exception:
-                _debug_instance = NullDebugManager()  # type: ignore[assignment]
     return _debug_instance
 
 

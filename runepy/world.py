@@ -47,6 +47,12 @@ try:
         CardMaker,
         CollisionNode,
         CollisionPlane,
+        Geom,
+        GeomNode,
+        GeomTriangles,
+        GeomVertexData,
+        GeomVertexFormat,
+        GeomVertexWriter,
         Plane,
         Point3,
         Vec3,
@@ -55,6 +61,8 @@ try:
 except Exception:  # pragma: no cover - Panda3D may be missing during tests
     BitMask32 = CardMaker = CollisionNode = CollisionPlane = Plane = None
     Point3 = Vec3 = LineSegs = None
+    Geom = GeomNode = GeomTriangles = None
+    GeomVertexData = GeomVertexFormat = GeomVertexWriter = None
 
 
 class World:

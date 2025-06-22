@@ -165,7 +165,55 @@ class DebugManager:
                 new_region.node.reparentTo(parent)
                 new_region.node.setPos(rx * REGION_SIZE, ry * REGION_SIZE, 0)
             world.region_manager.loaded[(rx, ry)] = new_region
+        except Exception: pass
+
+    def get_avatar_speed(self) -> float:
+        try:
+            from direct.showbase.ShowBaseGlobal import base
+            return base.player.walk_speed
         except Exception:
+            try:
+                return base.character.speed
+            except Exception:
+                return 0.0
+
+    def set_avatar_speed(self, value: float) -> None:
+        try:
+            from direct.showbase.ShowBaseGlobal import base
+            if hasattr(base.player, "set_speed"):
+                base.player.set_speed(value)
+            elif hasattr(base.character, "speed"):
+                base.character.speed = value
+        except Exception:
+            pass
+
+    def get_cam_pan_speed(self) -> float:
+        try:
+            from direct.showbase.ShowBaseGlobal import base
+            return base.camera_ctl.pan_speed
+        except Exception:
+            return 0.0
+
+    def set_cam_pan_speed(self, value: float) -> None:
+        try:
+            from direct.showbase.ShowBaseGlobal import base
+            base.camera_ctl.set_pan_speed(value)
+        except Exception:
+            pass
+
+    def get_zoom_step(self) -> float:
+        try:
+            from direct.showbase.ShowBaseGlobal import base
+            return base.camera_ctl.zoom_step
+        except Exception:
+            return 0.0
+
+    def set_zoom_step(self, value: float) -> None:
+        try:
+            from direct.showbase.ShowBaseGlobal import base
+            base.camera_ctl.set_zoom_step(value)
+        except Exception:
+            pass
             pass
 
     def attach(self, base: Any) -> None:
@@ -178,7 +226,7 @@ class DebugManager:
         self.base = base
 
         # 1. Create the window lazily to avoid Panda3D dependency during tests
-        from .gui import DebugWindow
+        from runepy.debug.gui import DebugWindow
         try:
             self.window = DebugWindow(self)
         except Exception:
@@ -194,7 +242,7 @@ class DebugManager:
 
         # 3. Optional debug echo
         if __debug__:
-            print('[DebugManager] F1 bound – press to toggle debug window')
+            print('[DebugManager] F1 bound')
 
         self.enable()
 

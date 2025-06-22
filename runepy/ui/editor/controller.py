@@ -1,0 +1,130 @@
+"""UI editing controller."""
+from __future__ import annotations
+
+try:
+    from direct.showbase.ShowBaseGlobal import base
+    from direct.task import Task
+except Exception:  # pragma: no cover - Panda3D may be missing
+    base = None  # type: ignore
+    Task = object  # type: ignore
+
+try:
+    from direct.gui.DirectGui import DirectFrame
+except Exception:  # pragma: no cover - Panda3D may be missing
+    DirectFrame = object  # type: ignore
+
+from pathlib import Path
+from typing import Any
+
+from .serializer import dump_layout
+from .gizmos import SelectionGizmo
+
+
+class UIEditorController:
+    """Basic UI layout editor."""
+
+    def __init__(self, root_np: Any) -> None:
+        self.root = root_np
+        self._drag_widget = None
+        self._drag_start = None
+        self._widget_start = None
+        self._gizmo: SelectionGizmo | None = None
+
+    # ------------------------------------------------------------------
+    def enable(self) -> None:
+        if base is None:
+            return
+        base.accept("f2", self.disable)
+        base.accept("control-s", self._save)
+        base.accept("arrow_up", lambda: self._nudge(0, 0.01))
+        base.accept("arrow_down", lambda: self._nudge(0, -0.01))
+        base.accept("arrow_left", lambda: self._nudge(-0.01, 0))
+        base.accept("arrow_right", lambda: self._nudge(0.01, 0))
+        base.taskMgr.add(self._on_mouse_move, "ui-editor-move")
+
+    def disable(self) -> None:
+        if base is None:
+            return
+        base.ignore("f2")
+        base.ignore("control-s")
+        for key in ("arrow_up", "arrow_down", "arrow_left", "arrow_right"):
+            base.ignore(key)
+        base.taskMgr.remove("ui-editor-move")
+        if self._gizmo is not None:
+            try:
+                self._gizmo.destroy()
+            except Exception:
+                pass
+            self._gizmo = None
+
+    # ------------------------------------------------------------------
+    def _on_mouse_move(self, task: "Task"):
+        if base is None or not base.mouseWatcherNode.hasMouse():
+            return task.cont
+        mpos = base.mouseWatcherNode.getMouse()
+        if base.mouseWatcherNode.is_button_down("mouse1") and self._drag_widget:
+            return self._update_drag(task)
+        return task.cont
+
+    def _begin_drag(self, widget: Any, mpos: Any) -> None:
+        self._drag_widget = widget
+        self._drag_start = mpos
+        if hasattr(widget, "getPos"):
+            self._widget_start = widget.getPos()
+        if self._gizmo is None:
+            try:
+                self._gizmo = SelectionGizmo(widget)
+            except Exception:
+                self._gizmo = None
+        else:
+            self._gizmo.target = widget  # type: ignore[attr-defined]
+            self._gizmo.update()  # type: ignore[operator]
+        base.taskMgr.add(self._update_drag, "ui-editor-drag")
+
+    def _update_drag(self, task: "Task"):
+        if base is None or self._drag_widget is None or self._drag_start is None:
+            return task.done
+        if not base.mouseWatcherNode.hasMouse():
+            return task.cont
+        cur = base.mouseWatcherNode.getMouse()
+        dx = cur[0] - self._drag_start[0]
+        dy = cur[1] - self._drag_start[1]
+        if self._widget_start is not None and hasattr(self._drag_widget, "setPos"):
+            self._drag_widget.setPos(
+                self._widget_start[0] + dx,
+                0,
+                self._widget_start[2] + dy,
+            )
+            if self._gizmo is not None:
+                self._gizmo.update()
+        return task.cont
+
+    def _finish_drag(self) -> None:
+        self._drag_widget = None
+        self._drag_start = None
+        self._widget_start = None
+        try:
+            base.taskMgr.remove("ui-editor-drag")
+        except Exception:
+            pass
+
+    # ------------------------------------------------------------------
+    def _nudge(self, dx: float, dz: float) -> None:
+        if self._gizmo is None:
+            return
+        widget = self._gizmo.target
+        if widget is None or not hasattr(widget, "getPos"):
+            return
+        pos = widget.getPos()
+        widget.setPos(pos[0] + dx, 0, pos[2] + dz)
+        self._gizmo.update()
+
+    def _save(self) -> None:
+        path = Path(__file__).with_name("debug_layout.json")
+        try:
+            dump_layout(self.root, path)
+            print("layout saved")
+        except Exception as exc:  # pragma: no cover - can't save
+            print(f"failed to save layout: {exc}")
+
+__all__ = ["UIEditorController"]

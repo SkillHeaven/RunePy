@@ -16,6 +16,12 @@ class DebugWindow(DirectFrame):
     def __init__(self, manager) -> None:
         super().__init__()
         self.widgets = build_ui(self, L, manager)
+        # Keep children clipped inside the window frame
+        if hasattr(self, "setClipFrame") and "frameSize" in self:
+            try:
+                self.setClipFrame(self["frameSize"])
+            except Exception:
+                pass
         self.hide()
 
     # ------------------------------------------------------------------

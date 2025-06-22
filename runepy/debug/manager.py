@@ -214,7 +214,23 @@ class DebugManager:
             base.camera_ctl.set_zoom_step(value)
         except Exception:
             pass
-            pass
+
+    # ------------------------------------------------------------------
+    # UI editor integration
+    # ------------------------------------------------------------------
+    def toggle_ui_editor(self) -> None:
+        if self.window is None:
+            return
+        try:
+            from runepy.ui.editor.controller import UIEditorController
+        except Exception:
+            return
+        if getattr(self, "_ui_editor", None) is None:
+            self._ui_editor = UIEditorController(self.window)
+            self._ui_editor.enable()
+        else:
+            self._ui_editor.disable()
+            self._ui_editor = None
 
     def attach(self, base: Any) -> None:
         """Bind the debug GUI to an existing ShowBase instance.
@@ -235,8 +251,8 @@ class DebugManager:
 
         # 2. Register key events (lower-case names!)
         try:
-            self.base.accept('f1', self.window.toggleVisible)
-            self.base.accept('f1-up', lambda: None)
+            self.base.accept('f1-up', self.window.toggleVisible)
+            self.base.accept('f2', get_debug().toggle_ui_editor)
         except Exception:
             pass
 

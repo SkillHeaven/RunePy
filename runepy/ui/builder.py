@@ -97,6 +97,10 @@ def build_ui(parent: Any, layout: Dict[str, Any], manager: Any | None = None) ->
                 "range",
             }
         }
+        if "pos" in params:
+            params["pos"] = tuple(params["pos"])
+        if "frameSize" in params:
+            params["frameSize"] = tuple(params["frameSize"])
 
         if kind == "button":
             cmd_name = node.get("command")

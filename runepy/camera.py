@@ -24,9 +24,10 @@ class CameraControl:
 class FreeCameraControl:
     """Camera controller allowing WASD movement for the editor."""
 
-    def __init__(self, camera, speed=5.0):
+    def __init__(self, camera, speed=5.0, world=None):
         self.camera = camera
         self.speed = speed
+        self.world = world
         self.move = {"forward": False, "back": False, "left": False, "right": False}
 
     def start(self, base):
@@ -55,5 +56,7 @@ class FreeCameraControl:
                 self.camera.getY() + vec.y,
                 self.camera.getZ(),
             )
+            if self.world is not None:
+                self.world.update_streaming(int(self.camera.getX()), int(self.camera.getY()))
         return task.cont
 

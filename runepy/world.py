@@ -60,7 +60,7 @@ except Exception:  # pragma: no cover - Panda3D may be missing during tests
 class World:
     """Generate and display a simple grid-based world."""
 
-    def __init__(self, render, radius=5, tile_size=1, debug=False, map_file=None):
+    def __init__(self, render, radius=500, tile_size=1, debug=False, map_file=None):
         self.render = render
         self.radius = radius
         self.tile_size = tile_size

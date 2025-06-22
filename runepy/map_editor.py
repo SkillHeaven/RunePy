@@ -30,9 +30,7 @@ class MapEditor:
             return
         tile_data = self.world.grid[grid_y][grid_x]
         tile_data.walkable = not tile_data.walkable
-        tile = self.world.tiles.get((tile_x, tile_y))
-        if tile:
-            tile.setColor(self.world._tile_color(tile_data))
+        self.world.update_tile_color(tile_x, tile_y)
 
     def toggle_interactable(self):
         if self.client.options_menu.visible:

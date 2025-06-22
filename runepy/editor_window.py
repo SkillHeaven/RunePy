@@ -68,7 +68,7 @@ class EditorWindow(BaseApp):
             self.mouseWatcherNode, self.camera, self.render
         )
         if mpos:
-            if (tile_x, tile_y) in self.world.tiles:
+            if -self.world.radius <= tile_x <= self.world.radius and -self.world.radius <= tile_y <= self.world.radius:
                 self.world.highlight_tile(tile_x, tile_y)
             else:
                 self.world.clear_highlight()

@@ -55,6 +55,22 @@ def _make_widget(kind: str, parent: Any, **kwargs: Any) -> Any:
     return w
 
 
+def _build_slider(parent: Any, spec: Dict[str, Any], mgr: Any) -> Any:
+    getter = getattr(mgr, spec['getter'])
+    setter = getattr(mgr, spec['setter'])
+
+    # DirectSlider passes the new value as its first positional arg.
+    # Preserve that parameter in the lambda.
+    slider = DirectSlider(
+        parent=parent,
+        range=spec.get('range', (0, 1)),
+        value=getter(),
+        command=lambda v, _setter=setter: _setter(float(v)),
+        **spec['props']
+    )
+    return slider
+
+
 def build_ui(parent: Any, layout: Dict[str, Any], manager: Any | None = None) -> Dict[str, Any]:
     """Create widgets from ``layout`` and return them in a dict."""
 
@@ -106,17 +122,26 @@ def build_ui(parent: Any, layout: Dict[str, Any], manager: Any | None = None) ->
                 params["range"] = tuple(rng)
             if getter_name and manager and hasattr(manager, getter_name):
                 try:
-                    params["value"] = getattr(manager, getter_name)()
+                    value = getattr(manager, getter_name)()
                 except Exception:
-                    pass
+                    value = None
+            else:
+                value = None
             if setter_name and manager and hasattr(manager, setter_name):
-                def _cb(v: Any, m=manager, n=setter_name):
-                    try:
-                        getattr(m, n)(float(v))
-                    except Exception:
-                        pass
-                params["command"] = _cb
-            widget = _make_widget("slider", parent_node, **params)
+                props = params.copy()
+                if value is not None:
+                    props.setdefault("value", value)
+                spec = {
+                    "getter": getter_name,
+                    "setter": setter_name,
+                    "range": props.get("range", (0, 1)),
+                    "props": props,
+                }
+                widget = _build_slider(parent_node, spec, manager)
+            else:
+                if value is not None:
+                    params.setdefault("value", value)
+                widget = _make_widget("slider", parent_node, **params)
         elif kind == "label":
             widget = _make_widget("label", parent_node, **params)
         elif kind == "frame":

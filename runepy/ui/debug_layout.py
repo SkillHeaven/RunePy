@@ -1,0 +1,88 @@
+"""Layout description for the debug overlay."""
+
+LAYOUT = {
+    "type": "frame",
+    "frameColor": (0, 0, 0, 0.7),
+    "frameSize": (-0.6, 0.6, -0.4, 0.4),
+    "pos": (0.7, 0, 0.55),
+    "children": [
+        {
+            "type": "label",
+            "name": "stats",
+            "text": "",
+            "pos": (-0.55, 0, 0.25),
+            "scale": 0.05,
+        },
+        {
+            "type": "button",
+            "name": "dump_console",
+            "text": "Dump to console",
+            "pos": (-0.45, 0, 0.1),
+            "scale": 0.05,
+            "command": "dump_console",
+        },
+        {
+            "type": "button",
+            "name": "dump_file",
+            "text": "Dump to file",
+            "pos": (-0.45, 0, 0.0),
+            "scale": 0.05,
+            "command": "dump_file",
+        },
+        {
+            "type": "button",
+            "name": "toggle_pstats",
+            "text": "Toggle PStats",
+            "pos": (-0.45, 0, -0.1),
+            "scale": 0.05,
+            "command": "toggle_pstats",
+        },
+        {
+            "type": "button",
+            "name": "reload_region",
+            "text": "Reload region",
+            "pos": (-0.45, 0, -0.2),
+            "scale": 0.05,
+            "command": "reload_region",
+        },
+        {
+            "type": "slider",
+            "name": "avatar_speed",
+            "label": "Avatar speed",
+            "pos": (-0.05, 0, -0.15),
+            "label_pos": (-0.55, 0, -0.13),
+            "scale": 0.4,
+            "label_scale": 0.05,
+            "range": (0.5, 10.0),
+            "getter": "get_avatar_speed",
+            "setter": "set_avatar_speed",
+        },
+        {
+            "type": "slider",
+            "name": "cam_pan_speed",
+            "label": "Cam pan-speed",
+            "pos": (-0.05, 0, -0.25),
+            "label_pos": (-0.55, 0, -0.23),
+            "scale": 0.4,
+            "label_scale": 0.05,
+            "range": (1.0, 40.0),
+            "getter": "get_cam_pan_speed",
+            "setter": "set_cam_pan_speed",
+        },
+        {
+            "type": "slider",
+            "name": "zoom_step",
+            "label": "Zoom step",
+            "pos": (-0.05, 0, -0.35),
+            "label_pos": (-0.55, 0, -0.33),
+            "scale": 0.4,
+            "label_scale": 0.05,
+            "range": (0.1, 5.0),
+            "getter": "get_zoom_step",
+            "setter": "set_zoom_step",
+        },
+    ],
+}
+
+__all__ = ["LAYOUT"]
+

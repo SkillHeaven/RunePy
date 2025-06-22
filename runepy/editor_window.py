@@ -5,6 +5,7 @@ from runepy.camera import FreeCameraControl
 from runepy.options_menu import KeyBindingManager, OptionsMenu
 from runepy.controls import Controls
 from runepy.utils import get_mouse_tile_coords, get_tile_from_mouse
+from runepy.debug import get_debug
 
 
 
@@ -16,6 +17,7 @@ class EditorWindow(BaseApp):
 
     def initialize(self):
         self.world = World(self.render)
+        get_debug().attach(self)
         self.editor = MapEditor(self, self.world)
         self.editor.save_callback = self.save_map
         self.editor.load_callback = self.load_map

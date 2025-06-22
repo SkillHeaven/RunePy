@@ -89,6 +89,23 @@ region.save("region_01.npz")
 loaded = RegionArrays.load("region_01.npz")
 ```
 
+## Map Manager and region loading
+
+The world is divided into 64×64 tile regions that are loaded on demand. The
+``MapManager`` class tracks the player position and ensures all regions within a
+view radius remain loaded. Region coordinates are computed with ``Rx = x //
+64`` and ``Ry = y // 64`` and a unique ID may be derived from ``(Rx << 8) | Ry``.
+When the player crosses a region boundary, adjacent regions are loaded and old
+ones are unloaded automatically.
+
+```python
+from runepy import MapManager
+
+manager = MapManager(view_distance=1)
+manager.update(10, 20)  # loads the region containing (10,20) and neighbors
+manager.update(70, 20)  # moves into the next region triggering load/unload
+```
+
 
 
 ## Utilities

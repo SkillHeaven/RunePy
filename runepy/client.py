@@ -1,5 +1,8 @@
 from panda3d.core import ModifierButtons, Vec3
-from direct.showbase.ShowBaseGlobal import base
+try:
+    import direct.showbase.ShowBaseGlobal as sbg
+except Exception:  # pragma: no cover - Panda3D may be missing
+    sbg = None
 from runepy.utils import get_mouse_tile_coords, get_tile_from_mouse
 from direct.interval.IntervalGlobal import Sequence, Func
 import math
@@ -42,12 +45,11 @@ class Client(BaseApp):
 
         tile_fit_scale = self.world.tile_size * 0.5
         self.loading_screen.update(50, "Loading character")
-        base.world = self.world
         self.character = Character(self.render, self.loader, Vec3(0, 0, 0.5), scale=tile_fit_scale, debug=self.debug)
-        base.character = self.character
+        if sbg is not None and hasattr(sbg, "base"):
+            sbg.base.world = self.world
+            sbg.base.character = self.character
         self.camera_control = CameraControl(self.camera, self.render, self.character)
-
-        # Load persisted state if available
         state = load_state()
         char_pos = state.get("character_pos")
         if isinstance(char_pos, list) and len(char_pos) == 3:

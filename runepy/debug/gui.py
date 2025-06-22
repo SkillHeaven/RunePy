@@ -61,6 +61,25 @@ class DebugWindow(DirectFrame):
         DirectButton(text="Reload region", command=self.mgr.reload_region, pos=(-0.45, 0, y), scale=0.05, parent=self)
 
     def _build_tweaks(self) -> None:
-        pass
+        try:
+            from direct.showbase.ShowBaseGlobal import base
+        except Exception:
+            return
+
+        def add_slider(y, text, min_, max_, getter, setter):
+            DirectLabel(parent=self, text=text, pos=(-0.55, 0, y + 0.02), scale=0.05)
+            try:
+                value = getter()
+                slider = DirectSlider(parent=self, range=(min_, max_), value=value, pos=(-0.05, 0, y), scale=0.4, command=lambda v: setter(float(v)))
+            except Exception:
+                slider = DirectSlider(parent=self, range=(min_, max_), value=min_, pos=(-0.05, 0, y), scale=0.4, state="disabled")
+            return slider
+
+        y = -0.15
+        add_slider(y, "Avatar speed", 0.5, 10.0, lambda: base.player.walk_speed, lambda v: base.player.set_speed(v))
+        y -= 0.1
+        add_slider(y, "Cam pan-speed", 1.0, 40.0, lambda: base.camera_ctl.pan_speed, lambda v: base.camera_ctl.set_pan_speed(v))
+        y -= 0.1
+        add_slider(y, "Zoom step", 0.1, 5.0, lambda: base.camera_ctl.zoom_step, lambda v: base.camera_ctl.set_zoom_step(v))
 
 __all__ = ["DebugWindow"]

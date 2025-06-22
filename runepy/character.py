@@ -1,7 +1,7 @@
 #Character.py
 from panda3d.core import Vec3
 from direct.interval.IntervalGlobal import Func, LerpPosInterval, Sequence
-from world.coords import world_to_region
+from runepy.world import world_to_region
 
 class Character:
 

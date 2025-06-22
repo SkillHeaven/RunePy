@@ -117,9 +117,11 @@ tile coordinates using the camera and render nodes. Pass the current camera and
 
 ## Tests
 
-Run the test suite with `pytest -q` from the repository root:
+Install the Python dependencies listed in `requirements.txt` and run the
+test suite with `pytest -q` from the repository root:
 
 ```bash
+pip install -r requirements.txt
 pytest -q
 ```
 

@@ -36,10 +36,29 @@ class DebugWindow(DirectFrame):
         self.hide()
 
     def _build_live_stats(self) -> None:
-        pass
+        self.stats_lbl = DirectLabel(text="", parent=self, pos=(-0.55, 0, 0.25), scale=0.05)
+
+    def refresh_task(self, task: "Task"):
+        from direct.showbase.ShowBaseGlobal import base, render
+        world = getattr(base, "world", None)
+        if world is not None:
+            rm = world.region_manager
+            regions = len(rm.loaded)
+        else:
+            regions = 0
+        geoms = render.findAllMatches("**/+GeomNode").getNumPaths()
+        self.stats_lbl["text"] = f"Regions: {regions:2d}\nGeoms:   {geoms:3d}"
+        return task.again
 
     def _build_actions(self) -> None:
-        pass
+        y = 0.1
+        DirectButton(text="Dump to console", command=self.mgr.dump_console, pos=(-0.45, 0, y), scale=0.05, parent=self)
+        y -= 0.1
+        DirectButton(text="Dump to file", command=self.mgr.dump_file, pos=(-0.45, 0, y), scale=0.05, parent=self)
+        y -= 0.1
+        DirectButton(text="Toggle PStats", command=self.mgr.toggle_pstats, pos=(-0.45, 0, y), scale=0.05, parent=self)
+        y -= 0.1
+        DirectButton(text="Reload region", command=self.mgr.reload_region, pos=(-0.45, 0, y), scale=0.05, parent=self)
 
     def _build_tweaks(self) -> None:
         pass

@@ -17,7 +17,6 @@ class EditorWindow(BaseApp):
 
     def initialize(self):
         self.world = World(self.render)
-        get_debug().attach(self)
         self.editor = MapEditor(self, self.world)
         self.editor.save_callback = self.save_map
         self.editor.load_callback = self.load_map

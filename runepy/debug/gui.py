@@ -82,4 +82,11 @@ class DebugWindow(DirectFrame):
         y -= 0.1
         add_slider(y, "Zoom step", 0.1, 5.0, lambda: base.camera_ctl.zoom_step, lambda v: base.camera_ctl.set_zoom_step(v))
 
+    # ------------------------------------------------------------------
+    def toggleVisible(self):
+        if self.isHidden():
+            self.show()
+        else:
+            self.hide()
+
 __all__ = ["DebugWindow"]

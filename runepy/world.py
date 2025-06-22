@@ -76,12 +76,14 @@ class World:
                 self.log(f"Failed to load map '{map_file}': {exc}")
 
         self.tile_root = self.render.attachNewNode("tile_root")
-        self.tiles = {}
         self.grid_lines = self.render.attachNewNode("grid_lines")
 
         self._generate_tiles()
         self._create_grid_lines()
         self._create_subfloor()
+
+        # Highlight quad reused for hover effects
+        self.highlight_quad = self._create_highlight_quad()
         # Flattening tiles would merge them into a single node which prevents
         # per-tile color adjustments. Keep tiles separate so each can be
         # highlighted individually. Grid lines remain flattened for performance.
@@ -102,6 +104,17 @@ class World:
         # Ensure the subfloor renders before the tiles
         node.setBin("background", 0)
         node.setDepthWrite(False)
+    def _create_highlight_quad(self):
+        cm = CardMaker("highlight")
+        size = self.tile_size * 0.9
+        cm.setFrame(-size/2, size/2, -size/2, size/2)
+        quad = self.tile_root.attachNewNode(cm.generate())
+        quad.setHpr(0, -90, 0)
+        quad.setColor(1, 1, 0, 0.5)
+        quad.setTransparency(True)
+        quad.hide()
+        return quad
+
 
     def save_map(self, filename):
         """Write the current grid to ``filename`` as JSON."""
@@ -126,22 +139,60 @@ class World:
         return (0.1, 0.1, 0.1, 1)
 
     def _generate_tiles(self):
+        if CardMaker is None:
+            return
+
+        format = GeomVertexFormat.get_v3cp()
+        vdata = GeomVertexData("tiles", format, Geom.UHDynamic)
+        vertex = GeomVertexWriter(vdata, "vertex")
+        color = GeomVertexWriter(vdata, "color")
+        tris = GeomTriangles(Geom.UHDynamic)
+
+        self._tile_indices = {}
+        index = 0
+        half = self.tile_size / 2
         for x in range(-self.radius, self.radius + 1):
             for y in range(-self.radius, self.radius + 1):
-                tile = self._create_tile((x * self.tile_size, y * self.tile_size, 0), self.tile_size)
+                x0 = x * self.tile_size - half
+                x1 = x * self.tile_size + half
+                y0 = y * self.tile_size - half
+                y1 = y * self.tile_size + half
                 tile_data = self.grid[y + self.radius][x + self.radius]
-                tile.setColor(self._tile_color(tile_data))
+                col = self._tile_color(tile_data)
 
-                tile.setName(f"tile_{x}_{y}")
-                self.tiles[(x, y)] = tile
+                vertex.addData3(x0, y0, 0)
+                color.addData4(*col)
+                vertex.addData3(x1, y0, 0)
+                color.addData4(*col)
+                vertex.addData3(x1, y1, 0)
+                color.addData4(*col)
+                vertex.addData3(x0, y1, 0)
+                color.addData4(*col)
 
-    def _create_tile(self, position, size):
-        card_maker = CardMaker("tile")
-        card_maker.setFrame(-size / 2, size / 2, -size / 2, size / 2)
-        tile = self.tile_root.attachNewNode(card_maker.generate())
-        tile.setPos(*position)
-        tile.setHpr(0, -90, 0)
-        return tile
+                tris.addVertices(index, index + 1, index + 2)
+                tris.addVertices(index, index + 2, index + 3)
+
+                self._tile_indices[(x, y)] = (index, index + 1, index + 2, index + 3)
+                index += 4
+
+        geom = Geom(vdata)
+        geom.addPrimitive(tris)
+        node = GeomNode("tiles")
+        node.addGeom(geom)
+        self.tile_geom = self.tile_root.attachNewNode(node)
+
+    def update_tile_color(self, x: int, y: int) -> None:
+        if CardMaker is None:
+            return
+        indices = self._tile_indices.get((x, y))
+        if not indices:
+            return
+        vdata = self.tile_geom.node().modifyGeom(0).modifyVertexData()
+        writer = GeomVertexWriter(vdata, "color")
+        col = self._tile_color(self.grid[y + self.radius][x + self.radius])
+        for i in indices:
+            writer.setRow(i)
+            writer.setData4f(*col)
 
     def _create_grid_lines(self):
         lines = LineSegs()
@@ -166,23 +217,18 @@ class World:
         node = lines.create()
         self.grid_lines.attachNewNode(node)
 
-    def highlight_tile(self, x: int, y: int, scale: float = 0.8):
-        """Darken the tile at ``(x, y)`` to indicate a hover state."""
+    def highlight_tile(self, x: int, y: int):
+        """Highlight tile at (x, y) by moving the overlay quad."""
         coord = (x, y)
         if self._hovered == coord:
             return
-        if self._hovered in self.tiles:
-            self.tiles[self._hovered].clearColorScale()
-            self._hovered = None
-        tile = self.tiles.get(coord)
-        if tile:
-            tile.setColorScale(scale, scale, scale, 1)
-            self._hovered = coord
+        self.highlight_quad.setPos(x * self.tile_size, y * self.tile_size, 0.05)
+        self.highlight_quad.show()
+        self._hovered = coord
 
     def clear_highlight(self):
-        """Remove any hover highlight from the map."""
-        if self._hovered in self.tiles:
-            self.tiles[self._hovered].clearColorScale()
+        """Hide the highlight overlay."""
+        self.highlight_quad.hide()
         self._hovered = None
 
     def _create_collision_plane(self):
@@ -217,7 +263,6 @@ class World:
         self.grid_lines.removeNode()
         self.tile_root = self.render.attachNewNode("tile_root")
         self.grid_lines = self.render.attachNewNode("grid_lines")
-        self.tiles = {}
         self._generate_tiles()
         self._create_grid_lines()
         # Keep tiles un-flattened so hover highlighting works on individual

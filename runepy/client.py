@@ -81,7 +81,7 @@ class Client(BaseApp):
         )
         if mpos:
             self.debug_info.update_tile_info(mpos, tile_x, tile_y)
-            if (tile_x, tile_y) in self.world.tiles:
+            if -self.world.radius <= tile_x <= self.world.radius and -self.world.radius <= tile_y <= self.world.radius:
                 self.world.highlight_tile(tile_x, tile_y)
             else:
                 self.world.clear_highlight()

@@ -62,6 +62,7 @@ class Client(BaseApp):
         self.key_manager.bind("open_menu", self.options_menu.toggle)
 
         self.accept("mouse1", self.tile_click_event)
+        self.accept("f3", self.debug_info.toggle_region_info)
 
         self.loading_screen.update(80, "Finalizing")
 

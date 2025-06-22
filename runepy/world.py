@@ -81,12 +81,27 @@ class World:
 
         self._generate_tiles()
         self._create_grid_lines()
+        self._create_subfloor()
         # Flattening tiles would merge them into a single node which prevents
         # per-tile color adjustments. Keep tiles separate so each can be
         # highlighted individually. Grid lines remain flattened for performance.
         self.grid_lines.flattenStrong()
 
         self._hovered = None
+
+    def _create_subfloor(self):
+        """Create a large black plane just below the tiles."""
+        if CardMaker is None:
+            return
+        plane_size = (self.radius * 2 + 4) * self.tile_size
+        cm = CardMaker("subfloor")
+        cm.setFrame(-plane_size / 2, plane_size / 2, -plane_size / 2, plane_size / 2)
+        node = self.render.attachNewNode(cm.generate())
+        node.setPos(0, 0, -1)
+        node.setColor(0, 0, 0, 1)
+        # Ensure the subfloor renders before the tiles
+        node.setBin("background", 0)
+        node.setDepthWrite(False)
 
     def save_map(self, filename):
         """Write the current grid to ``filename`` as JSON."""

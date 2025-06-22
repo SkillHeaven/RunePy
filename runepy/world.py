@@ -68,11 +68,21 @@ except Exception:  # pragma: no cover - Panda3D may be missing during tests
 class World:
     """Generate and display a simple grid-based world."""
 
-    def __init__(self, render, radius=500, tile_size=1, debug=False, map_file=None):
+    def __init__(
+        self,
+        render,
+        radius=500,
+        tile_size=1,
+        debug=False,
+        map_file=None,
+        progress_callback=None,
+    ):
+
         self.render = render
         self.radius = radius
         self.tile_size = tile_size
         self.debug = debug
+        self.progress_callback = progress_callback
 
         width = height = radius * 2 + 1
         self.grid = [[TileData() for _ in range(width)] for _ in range(height)]
@@ -89,6 +99,8 @@ class World:
         self._generate_tiles()
         self._create_grid_lines()
         self._create_subfloor()
+        if self.progress_callback:
+            self.progress_callback(1.0, "World ready")
 
         # Highlight quad reused for hover effects
         self.highlight_quad = self._create_highlight_quad()
@@ -159,6 +171,11 @@ class World:
         self._tile_indices = {}
         index = 0
         half = self.tile_size / 2
+        total = (self.radius * 2 + 1) ** 2
+        count = 0
+        if self.progress_callback:
+            self.progress_callback(0.0, 'Generating tiles')
+        interval = max(1, total // 20)
         for x in range(-self.radius, self.radius + 1):
             for y in range(-self.radius, self.radius + 1):
                 x0 = x * self.tile_size - half
@@ -182,13 +199,17 @@ class World:
 
                 self._tile_indices[(x, y)] = (index, index + 1, index + 2, index + 3)
                 index += 4
+                count += 1
+                if self.progress_callback and count % interval == 0:
+                    self.progress_callback(count / total, f'Generating tiles {int(100*count/total)}%')
 
         geom = Geom(vdata)
         geom.addPrimitive(tris)
-        node = GeomNode("tiles")
+        node = GeomNode('tiles')
         node.addGeom(geom)
         self.tile_geom = self.tile_root.attachNewNode(node)
-
+        if self.progress_callback:
+            self.progress_callback(1.0, 'Generating tiles 100%')
     def update_tile_color(self, x: int, y: int) -> None:
         if CardMaker is None:
             return
@@ -276,5 +297,3 @@ class World:
         # Keep tiles un-flattened so hover highlighting works on individual
         # nodes. Grid lines can still be flattened for efficiency.
         self.grid_lines.flattenStrong()
-
-

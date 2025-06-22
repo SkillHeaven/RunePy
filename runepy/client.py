@@ -35,7 +35,9 @@ class Client(BaseApp):
         self.buttonThrowers[0].node().set_modifier_buttons(ModifierButtons())
 
         self.loading_screen.update(20, "Generating world")
-        self.world = World(self.render, debug=self.debug)
+        def world_progress(frac, text):
+            self.loading_screen.update(20 + int(30 * frac), text)
+        self.world = World(self.render, debug=self.debug, progress_callback=world_progress)
         self.grid = self.world.grid
         self.map_radius = self.world.radius
 

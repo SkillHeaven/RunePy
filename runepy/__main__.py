@@ -1,26 +1,18 @@
-import argparse
-from runepy.client import Client
-from runepy.editor_window import EditorWindow
+"""Minimal entry point that enables the debug overlay."""
+
+from direct.showbase.ShowBase import ShowBase
 
 from runepy.debug import get_debug
 
-def main():
-    parser = argparse.ArgumentParser(description="RunePy client")
-    parser.add_argument(
-        "--mode",
-        choices=["game", "editor"],
-        default="game",
-        help="Start in regular game mode or map editor",
-    )
-    args = parser.parse_args()
 
-    if args.mode == "editor":
-        app = EditorWindow()
-    else:
-        app = Client()
-    from direct.showbase.ShowBaseGlobal import base
+def main() -> None:
+    """Launch a bare :class:`ShowBase` with the debug manager attached."""
+
+    base = ShowBase()  # ShowBase must exist before attaching
     get_debug().attach(base)
-    app.run()
+
+    # (rest of your setup would go here)
+    base.run()
 
 
 if __name__ == "__main__":

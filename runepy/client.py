@@ -222,4 +222,8 @@ if __name__ == "__main__":
         app = EditorWindow()
     else:
         app = Client()
+
+    from runepy.debug import get_debug
+    get_debug().attach(app)
+
     app.run()

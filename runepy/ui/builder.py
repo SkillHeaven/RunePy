@@ -69,9 +69,9 @@ def _build_slider(parent: Any, spec: Dict[str, Any], mgr: Any) -> Any:
         parent=parent,
         range=rng,
         value=val,
-        command=lambda v, _setter=setter: _setter(float(v)),
         **props,
     )
+    slider["command"] = lambda _s=slider, _setter=setter: _setter(float(_s["value"]))
     return slider
 
 

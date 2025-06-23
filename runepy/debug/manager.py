@@ -232,8 +232,11 @@ class DebugManager:
             self._ui_editor.disable()
             self._ui_editor = None
 
-    def attach(self, base: Any) -> None:
+    def attach(self, base: Any | None) -> None:
         """Bind the debug GUI to an existing :class:`ShowBase` instance."""
+
+        if base is None:
+            return
 
         if getattr(self, "_attached", False):
             return  # guard against double attach

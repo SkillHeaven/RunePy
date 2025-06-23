@@ -61,12 +61,16 @@ def _build_slider(parent: Any, spec: Dict[str, Any], mgr: Any) -> Any:
 
     # DirectSlider passes the new value as its first positional arg.
     # Preserve that parameter in the lambda.
+    props = dict(spec.get('props', {}))
+    rng = props.pop('range', spec.get('range', (0, 1)))
+    val = props.pop('value', getter())
+
     slider = DirectSlider(
         parent=parent,
-        range=spec.get('range', (0, 1)),
-        value=getter(),
+        range=rng,
+        value=val,
         command=lambda v, _setter=setter: _setter(float(v)),
-        **spec['props']
+        **props,
     )
     return slider
 

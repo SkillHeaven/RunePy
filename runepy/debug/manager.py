@@ -233,34 +233,21 @@ class DebugManager:
             self._ui_editor = None
 
     def attach(self, base: Any) -> None:
-        """Bind the debug GUI to an existing ShowBase instance.
+        """Bind the debug GUI to an existing :class:`ShowBase` instance."""
 
-        Safe to call multiple times; only the first call does the work.
-        """
-        if self.base:
-            return
+        if getattr(self, "_attached", False):
+            return  # guard against double attach
+        self._attached = True
+
         self.base = base
+        from .gui import DebugWindow
+        self.window = DebugWindow(self)
+        self.window.hide()  # start hidden
 
-        # 1. Create the window lazily to avoid Panda3D dependency during tests
-        from runepy.debug.gui import DebugWindow
-        try:
-            self.window = DebugWindow(self)
-        except Exception:
-            self.window = None
-            return
+        base.accept('f1', self.window.toggleVisible)
+        base.accept('f2', self.toggle_ui_editor)
 
-        # 2. Register key events (lower-case names!)
-        try:
-            self.base.accept('f1-up', self.window.toggleVisible)
-            self.base.accept('f2', get_debug().toggle_ui_editor)
-        except Exception:
-            pass
-
-        # 3. Optional debug echo
-        if __debug__:
-            print('[DebugManager] F1 bound')
-
-        self.enable()
+        print('[DebugManager] F1 bound')
 
 _debug_instance: Optional[DebugManager] = None
 

@@ -6,7 +6,7 @@ Set-Location $scriptDir
 
 # Prefer py launcher if available, fallback to python
 if (Get-Command py -ErrorAction SilentlyContinue) {
-    py -m runepy
+    py -m runepy.client
 } else {
-    python -m runepy
+    python -m runepy.client
 }

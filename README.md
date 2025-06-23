@@ -58,13 +58,13 @@ After installing the requirements, launch the program using one of the following
 
 **Direct Python**
 ```bash
-python -m runepy
+python -m runepy.client
 ```
 
 To launch the map editor instead of the game, run:
 
 ```bash
-python -m runepy --mode editor
+python -m runepy.client --mode editor
 ```
 
 A window will open containing a grid of tiles. By default the world spans 1000×1000 tiles, so there is plenty of space to explore. Clicking on a tile moves the smiley‑face character to that location using pathfinding. Use the mouse wheel to zoom the camera in or out.

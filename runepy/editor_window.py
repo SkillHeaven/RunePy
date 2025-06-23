@@ -88,4 +88,9 @@ class EditorWindow(BaseApp):
 
 if __name__ == "__main__":
     app = EditorWindow()
+
+    from runepy.debug import get_debug
+
+    get_debug().attach(app)
+
     app.run()

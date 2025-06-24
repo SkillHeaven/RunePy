@@ -15,6 +15,13 @@ except Exception:  # pragma: no cover - Panda3D may be missing
 
 from pathlib import Path
 from typing import Any
+import os
+import sys
+
+try:
+    from panda3d.core import WindowProperties
+except Exception:  # pragma: no cover - Panda3D may be missing
+    WindowProperties = object  # type: ignore
 
 from .serializer import dump_layout
 from .gizmos import SelectionGizmo
@@ -41,6 +48,20 @@ class UIEditorController:
         base.accept("arrow_left", lambda: self._nudge(-0.01, 0))
         base.accept("arrow_right", lambda: self._nudge(0.01, 0))
         base.taskMgr.add(self._on_mouse_move, "ui-editor-move")
+        if WindowProperties is not object and hasattr(base, "win"):
+            try:
+                props = WindowProperties()
+                cursor=""
+                if sys.platform.startswith("win"):
+                    root=os.environ.get("SystemRoot", r"C:\Windows")
+                    candidate=Path(root)/"Cursors"/"cross.cur"
+                    if candidate.exists():
+                        cursor=str(candidate)
+                if cursor:
+                    props.setCursorFilename(cursor)
+                base.win.requestProperties(props)
+            except Exception:
+                pass
 
     def disable(self) -> None:
         if base is None:
@@ -56,6 +77,13 @@ class UIEditorController:
             except Exception:
                 pass
             self._gizmo = None
+        if WindowProperties is not object and hasattr(base, "win"):
+            try:
+                props = WindowProperties()
+                props.setCursorFilename("")
+                base.win.requestProperties(props)
+            except Exception:
+                pass
 
     # ------------------------------------------------------------------
     def _on_mouse_move(self, task: "Task"):

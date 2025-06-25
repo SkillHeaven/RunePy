@@ -46,6 +46,8 @@ class UIEditorController:
         base.accept("arrow_down", lambda: self._nudge(0, -0.01))
         base.accept("arrow_left", lambda: self._nudge(-0.01, 0))
         base.accept("arrow_right", lambda: self._nudge(0.01, 0))
+        base.accept("mouse1", self._mouse_down)
+        base.accept("mouse1-up", self._mouse_up)
         base.taskMgr.add(self._on_mouse_move, "ui-editor-move")
         if WindowProperties is not object and hasattr(base, "win"):
             try:
@@ -68,6 +70,8 @@ class UIEditorController:
         base.ignore("control-s")
         for key in ("arrow_up", "arrow_down", "arrow_left", "arrow_right"):
             base.ignore(key)
+        base.ignore("mouse1")
+        base.ignore("mouse1-up")
         base.taskMgr.remove("ui-editor-move")
         if self._gizmo is not None:
             try:
@@ -91,6 +95,38 @@ class UIEditorController:
         if base.mouseWatcherNode.is_button_down("mouse1") and self._drag_widget:
             return self._update_drag(task)
         return task.cont
+
+    def _mouse_down(self) -> None:
+        if base is None or not base.mouseWatcherNode.hasMouse():
+            return
+        mpos = base.mouseWatcherNode.getMouse()
+
+        def _search(node: Any) -> Any | None:
+            for child in getattr(node, "getChildren", lambda: [])():
+                found = _search(child)
+                if found is not None:
+                    return found
+            if getattr(node, "getPythonTag", lambda _n: None)("debug_gui"):
+                if hasattr(node, "__getitem__") and hasattr(node, "getPos"):
+                    try:
+                        fs = node["frameSize"]
+                        pos = node.getPos()
+                        left = pos[0] + fs[0]
+                        right = pos[0] + fs[1]
+                        bottom = pos[2] + fs[2]
+                        top = pos[2] + fs[3]
+                        if left <= mpos[0] <= right and bottom <= mpos[1] <= top:
+                            return node
+                    except Exception:
+                        pass
+            return None
+
+        widget = _search(self.root)
+        if widget is not None:
+            self._begin_drag(widget, mpos)
+
+    def _mouse_up(self) -> None:
+        self._finish_drag()
 
     def _begin_drag(self, widget: Any, mpos: Any) -> None:
         self._drag_widget = widget

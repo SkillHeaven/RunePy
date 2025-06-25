@@ -17,6 +17,7 @@ RunePy is a small demonstration project built with [Panda3D](https://www.panda3d
 - Map regions stream in on demand as the player moves
 - F1 debug window with live stats and tweakable sliders
 - Optional UI editor (F2) for rearranging and saving the debug layout
+  (the debug window border turns red while editing)
 
 ## Repository Layout
 

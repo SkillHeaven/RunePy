@@ -36,6 +36,7 @@ class UIEditorController:
         self._drag_start = None
         self._widget_start = None
         self._gizmo: SelectionGizmo | None = None
+        self._orig_color = None
 
     # ------------------------------------------------------------------
     def enable(self) -> None:
@@ -49,6 +50,16 @@ class UIEditorController:
         base.accept("mouse1", self._mouse_down)
         base.accept("mouse1-up", self._mouse_up)
         base.taskMgr.add(self._on_mouse_move, "ui-editor-move")
+        if hasattr(self.root, "__setitem__"):
+            try:
+                if hasattr(self.root, "__getitem__"):
+                    try:
+                        self._orig_color = self.root["frameColor"]
+                    except Exception:
+                        self._orig_color = None
+                self.root["frameColor"] = (0.8, 0.0, 0.0, 0.7)
+            except Exception:
+                pass
         if WindowProperties is not object and hasattr(base, "win"):
             try:
                 props = WindowProperties()
@@ -79,6 +90,12 @@ class UIEditorController:
             except Exception:
                 pass
             self._gizmo = None
+        if hasattr(self.root, "__setitem__") and self._orig_color is not None:
+            try:
+                self.root["frameColor"] = self._orig_color
+            except Exception:
+                pass
+            self._orig_color = None
         if WindowProperties is not object and hasattr(base, "win"):
             try:
                 props = WindowProperties()

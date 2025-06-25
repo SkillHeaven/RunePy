@@ -101,27 +101,34 @@ class UIEditorController:
             return
         mpos = base.mouseWatcherNode.getMouse()
 
-        def _search(node: Any) -> Any | None:
+        def _search(node: Any, offset: tuple[float, float]) -> Any | None:
+            if hasattr(node, "getPos"):
+                try:
+                    p = node.getPos()
+                    offset = (offset[0] + p[0], offset[1] + p[2])
+                except Exception:
+                    pass
+
             for child in getattr(node, "getChildren", lambda: [])():
-                found = _search(child)
+                found = _search(child, offset)
                 if found is not None:
                     return found
+
             if getattr(node, "getPythonTag", lambda _n: None)("debug_gui"):
-                if hasattr(node, "__getitem__") and hasattr(node, "getPos"):
+                if hasattr(node, "__getitem__"):
                     try:
                         fs = node["frameSize"]
-                        pos = node.getPos()
-                        left = pos[0] + fs[0]
-                        right = pos[0] + fs[1]
-                        bottom = pos[2] + fs[2]
-                        top = pos[2] + fs[3]
+                        left = offset[0] + fs[0]
+                        right = offset[0] + fs[1]
+                        bottom = offset[1] + fs[2]
+                        top = offset[1] + fs[3]
                         if left <= mpos[0] <= right and bottom <= mpos[1] <= top:
                             return node
                     except Exception:
                         pass
             return None
 
-        widget = _search(self.root)
+        widget = _search(self.root, (0.0, 0.0))
         if widget is not None:
             self._begin_drag(widget, mpos)
 

@@ -100,3 +100,28 @@ def test_begin_and_finish_drag(monkeypatch):
     fake_base.accepted["mouse1-up"]()
     assert ended
     editor.disable()
+
+
+def test_mouse_down_with_offset_root(monkeypatch):
+    from runepy.ui.editor import controller as ctr
+
+    fake_base = _FakeBase()
+    monkeypatch.setattr(ctr, "base", fake_base)
+
+    root = _FakeWidget(pos=(0.7, 0, 0.55), frame=(-1, 1, -1, 1))
+    child = _FakeWidget(pos=(0, 0, 0), frame=(-0.2, 0.2, -0.2, 0.2))
+    root.children.append(child)
+
+    editor = ctr.UIEditorController(root)
+    began: list[object] = []
+
+    def _begin(w, m):
+        began.append(w)
+
+    editor._begin_drag = _begin  # type: ignore[assignment]
+
+    editor.enable()
+    fake_base.mouseWatcherNode.pos = (0.7, 0.55)
+    fake_base.accepted["mouse1"]()
+    assert began and began[0] is child
+    editor.disable()

@@ -41,7 +41,6 @@ class UIEditorController:
     def enable(self) -> None:
         if base is None:
             return
-        base.accept("f2", self.disable)
         base.accept("control-s", self._save)
         base.accept("arrow_up", lambda: self._nudge(0, 0.01))
         base.accept("arrow_down", lambda: self._nudge(0, -0.01))
@@ -66,7 +65,6 @@ class UIEditorController:
     def disable(self) -> None:
         if base is None:
             return
-        base.ignore("f2")
         base.ignore("control-s")
         for key in ("arrow_up", "arrow_down", "arrow_left", "arrow_right"):
             base.ignore(key)

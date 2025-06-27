@@ -34,6 +34,7 @@ RunePy is a small demonstration project built with [Panda3D](https://www.panda3d
 | `runepy/debug/manager.py` | Toggleable debug window and related tools. |
 | `runepy/ui/builder.py` | Constructs GUI widgets from layout dictionaries. |
 | `runepy/ui/editor` | Package providing the simple UI editor. |
+| `runepy/ui_editor.py` | Standalone UI editing window. |
 
 ## Requirements
 
@@ -64,6 +65,12 @@ To launch the map editor instead of the game, run:
 
 ```bash
 python -m runepy.client --mode editor
+```
+
+To open the standalone UI editor, run:
+
+```bash
+python -m runepy.ui_editor
 ```
 
 A window will open containing a grid of tiles. The world loads 64×64 regions dynamically as you explore, letting the map expand as needed. Clicking on a tile moves the smiley‑face character to that location using pathfinding. Use the mouse wheel to zoom the camera in or out.

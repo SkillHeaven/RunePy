@@ -84,7 +84,7 @@ class World:
     def __init__(
         self,
         render=None,
-        radius=500,
+        radius=None,
         tile_size=1,
         debug=False,
         map_file=None,
@@ -92,6 +92,8 @@ class World:
         view_radius=1,
     ):
         self.render = render
+        if radius is None:
+            radius = view_radius * REGION_SIZE
         self.radius = radius
         self.tile_size = tile_size
         self.debug = debug

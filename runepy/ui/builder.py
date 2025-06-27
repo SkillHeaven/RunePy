@@ -99,6 +99,7 @@ def build_ui(parent: Any, layout: Dict[str, Any], manager: Any | None = None) ->
                 "label_pos",
                 "label_scale",
                 "range",
+                "tags",
             }
         }
         if "pos" in params:

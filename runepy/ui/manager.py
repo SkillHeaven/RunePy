@@ -21,6 +21,7 @@ class UIManager:
     def __init__(self) -> None:
         self.frames: Dict[str, Any] = {}
         self.widgets: Dict[str, Dict[str, Any]] = {}
+        self.meta: Dict[str, Dict[str, Any]] = {}
 
     # ------------------------------------------------------------------
     def load_ui(self, name: str, layout: str | Dict[str, Any]) -> Any:
@@ -38,9 +39,12 @@ class UIManager:
         else:
             data = layout
 
+        spec = dict(data)
+        meta = {"tags": spec.pop("tags", [])}
         root = DirectFrame() if DirectFrame is not StubWidget else StubWidget()
-        self.widgets[name] = build_ui(root, data, self)
+        self.widgets[name] = build_ui(root, spec, self)
         self.frames[name] = root
+        self.meta[name] = meta
         return root
 
     # ------------------------------------------------------------------
@@ -60,6 +64,7 @@ class UIManager:
         """Remove and destroy a loaded UI."""
         frame = self.frames.pop(name, None)
         self.widgets.pop(name, None)
+        self.meta.pop(name, None)
         if frame is not None and hasattr(frame, "destroy"):
             frame.destroy()
 

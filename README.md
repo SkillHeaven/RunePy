@@ -15,9 +15,7 @@ RunePy is a small demonstration project built with [Panda3D](https://www.panda3d
 - Individual tiles darken slightly when hovered to show the current mouse position
 - Loading screen displays progress messages during startup
 - Map regions stream in on demand as the player moves
-- F1 debug window with live stats and tweakable sliders
-- Optional UI editor (F2) for rearranging and saving the debug layout
-  (the debug window border turns red while editing)
+- Placeholder debug window toggled with ``F1``
 
 ## Repository Layout
 
@@ -74,10 +72,8 @@ Zooming is always handled by the mouse wheel and cannot be changed. In the edito
 
 Press ``Esc`` in either mode to open an options menu where you can rebind the available controls, including the editor's side movement and save/load shortcuts. When this menu is visible, gameplay clicks are ignored so you can't interact with the world through the menu.
 
-Press ``F1`` at any time to toggle the debug window. This overlay shows live
-statistics and provides sliders for tweaking speeds. With the debug window
-visible you can press ``F2`` to enter a simple editor mode for rearranging the
-widgets and saving the layout.
+Press ``F1`` at any time to toggle a minimal debug window. The old stats and
+sliders have been removed while the feature is being reworked.
 
 ## Configuration
 

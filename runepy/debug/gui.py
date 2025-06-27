@@ -32,6 +32,8 @@ class DebugWindow(DirectFrame):
             self.hide()
 
     def refresh_task(self, task: "Task"):
+        if "stats" not in self.widgets:
+            return task.again
         try:
             from direct.showbase.ShowBaseGlobal import base, render
         except Exception:

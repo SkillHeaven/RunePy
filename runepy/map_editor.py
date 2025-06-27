@@ -68,12 +68,12 @@ class MapEditor:
     # ------------------------------------------------------------------
     # Persistence helpers
     # ------------------------------------------------------------------
-    def save_map(self, filename):
+    def save_map(self):
         """Save all loaded regions to disk."""
         for region in self.world.region_manager.loaded.values():
             region.save()
 
-    def load_map(self, filename):
+    def load_map(self):
         """Load map data by clearing and reloading regions from disk."""
         self.world.region_manager.loaded.clear()
         self.world.region_manager.ensure(0, 0)
@@ -86,7 +86,7 @@ class MapEditor:
             self.save_callback()
         else:
             try:
-                self.save_map("map.json")
+                self.save_map()
                 print("Map saved to map.json")
             except Exception as exc:
                 print(f"Failed to save map: {exc}")
@@ -96,7 +96,7 @@ class MapEditor:
             self.load_callback()
         else:
             try:
-                self.load_map("map.json")
+                self.load_map()
                 print("Map loaded from map.json")
             except Exception as exc:
                 print(f"Failed to load map: {exc}")

@@ -215,23 +215,6 @@ class DebugManager:
         except Exception:
             pass
 
-    # ------------------------------------------------------------------
-    # UI editor integration
-    # ------------------------------------------------------------------
-    def toggle_ui_editor(self) -> None:
-        if self.window is None:
-            return
-        try:
-            from runepy.ui.editor.controller import UIEditorController
-        except Exception:
-            return
-        if getattr(self, "_ui_editor", None) is None:
-            self._ui_editor = UIEditorController(self.window)
-            self._ui_editor.enable()
-        else:
-            self._ui_editor.disable()
-            self._ui_editor = None
-
     def attach(self, base: Any | None) -> None:
         """Bind the debug GUI to an existing :class:`ShowBase` instance."""
 
@@ -248,7 +231,6 @@ class DebugManager:
         self.window.hide()  # start hidden
 
         base.accept('f1', self.window.toggleVisible)
-        base.accept('f2', self.toggle_ui_editor)
 
         print('[DebugManager] F1 bound')
 

@@ -4,6 +4,7 @@ from . import pathfinding
 from .array_map import RegionArrays
 from .map_manager import MapManager
 from .terrain import TerrainTile, FLAG_BLOCKED
+from .ui.manager import UIManager
 
 try:
     from .base_app import BaseApp
@@ -17,5 +18,6 @@ __all__ = [
     "MapManager",
     "TerrainTile",
     "FLAG_BLOCKED",
+    "UIManager",
 ]
 

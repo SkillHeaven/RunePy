@@ -81,11 +81,11 @@ class EditorWindow(BaseApp):
         return task.cont
 
     def save_map(self):
-        self.editor.save_map("map.json")
+        self.editor.save_map()
         print("Map saved to map.json")
 
     def load_map(self):
-        self.editor.load_map("map.json")
+        self.editor.load_map()
         print("Map loaded from map.json")
 
 

@@ -1,5 +1,6 @@
 from runepy.base_app import BaseApp
 from runepy.world import World
+from constants import REGION_SIZE, VIEW_RADIUS
 from runepy.map_editor import MapEditor
 from runepy.camera import FreeCameraControl
 from runepy.options_menu import KeyBindingManager, OptionsMenu
@@ -16,7 +17,9 @@ class EditorWindow(BaseApp):
         super().__init__()
 
     def initialize(self):
-        self.world = World(self.render)
+        view_radius = VIEW_RADIUS
+        world_radius = view_radius * REGION_SIZE
+        self.world = World(self.render, radius=world_radius, view_radius=view_radius)
         self.editor = MapEditor(self, self.world)
         self.editor.save_callback = self.save_map
         self.editor.load_callback = self.load_map

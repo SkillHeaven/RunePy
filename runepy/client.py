@@ -15,6 +15,7 @@ from runepy.debuginfo import DebugInfo
 from runepy.camera import CameraControl
 from runepy.controls import Controls
 from runepy.world import World
+from constants import REGION_SIZE, VIEW_RADIUS
 from runepy.pathfinding import a_star
 from runepy.collision import CollisionControl
 from runepy.options_menu import KeyBindingManager, OptionsMenu
@@ -42,7 +43,16 @@ class Client(BaseApp):
         self.loading_screen.update(20, "Generating world")
         def world_progress(frac, text):
             self.loading_screen.update(20 + int(30 * frac), text)
-        self.world = World(self.render, debug=self.debug, progress_callback=world_progress)
+
+        view_radius = VIEW_RADIUS
+        world_radius = view_radius * REGION_SIZE
+        self.world = World(
+            self.render,
+            radius=world_radius,
+            debug=self.debug,
+            progress_callback=world_progress,
+            view_radius=view_radius,
+        )
 
         tile_fit_scale = self.world.tile_size * 0.5
         self.loading_screen.update(50, "Loading character")

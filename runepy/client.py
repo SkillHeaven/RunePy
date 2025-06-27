@@ -187,12 +187,12 @@ class Client(BaseApp):
     # ------------------------------------------------------------------
     def save_map(self, filename="map.json"):
         """Save the current world grid to ``filename``."""
-        self.editor.save_map(filename)
+        self.editor.save_map()
         print(f"Map saved to {filename}")
 
     def load_map(self, filename="map.json"):
         """Load a map from ``filename`` and rebuild the world."""
-        self.editor.load_map(filename)
+        self.editor.load_map()
         # World size may change during map load but pathfinding now stitches
         # regions dynamically so no cached grid is needed.
         print(f"Map loaded from {filename}")

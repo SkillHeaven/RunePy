@@ -87,7 +87,6 @@ class World:
         radius=None,
         tile_size=1,
         debug=False,
-        map_file=None,
         progress_callback=None,
         view_radius=1,
     ):

@@ -102,32 +102,19 @@ class World:
         self.region_manager = RegionManager(view_radius=view_radius)
         self.manager = self.region_manager
         self._current_region: Tuple[int, int] | None = None
-        width = height = radius * 2 + 1
-        self.grid = [[TileData() for _ in range(width)] for _ in range(height)]
-
-        if map_file:
-            try:
-                self.load_map(map_file)
-            except Exception as exc:
-                self.log(f"Failed to load map '{map_file}': {exc}")
         if self.render is not None:
             self.tile_root = self.render.attachNewNode("tile_root")
-            self.grid_lines = self.render.attachNewNode("grid_lines")
             base_inst = getattr(sbg, "base", None)
             if base_inst is not None:
                 base_inst.tile_root = self.tile_root
-            self._generate_tiles()
-            self._create_grid_lines()
             self._create_subfloor()
             if self.progress_callback:
                 self.progress_callback(1.0, "World ready")
 
             # Highlight quad reused for hover effects
             self.highlight_quad = self._create_highlight_quad()
-            self.grid_lines.flattenStrong()
         else:
             self.tile_root = None
-            self.grid_lines = None
             self.highlight_quad = None
 
         self._hovered = None
@@ -157,115 +144,12 @@ class World:
         return quad
 
 
-    def save_map(self, filename):
-        """Write the current grid to ``filename`` as JSON."""
-        import json
-
-        data = {
-            "radius": self.radius,
-            "tile_size": self.tile_size,
-            "grid": [[tile.to_dict() for tile in row] for row in self.grid],
-        }
-        with open(filename, "w") as f:
-            json.dump(data, f)
 
     def log(self, *args, **kwargs):
         if self.debug:
             print(*args, **kwargs)
 
-    def _tile_color(self, tile: TileData):
-        """Return the display color for a tile based on its state."""
-        if tile.walkable:
-            return (0.3, 0.3, 0.3, 1)
-        return (0.1, 0.1, 0.1, 1)
 
-    def _generate_tiles(self):
-        if CardMaker is None:
-            return
-
-        format = GeomVertexFormat.get_v3cp()
-        vdata = GeomVertexData("tiles", format, Geom.UHDynamic)
-        vertex = GeomVertexWriter(vdata, "vertex")
-        color = GeomVertexWriter(vdata, "color")
-        tris = GeomTriangles(Geom.UHDynamic)
-
-        self._tile_indices = {}
-        index = 0
-        half = self.tile_size / 2
-        total = (self.radius * 2 + 1) ** 2
-        count = 0
-        if self.progress_callback:
-            self.progress_callback(0.0, 'Generating tiles')
-        interval = max(1, total // 20)
-        for x in range(-self.radius, self.radius + 1):
-            for y in range(-self.radius, self.radius + 1):
-                x0 = x * self.tile_size - half
-                x1 = x * self.tile_size + half
-                y0 = y * self.tile_size - half
-                y1 = y * self.tile_size + half
-                tile_data = self.grid[y + self.radius][x + self.radius]
-                col = self._tile_color(tile_data)
-
-                vertex.addData3(x0, y0, 0)
-                color.addData4(*col)
-                vertex.addData3(x1, y0, 0)
-                color.addData4(*col)
-                vertex.addData3(x1, y1, 0)
-                color.addData4(*col)
-                vertex.addData3(x0, y1, 0)
-                color.addData4(*col)
-
-                tris.addVertices(index, index + 1, index + 2)
-                tris.addVertices(index, index + 2, index + 3)
-
-                self._tile_indices[(x, y)] = (index, index + 1, index + 2, index + 3)
-                index += 4
-                count += 1
-                if self.progress_callback and count % interval == 0:
-                    self.progress_callback(count / total, f'Generating tiles {int(100*count/total)}%')
-
-        geom = Geom(vdata)
-        geom.addPrimitive(tris)
-        node = GeomNode('tiles')
-        node.addGeom(geom)
-        self.tile_geom = self.tile_root.attachNewNode(node)
-        if self.progress_callback:
-            self.progress_callback(1.0, 'Generating tiles 100%')
-    def update_tile_color(self, x: int, y: int) -> None:
-        if CardMaker is None:
-            return
-        indices = self._tile_indices.get((x, y))
-        if not indices:
-            return
-        vdata = self.tile_geom.node().modifyGeom(0).modifyVertexData()
-        writer = GeomVertexWriter(vdata, "color")
-        col = self._tile_color(self.grid[y + self.radius][x + self.radius])
-        for i in indices:
-            writer.setRow(i)
-            writer.setData4f(*col)
-
-    def _create_grid_lines(self):
-        lines = LineSegs()
-        lines.setThickness(1.0)
-        lines.setColor(0.2, 0.2, 0.2, 1)
-
-        start = -self.radius - 0.5
-        end = self.radius + 0.5
-
-        for i in range(self.radius * 2 + 2):
-            pos = start + i
-            x = pos * self.tile_size
-            lines.moveTo(x, start * self.tile_size, 0.02)
-            lines.drawTo(x, end * self.tile_size, 0.02)
-
-        for i in range(self.radius * 2 + 2):
-            pos = start + i
-            y = pos * self.tile_size
-            lines.moveTo(start * self.tile_size, y, 0.02)
-            lines.drawTo(end * self.tile_size, y, 0.02)
-
-        node = lines.create()
-        self.grid_lines.attachNewNode(node)
 
     def highlight_tile(self, x: int, y: int):
         """Highlight tile at (x, y) by moving the overlay quad."""
@@ -291,36 +175,6 @@ class World:
     # ------------------------------------------------------------------
     # Persistence helpers
     # ------------------------------------------------------------------
-    def load_map(self, filename):
-        """Load ``filename`` and rebuild this world's tiles."""
-        import json
-
-        with open(filename, "r") as f:
-            data = json.load(f)
-
-        self.radius = data.get("radius", self.radius)
-        self.tile_size = data.get("tile_size", self.tile_size)
-
-        loaded_grid = data.get("grid", [])
-        if loaded_grid:
-            self.grid = [
-                [TileData.from_dict(t) for t in row]
-                for row in loaded_grid
-            ]
-
-        # Rebuild tile nodes from loaded grid
-        self.tile_root.removeNode()
-        self.grid_lines.removeNode()
-        self.tile_root = self.render.attachNewNode("tile_root")
-        self.grid_lines = self.render.attachNewNode("grid_lines")
-        base_inst = getattr(sbg, "base", None)
-        if base_inst is not None:
-            base_inst.tile_root = self.tile_root
-        self._generate_tiles()
-        self._create_grid_lines()
-        # Keep tiles un-flattened so hover highlighting works on individual
-        # nodes. Grid lines can still be flattened for efficiency.
-        self.grid_lines.flattenStrong()
 
     # ------------------------------------------------------------------
     # Region streaming helpers
@@ -441,18 +295,31 @@ class Region:
         if self.node is not None:
             self.node.removeNode()
             self.node = None
-        format = GeomVertexFormat.get_v3()
+        # Include vertex colors so base/overlay arrays can influence rendering
+        format = GeomVertexFormat.get_v3cp()
         vdata = GeomVertexData("region", format, Geom.UHStatic)
         vertex = GeomVertexWriter(vdata, "vertex")
+        color = GeomVertexWriter(vdata, "color")
         tris = GeomTriangles(Geom.UHStatic)
         index = 0
         for y in range(REGION_SIZE):
             for x in range(REGION_SIZE):
                 z = float(self.height[y, x])
+                val = int(self.overlay[y, x]) or int(self.base[y, x])
+                if val:
+                    shade = val / 255.0
+                    col = (shade, shade, shade, 1.0)
+                else:
+                    col = (0.2, 0.2, 0.2, 1.0)
+                # Four identical vertices for a tile
                 vertex.addData3(x, y, z)
+                color.addData4f(*col)
                 vertex.addData3(x + 1, y, z)
+                color.addData4f(*col)
                 vertex.addData3(x + 1, y + 1, z)
+                color.addData4f(*col)
                 vertex.addData3(x, y + 1, z)
+                color.addData4f(*col)
                 tris.addVertices(index, index + 1, index + 2)
                 tris.addVertices(index, index + 2, index + 3)
                 index += 4

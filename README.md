@@ -16,6 +16,7 @@ RunePy is a small demonstration project built with [Panda3D](https://www.panda3d
 - Loading screen displays progress messages during startup
 - Map regions stream in on demand as the player moves
 - Placeholder debug window toggled with ``F1``
+- Centralized UI manager for loading and toggling interfaces
 
 ## Repository Layout
 
@@ -33,6 +34,7 @@ RunePy is a small demonstration project built with [Panda3D](https://www.panda3d
 | `runepy/utils.py` | Shared helpers like `get_mouse_tile_coords`. |
 | `runepy/debug/manager.py` | Toggleable debug window and related tools. |
 | `runepy/ui/builder.py` | Constructs GUI widgets from layout dictionaries. |
+| `runepy/ui/manager.py` | Simple manager for loading and showing UIs. |
 | `runepy/ui/editor` | Package providing the simple UI editor. |
 | `runepy/ui_editor.py` | Standalone UI editing window. |
 

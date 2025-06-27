@@ -24,13 +24,20 @@ class MapEditor:
         )
         if tile_x is None:
             return
-        grid_x = tile_x + self.world.radius
-        grid_y = tile_y + self.world.radius
-        if not (0 <= grid_x < len(self.world.grid[0]) and 0 <= grid_y < len(self.world.grid)):
-            return
-        tile_data = self.world.grid[grid_y][grid_x]
-        tile_data.walkable = not tile_data.walkable
-        self.world.update_tile_color(tile_x, tile_y)
+        rx, ry = world_to_region(tile_x, tile_y)
+        region = self.world.region_manager.loaded.get((rx, ry))
+        if region is None:
+            self.world.region_manager.ensure(tile_x, tile_y)
+            region = self.world.region_manager.loaded.get((rx, ry))
+            if region is None:
+                return
+        lx, ly = local_tile(tile_x, tile_y)
+        region.flags[ly, lx] ^= FLAG_BLOCKED
+        region.make_mesh()
+        if region.node is not None:
+            parent = getattr(self.client, "tile_root", self.client.render)
+            region.node.reparentTo(parent)
+            region.node.setPos(region.rx * REGION_SIZE, region.ry * REGION_SIZE, 0)
 
     def toggle_interactable(self):
         if self.client.options_menu.visible:
@@ -40,27 +47,33 @@ class MapEditor:
         )
         if tile_x is None:
             return
-        grid_x = tile_x + self.world.radius
-        grid_y = tile_y + self.world.radius
-        if not (0 <= grid_x < len(self.world.grid[0]) and 0 <= grid_y < len(self.world.grid)):
-            return
-        tile_data = self.world.grid[grid_y][grid_x]
-        if "interactable" in tile_data.tags:
-            tile_data.tags.remove("interactable")
-        else:
-            tile_data.tags.append("interactable")
-        print(f"Tile ({tile_x}, {tile_y}) interactable tags: {tile_data.tags}")
+        rx, ry = world_to_region(tile_x, tile_y)
+        region = self.world.region_manager.loaded.get((rx, ry))
+        if region is None:
+            self.world.region_manager.ensure(tile_x, tile_y)
+            region = self.world.region_manager.loaded.get((rx, ry))
+            if region is None:
+                return
+        lx, ly = local_tile(tile_x, tile_y)
+        region.overlay[ly, lx] ^= 1
+        region.make_mesh()
+        if region.node is not None:
+            parent = getattr(self.client, "tile_root", self.client.render)
+            region.node.reparentTo(parent)
+            region.node.setPos(region.rx * REGION_SIZE, region.ry * REGION_SIZE, 0)
 
     # ------------------------------------------------------------------
     # Persistence helpers
     # ------------------------------------------------------------------
     def save_map(self, filename):
-        """Write the current grid to ``filename`` as JSON."""
-        self.world.save_map(filename)
+        """Save all loaded regions to disk."""
+        for region in self.world.region_manager.loaded.values():
+            region.save()
 
     def load_map(self, filename):
-        """Load ``filename`` and rebuild the world's tiles."""
-        self.world.load_map(filename)
+        """Load map data by clearing and reloading regions from disk."""
+        self.world.region_manager.loaded.clear()
+        self.world.region_manager.ensure(0, 0)
 
     # ------------------------------------------------------------------
     # Hotkeys used when running the editor standalone

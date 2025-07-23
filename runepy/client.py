@@ -216,7 +216,8 @@ class Client(BaseApp):
 
 
 
-if __name__ == "__main__":
+def main(args=None):
+    """Entry point for the ``runepy`` console script."""
     parser = argparse.ArgumentParser(description="RunePy client")
     parser.add_argument(
         "--mode",
@@ -224,9 +225,9 @@ if __name__ == "__main__":
         default="game",
         help="Start in regular game mode or map editor",
     )
-    args = parser.parse_args()
+    parsed = parser.parse_args(args)
 
-    if args.mode == "editor":
+    if parsed.mode == "editor":
         from runepy.editor_window import EditorWindow
 
         app = EditorWindow()
@@ -237,3 +238,7 @@ if __name__ == "__main__":
     get_debug().attach(app)
 
     app.run()
+
+
+if __name__ == "__main__":
+    main()

@@ -21,7 +21,7 @@ from runepy.collision import CollisionControl
 from runepy.options_menu import KeyBindingManager, OptionsMenu
 from runepy.loading_screen import LoadingScreen
 from runepy.debug import get_debug
-from config import load_state, save_state
+from runepy.config import load_state, save_state
 import atexit
 
 

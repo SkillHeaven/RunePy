@@ -67,15 +67,15 @@ After installing the requirements, launch the program using one of the following
 ./run.ps1
 ```
 
-**Direct Python**
+**Command Line**
 ```bash
-python -m runepy.client
+runepy --mode game
 ```
 
 To launch the map editor instead of the game, run:
 
 ```bash
-python -m runepy.client --mode editor
+runepy --mode editor
 ```
 
 To open the standalone UI editor, run:

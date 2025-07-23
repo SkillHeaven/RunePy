@@ -49,6 +49,15 @@ Install Panda3D using `pip` if it is not already available:
 pip install panda3d
 ```
 
+## Installation
+
+Install RunePy in editable mode so changes to the source are reflected without
+reinstalling:
+
+```bash
+pip install -e .
+```
+
 ## Running the example
 
 After installing the requirements, launch the program using one of the following commands:

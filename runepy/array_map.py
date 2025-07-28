@@ -43,4 +43,3 @@ class RegionArrays:
             data["overlay_ids"],
             data["collision_mask"],
         )
-

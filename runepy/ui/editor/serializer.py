@@ -33,4 +33,5 @@ def dump_layout(root_np: Any, path: str | Path) -> None:
     data = _serialize(root_np)
     Path(path).write_text(json.dumps(data, indent=2))
 
+
 __all__ = ["dump_layout"]

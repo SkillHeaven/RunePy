@@ -44,7 +44,10 @@ class MapManager:
     def _ensure_loaded(self, rx: int, ry: int) -> None:
         keep = set()
         for i in range(rx - self.view_distance, rx + self.view_distance + 1):
-            for j in range(ry - self.view_distance, ry + self.view_distance + 1):
+            for j in range(
+                ry - self.view_distance,
+                ry + self.view_distance + 1,
+            ):
                 keep.add((i, j))
                 if (i, j) not in self.loaded:
                     self.loaded[(i, j)] = self.load_region(i, j)

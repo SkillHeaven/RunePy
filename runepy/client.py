@@ -19,8 +19,6 @@ from constants import REGION_SIZE, VIEW_RADIUS
 from runepy.pathfinding import a_star
 from runepy.collision import CollisionControl
 from runepy.options_menu import KeyBindingManager, OptionsMenu
-from runepy.loading_screen import LoadingScreen
-from runepy.debug import get_debug
 from runepy.config import load_state, save_state
 import atexit
 
@@ -41,6 +39,7 @@ class Client(BaseApp):
         self.buttonThrowers[0].node().set_modifier_buttons(ModifierButtons())
 
         self.loading_screen.update(20, "Generating world")
+
         def world_progress(frac, text):
             self.loading_screen.update(20 + int(30 * frac), text)
 
@@ -56,11 +55,21 @@ class Client(BaseApp):
 
         tile_fit_scale = self.world.tile_size * 0.5
         self.loading_screen.update(50, "Loading character")
-        self.character = Character(self.render, self.loader, Vec3(0, 0, 0.5), scale=tile_fit_scale, debug=self.debug)
+        self.character = Character(
+            self.render,
+            self.loader,
+            Vec3(0, 0, 0.5),
+            scale=tile_fit_scale,
+            debug=self.debug,
+        )
         if sbg is not None and hasattr(sbg, "base"):
             sbg.base.world = self.world
             sbg.base.character = self.character
-        self.camera_control = CameraControl(self.camera, self.render, self.character)
+        self.camera_control = CameraControl(
+            self.camera,
+            self.render,
+            self.character,
+        )
         state = load_state()
         char_pos = state.get("character_pos")
         if isinstance(char_pos, list) and len(char_pos) == 3:
@@ -94,18 +103,22 @@ class Client(BaseApp):
 
     def update_tile_hover(self, task):
         mpos, tile_x, tile_y = get_mouse_tile_coords(
-            self.mouseWatcherNode, self.camera, self.render
+            self.mouseWatcherNode,
+            self.camera,
+            self.render,
         )
         if mpos:
             self.debug_info.update_tile_info(mpos, tile_x, tile_y)
-            if -self.world.radius <= tile_x <= self.world.radius and -self.world.radius <= tile_y <= self.world.radius:
+            if (
+                -self.world.radius <= tile_x <= self.world.radius
+                and -self.world.radius <= tile_y <= self.world.radius
+            ):
                 self.world.highlight_tile(tile_x, tile_y)
             else:
                 self.world.clear_highlight()
         else:
             self.world.clear_highlight()
         return task.cont
-
 
     def tile_click_event(self):
         if self.options_menu.visible:
@@ -128,7 +141,9 @@ class Client(BaseApp):
         self.collision_control.traverser.traverse(self.render)
         self.log("After traversing for collisions.")
 
-        collided_obj, pickedPos = self.collision_control.get_collided_object(self.render)
+        collided_obj, pickedPos = self.collision_control.get_collided_object(
+            self.render
+        )
 
         if collided_obj:
             self.log("Collided with:", collided_obj.getName())
@@ -138,12 +153,19 @@ class Client(BaseApp):
             target_pos = Vec3(snapped_x, snapped_y, 0.5)
 
             if (self.character.get_position() - target_pos).length() > 0.1:
-                # Stop any ongoing movement so the path starts from the exact current position
+                # Stop any movement so the path starts from the exact
+                # current position
                 self.character.cancel_movement()
                 current_pos = self.character.get_position()
-                current_x, current_y = int(current_pos.getX()), int(current_pos.getY())
+                current_x, current_y = (
+                    int(current_pos.getX()),
+                    int(current_pos.getY()),
+                )
 
-                stitched, off_x, off_y = self.world.walkable_window(current_x, current_y)
+                stitched, off_x, off_y = self.world.walkable_window(
+                    current_x,
+                    current_y,
+                )
                 start_idx = (current_x - off_x, current_y - off_y)
                 end_idx = (snapped_x - off_x, snapped_y - off_y)
 
@@ -162,23 +184,37 @@ class Client(BaseApp):
                         return
 
                     intervals = []
-                    prev_world_x, prev_world_y = current_pos.getX(), current_pos.getY()
+                      prev_world_x, prev_world_y = (
+                          current_pos.getX(),
+                          current_pos.getY(),
+                      )
                     for step in path:
                         world_x = step[0] + off_x
                         world_y = step[1] + off_y
                         self.log(f"Moving character to {(world_x, world_y)}")
-                        distance = math.sqrt((world_x - prev_world_x) ** 2 + (world_y - prev_world_y) ** 2)
+                        distance = math.sqrt(
+                            (world_x - prev_world_x) ** 2
+                            + (world_y - prev_world_y) ** 2
+                        )
                         duration = distance / self.character.speed
-                        move_interval = self.character.move_to(Vec3(world_x, world_y, 0.5), duration)
+                        move_interval = self.character.move_to(
+                            Vec3(world_x, world_y, 0.5),
+                            duration,
+                        )
                         intervals.append(move_interval)
                         prev_world_x, prev_world_y = world_x, world_y
 
-                    move_sequence = Sequence(*intervals, Func(self.camera_control.update_camera_focus))
+                    move_sequence = Sequence(
+                        *intervals,
+                        Func(self.camera_control.update_camera_focus),
+                    )
                     self.character.start_sequence(move_sequence)
                     self.log(f"Moved to {(world_x, world_y)}")
 
                 self.log(f"After Update: Camera Hpr: {self.camera.getHpr()}")
-                self.log(f"After Update: Character Pos: {self.character.get_position()}")
+                  self.log(
+                      f"After Update: Character Pos: {self.character.get_position()}"
+                  )
 
         self.collision_control.cleanup()
 
@@ -213,7 +249,6 @@ class Client(BaseApp):
             ],
         }
         save_state(state)
-
 
 
 def main(args=None):

@@ -1,4 +1,9 @@
-from direct.gui.DirectGui import DirectFrame, DirectLabel, DirectEntry, DirectButton
+from direct.gui.DirectGui import (
+    DirectFrame,
+    DirectLabel,
+    DirectEntry,
+    DirectButton,
+)
 from panda3d.core import TextNode
 from direct.showbase.DirectObject import DirectObject
 
@@ -56,16 +61,45 @@ class OptionsMenu:
         if self.visible:
             return
         self.visible = True
-        self.frame = DirectFrame(frameColor=(0, 0, 0, 0.7), frameSize=(-0.7, 0.7, -0.6, 0.6))
+        self.frame = DirectFrame(
+            frameColor=(0, 0, 0, 0.7),
+            frameSize=(-0.7, 0.7, -0.6, 0.6),
+        )
         y = 0.5
         self.entries = {}
         for action, key in self.manager.bindings.items():
-            DirectLabel(text=action, pos=(-0.6, 0, y), scale=0.05, parent=self.frame, text_align=TextNode.ALeft)
-            entry = DirectEntry(initialText=key, pos=(0.0, 0, y), scale=0.05, width=10, numLines=1, focus=0, parent=self.frame)
+            DirectLabel(
+                text=action,
+                pos=(-0.6, 0, y),
+                scale=0.05,
+                parent=self.frame,
+                text_align=TextNode.ALeft,
+            )
+            entry = DirectEntry(
+                initialText=key,
+                pos=(0.0, 0, y),
+                scale=0.05,
+                width=10,
+                numLines=1,
+                focus=0,
+                parent=self.frame,
+            )
             self.entries[action] = entry
             y -= 0.1
-        DirectButton(text="Save", command=self.apply, pos=(-0.2, 0, -0.5), scale=0.05, parent=self.frame)
-        DirectButton(text="Close", command=self.close, pos=(0.2, 0, -0.5), scale=0.05, parent=self.frame)
+        DirectButton(
+            text="Save",
+            command=self.apply,
+            pos=(-0.2, 0, -0.5),
+            scale=0.05,
+            parent=self.frame,
+        )
+        DirectButton(
+            text="Close",
+            command=self.close,
+            pos=(0.2, 0, -0.5),
+            scale=0.05,
+            parent=self.frame,
+        )
 
     def apply(self):
         for action, entry in self.entries.items():

@@ -3,6 +3,7 @@ from panda3d.core import Vec3, ClockObject
 # Initialize the global clock for time-based movement
 globalClock = ClockObject.getGlobalClock()
 
+
 class CameraControl:
 
     def __init__(self, camera, render, character):
@@ -10,16 +11,16 @@ class CameraControl:
         self.render = render
         self.character = character
 
+        self.last_mouse_pos = (0, 0)
 
-        self.last_mouse_pos = (0,0)
-
-        self.camera.setPos(0,0,10)
+        self.camera.setPos(0, 0, 10)
         self.camera.reparentTo(self.character.model)
         self.update_camera_focus()
 
     def update_camera_focus(self):
         self.camera.setH(0)  # Reset heading
         self.camera.setP(-90)  # Set pitch to face downward
+
 
 class FreeCameraControl:
     """Camera controller allowing WASD movement for the editor."""
@@ -28,7 +29,12 @@ class FreeCameraControl:
         self.camera = camera
         self.speed = speed
         self.world = world
-        self.move = {"forward": False, "back": False, "left": False, "right": False}
+        self.move = {
+            "forward": False,
+            "back": False,
+            "left": False,
+            "right": False,
+        }
 
     def start(self, base):
         self.base = base
@@ -57,6 +63,8 @@ class FreeCameraControl:
                 self.camera.getZ(),
             )
             if self.world is not None:
-                self.world.update_streaming(int(self.camera.getX()), int(self.camera.getY()))
+                self.world.update_streaming(
+                    int(self.camera.getX()),
+                    int(self.camera.getY()),
+                )
         return task.cont
-

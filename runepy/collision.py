@@ -1,5 +1,12 @@
-#collision.py
-from panda3d.core import CollisionRay, CollisionHandlerQueue, CollisionNode, BitMask32, CollisionTraverser
+# collision.py
+from panda3d.core import (
+    CollisionRay,
+    CollisionHandlerQueue,
+    CollisionNode,
+    BitMask32,
+    CollisionTraverser,
+)
+
 
 class CollisionControl:
     def __init__(self, camera, render):
@@ -26,7 +33,10 @@ class CollisionControl:
     def get_collided_object(self, render):
         if self.handler.getNumEntries() > 0:
             self.handler.sortEntries()
-            return self.handler.getEntry(0).getIntoNodePath(), self.handler.getEntry(0).getSurfacePoint(render)
+            return (
+                self.handler.getEntry(0).getIntoNodePath(),
+                self.handler.getEntry(0).getSurfacePoint(render),
+            )
         else:
             return None, None
 

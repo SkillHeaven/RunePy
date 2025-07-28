@@ -5,7 +5,7 @@ from runepy.map_editor import MapEditor
 from runepy.camera import FreeCameraControl
 from runepy.options_menu import KeyBindingManager, OptionsMenu
 from runepy.controls import Controls
-from runepy.utils import get_mouse_tile_coords, get_tile_from_mouse
+from runepy.utils import get_mouse_tile_coords
 from runepy.debug import get_debug
 
 
@@ -19,7 +19,11 @@ class EditorWindow(BaseApp):
     def initialize(self):
         view_radius = VIEW_RADIUS
         world_radius = view_radius * REGION_SIZE
-        self.world = World(self.render, radius=world_radius, view_radius=view_radius)
+        self.world = World(
+            self.render,
+            radius=world_radius,
+            view_radius=view_radius,
+        )
         self.editor = MapEditor(self, self.world)
         self.editor.save_callback = self.save_map
         self.editor.load_callback = self.load_map
@@ -55,9 +59,15 @@ class EditorWindow(BaseApp):
 
         # Bind forward/back movement directly so W/S are fixed keys
         self.accept("w", lambda: self.camera_control.set_move("forward", True))
-        self.accept("w-up", lambda: self.camera_control.set_move("forward", False))
+        self.accept(
+            "w-up",
+            lambda: self.camera_control.set_move("forward", False),
+        )
         self.accept("s", lambda: self.camera_control.set_move("back", True))
-        self.accept("s-up", lambda: self.camera_control.set_move("back", False))
+        self.accept(
+            "s-up",
+            lambda: self.camera_control.set_move("back", False),
+        )
 
         # Editor uses the same sky blue background as the game
         self.setBackgroundColor(0.53, 0.81, 0.92)
@@ -72,7 +82,10 @@ class EditorWindow(BaseApp):
             self.mouseWatcherNode, self.camera, self.render
         )
         if mpos:
-            if -self.world.radius <= tile_x <= self.world.radius and -self.world.radius <= tile_y <= self.world.radius:
+            if (
+                -self.world.radius <= tile_x <= self.world.radius
+                and -self.world.radius <= tile_y <= self.world.radius
+            ):
                 self.world.highlight_tile(tile_x, tile_y)
             else:
                 self.world.clear_highlight()
@@ -91,9 +104,5 @@ class EditorWindow(BaseApp):
 
 if __name__ == "__main__":
     app = EditorWindow()
-
-    from runepy.debug import get_debug
-
     get_debug().attach(app)
-
     app.run()

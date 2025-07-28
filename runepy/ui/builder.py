@@ -4,7 +4,12 @@ from __future__ import annotations
 from typing import Any, Dict
 
 try:
-    from direct.gui.DirectGui import DirectFrame, DirectButton, DirectSlider, DirectLabel
+    from direct.gui.DirectGui import (
+        DirectFrame,
+        DirectButton,
+        DirectSlider,
+        DirectLabel,
+    )
 except Exception:  # pragma: no cover - Panda3D may be missing
     DirectFrame = None  # type: ignore
     DirectButton = None  # type: ignore
@@ -33,7 +38,9 @@ class StubWidget:
     def __getitem__(self, key: str) -> Any:  # pragma: no cover - stub
         return self._props.get(key)
 
-    def __setitem__(self, key: str, value: Any) -> None:  # pragma: no cover - stub
+    def __setitem__(
+        self, key: str, value: Any
+    ) -> None:  # pragma: no cover - stub
         self._props[key] = value
 
 
@@ -71,11 +78,17 @@ def _build_slider(parent: Any, spec: Dict[str, Any], mgr: Any) -> Any:
         value=val,
         **props,
     )
-    slider["command"] = lambda _s=slider, _setter=setter: _setter(float(_s["value"]))
+    slider["command"] = lambda _s=slider, _setter=setter: _setter(
+        float(_s["value"])
+    )
     return slider
 
 
-def build_ui(parent: Any, layout: Dict[str, Any], manager: Any | None = None) -> Dict[str, Any]:
+def build_ui(
+    parent: Any,
+    layout: Dict[str, Any],
+    manager: Any | None = None,
+) -> Dict[str, Any]:
     """Create widgets from ``layout`` and return them in a dict."""
 
     widgets: Dict[str, Any] = {}
@@ -109,7 +122,11 @@ def build_ui(parent: Any, layout: Dict[str, Any], manager: Any | None = None) ->
 
         if kind == "button":
             cmd_name = node.get("command")
-            cmd = getattr(manager, cmd_name) if manager and cmd_name and hasattr(manager, cmd_name) else None
+            cmd = (
+                getattr(manager, cmd_name)
+                if manager and cmd_name and hasattr(manager, cmd_name)
+                else None
+            )
             if cmd is not None:
                 params["command"] = cmd
             widget = _make_widget("button", parent_node, **params)
@@ -166,5 +183,5 @@ def build_ui(parent: Any, layout: Dict[str, Any], manager: Any | None = None) ->
     _build(layout, parent)
     return widgets
 
-__all__ = ["build_ui", "StubWidget"]
 
+__all__ = ["build_ui", "StubWidget"]

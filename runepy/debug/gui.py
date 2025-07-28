@@ -45,7 +45,9 @@ class DebugWindow(DirectFrame):
         else:
             regions = 0
         geoms = render.findAllMatches("**/+GeomNode").getNumPaths()
-        self.widgets["stats"]["text"] = f"Regions: {regions:2d}\nGeoms:   {geoms:3d}"
+        self.widgets["stats"]["text"] = (
+            f"Regions: {regions:2d}\nGeoms:   {geoms:3d}"
+        )
         return task.again
 
 

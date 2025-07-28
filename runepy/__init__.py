@@ -20,4 +20,3 @@ __all__ = [
     "FLAG_BLOCKED",
     "UIManager",
 ]
-

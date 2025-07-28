@@ -217,8 +217,8 @@ class UIEditorController:
         widget.setPos(pos[0] + dx, 0, pos[2] + dz)
         self._gizmo.update()
 
-    def _save(self) -> None:
-        path = Path(__file__).with_name("debug_layout.json")
+    def _save(self, path: str | Path = Path("debug_layout.json")) -> None:
+        path = Path(path)
         try:
             dump_layout(self.root, path)
             print("layout saved")

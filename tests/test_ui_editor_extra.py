@@ -60,5 +60,6 @@ def test_save(monkeypatch, tmp_path):
     monkeypatch.setattr(ctr, "dump_layout", fake_dump)
     monkeypatch.setattr(ctr, "base", FakeBase())
     editor = ctr.UIEditorController(FakeWidget())
-    editor._save()
-    assert saved['path'].name == "debug_layout.json"
+    out_path = tmp_path / "layout.json"
+    editor._save(out_path)
+    assert saved['path'] == out_path

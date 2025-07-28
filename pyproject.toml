@@ -14,9 +14,13 @@ dependencies = [
 [project.scripts]
 runepy = "runepy.client:main"
 
+
 [tool.setuptools.packages.find]
-where = ["."]
+where = ["src"]
 include = ["runepy*"]
+
+[tool.setuptools.package-dir]
+"" = "src"
 
 [tool.setuptools]
 py-modules = ["constants"]

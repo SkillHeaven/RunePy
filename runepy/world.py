@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -10,6 +11,8 @@ import numpy as np
 
 from constants import REGION_SIZE, VIEW_RADIUS
 from runepy.terrain import FLAG_BLOCKED
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -146,7 +149,7 @@ class World:
 
     def log(self, *args, **kwargs):
         if self.debug:
-            print(*args, **kwargs)
+            logger.debug(*args, **kwargs)
 
 
 

@@ -1,3 +1,4 @@
+import logging
 from runepy.base_app import BaseApp
 from runepy.world import World
 from constants import REGION_SIZE, VIEW_RADIUS
@@ -7,6 +8,8 @@ from runepy.options_menu import KeyBindingManager, OptionsMenu
 from runepy.controls import Controls
 from runepy.utils import get_mouse_tile_coords
 from runepy.debug import get_debug
+
+logger = logging.getLogger(__name__)
 
 
 
@@ -95,11 +98,11 @@ class EditorWindow(BaseApp):
 
     def save_map(self):
         self.editor.save_map()
-        print("Map saved to map.json")
+        logger.info("Map saved to map.json")
 
     def load_map(self):
         self.editor.load_map()
-        print("Map loaded from map.json")
+        logger.info("Map loaded from map.json")
 
 
 if __name__ == "__main__":

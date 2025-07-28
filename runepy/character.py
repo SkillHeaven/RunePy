@@ -1,7 +1,10 @@
 # Character.py
+import logging
 from panda3d.core import Vec3
 from direct.interval.IntervalGlobal import Func, LerpPosInterval, Sequence
 from runepy.world import world_to_region
+
+logger = logging.getLogger(__name__)
 
 
 class Character:
@@ -36,7 +39,7 @@ class Character:
 
     def log(self, *args, **kwargs):
         if self.debug:
-            print(*args, **kwargs)
+            logger.debug(*args, **kwargs)
 
     def move_to(self, target_pos, duration, after_step=None):
         """Create a movement interval toward ``target_pos``

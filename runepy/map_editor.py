@@ -1,7 +1,10 @@
+import logging
 from runepy.utils import get_tile_from_mouse
 from runepy.world import world_to_region, local_tile
 from runepy.terrain import FLAG_BLOCKED
 from constants import REGION_SIZE
+
+logger = logging.getLogger(__name__)
 
 
 class MapEditor:
@@ -98,9 +101,9 @@ class MapEditor:
         else:
             try:
                 self.save_map()
-                print("Map saved to map.json")
+                logger.info("Map saved to map.json")
             except Exception as exc:
-                print(f"Failed to save map: {exc}")
+                logger.exception("Failed to save map", exc_info=exc)
 
     def _hotkey_load(self):
         if hasattr(self, "load_callback"):
@@ -108,6 +111,6 @@ class MapEditor:
         else:
             try:
                 self.load_map()
-                print("Map loaded from map.json")
+                logger.info("Map loaded from map.json")
             except Exception as exc:
-                print(f"Failed to load map: {exc}")
+                logger.exception("Failed to load map", exc_info=exc)

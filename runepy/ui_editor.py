@@ -35,8 +35,8 @@ class UIEditorApp(ShowBase):
         try:
             dump_layout(get_debug().window, path)  # type: ignore[arg-type]
             print(f"Layout saved to {path}")
-        except Exception:
-            pass
+        except Exception as exc:
+            print(f"Failed to save layout: {exc}")
 
 
 def main() -> None:

@@ -12,6 +12,7 @@ FakeFrame = FakeWidget
 FakeButton = FakeWidget
 FakeLabel = FakeWidget
 FakeSlider = FakeWidget
+FakeEntry = FakeWidget
 
 class Manager:
     def __init__(self):
@@ -30,6 +31,8 @@ def test_build_all_widgets(monkeypatch):
     monkeypatch.setattr(builder, "DirectButton", FakeButton)
     monkeypatch.setattr(builder, "DirectSlider", FakeSlider)
     monkeypatch.setattr(builder, "DirectLabel", FakeLabel)
+    monkeypatch.setattr(builder, "DirectEntry", FakeEntry)
+    builder._WIDGETS["entry"] = FakeEntry
 
     layout = {
         "type": "frame",
@@ -44,12 +47,15 @@ def test_build_all_widgets(monkeypatch):
                 "setter": "set_val",
                 "range": [0, 1],
             },
+            {"type": "entry", "name": "ent", "initialText": "abc"},
         ],
     }
 
     mgr = Manager()
     widgets = builder.build_ui(None, layout, mgr)
-    assert set(widgets) == {"root", "lbl", "btn", "sld"}
+    assert set(widgets) == {"root", "lbl", "btn", "sld", "ent"}
+    assert isinstance(widgets["ent"], FakeEntry)
+    assert widgets["ent"].kw["initialText"] == "abc"
 
     widgets["btn"]["command"]()
     assert mgr.clicked

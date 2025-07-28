@@ -2,8 +2,10 @@ import json
 import os
 
 _ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
-DEFAULT_CONFIG_PATH = os.path.join(_ROOT_DIR, "config.json")
-DEFAULT_STATE_PATH = os.path.join(_ROOT_DIR, "state.json")
+JSON_DIR = os.path.join(_ROOT_DIR, "json")
+os.makedirs(JSON_DIR, exist_ok=True)
+DEFAULT_CONFIG_PATH = os.path.join(JSON_DIR, "config.json")
+DEFAULT_STATE_PATH = os.path.join(JSON_DIR, "state.json")
 
 
 def load_config(path: str = DEFAULT_CONFIG_PATH) -> dict:
@@ -39,5 +41,6 @@ def load_state(path: str = DEFAULT_STATE_PATH) -> dict:
 
 def save_state(state: dict, path: str = DEFAULT_STATE_PATH) -> None:
     """Write ``state`` to ``path`` as JSON."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
         json.dump(state, f)

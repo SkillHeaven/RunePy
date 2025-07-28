@@ -187,10 +187,10 @@ class Client(BaseApp):
                         return
 
                     intervals = []
-                      prev_world_x, prev_world_y = (
-                          current_pos.getX(),
-                          current_pos.getY(),
-                      )
+                    prev_world_x, prev_world_y = (
+                        current_pos.getX(),
+                        current_pos.getY(),
+                    )
                     for step in path:
                         world_x = step[0] + off_x
                         world_y = step[1] + off_y
@@ -214,10 +214,10 @@ class Client(BaseApp):
                     self.character.start_sequence(move_sequence)
                     self.log(f"Moved to {(world_x, world_y)}")
 
-                self.log(f"After Update: Camera Hpr: {self.camera.getHpr()}")
-                  self.log(
-                      f"After Update: Character Pos: {self.character.get_position()}"
-                  )
+                    self.log(f"After Update: Camera Hpr: {self.camera.getHpr()}")
+                    self.log(
+                        f"After Update: Character Pos: {self.character.get_position()}"
+                    )
 
         self.collision_control.cleanup()
 

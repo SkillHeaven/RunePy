@@ -9,12 +9,14 @@ try:
         DirectButton,
         DirectSlider,
         DirectLabel,
+        DirectEntry,
     )
 except Exception:  # pragma: no cover - Panda3D may be missing
     DirectFrame = None  # type: ignore
     DirectButton = None  # type: ignore
     DirectSlider = None  # type: ignore
     DirectLabel = None  # type: ignore
+    DirectEntry = None  # type: ignore
 
 
 class StubWidget:
@@ -49,6 +51,7 @@ _WIDGETS = {
     "label": DirectLabel or StubWidget,
     "button": DirectButton or StubWidget,
     "slider": DirectSlider or StubWidget,
+    "entry": DirectEntry or StubWidget,
 }
 
 
@@ -168,6 +171,8 @@ def build_ui(
                 if value is not None:
                     params.setdefault("value", value)
                 widget = _make_widget("slider", parent_node, **params)
+        elif kind == "entry":
+            widget = _make_widget("entry", parent_node, **params)
         elif kind == "label":
             widget = _make_widget("label", parent_node, **params)
         elif kind == "frame":

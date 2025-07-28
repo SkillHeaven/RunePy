@@ -95,7 +95,7 @@ sliders have been removed while the feature is being reworked.
 
 ## Configuration
 
-Default key bindings are defined in ``config.json`` at the repository root. Edit this file to customize the controls that are initially loaded by both the game and the editor.
+Default key bindings are defined in ``json/config.json``. Edit this file to customize the controls that are initially loaded by both the game and the editor.
 
 ## License
 
@@ -137,7 +137,7 @@ manager.update(70, 20)  # moves into the next region triggering load/unload
 ## Logging
 
 Logging is configured automatically when the package is imported.
-Messages are written to `runepy.log` with warnings in `warnings.log` and errors in `errors.log`.
+Messages are written to `logs/runepy.log` with warnings in `logs/warnings.log` and errors in `logs/errors.log`.
 
 ## Utilities
 

@@ -6,6 +6,7 @@ module is unavailable.
 """
 
 from __future__ import annotations
+from runepy.logging_config import LOG_DIR
 import logging
 logger = logging.getLogger(__name__)
 from pathlib import Path
@@ -138,7 +139,7 @@ class DebugManager:
         regions, geoms = self._stats()
         if self.log_file is None:
             ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            self.log_file = Path(f"debug_{ts}.txt")
+            self.log_file = LOG_DIR / f"debug_{ts}.txt"
         with self.log_file.open("a") as f:
             f.write(
                 f"{datetime.datetime.now().isoformat()} {regions} {geoms}\n"

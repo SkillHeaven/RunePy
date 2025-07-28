@@ -11,6 +11,7 @@ import datetime
 
 from typing import Optional, Any
 
+
 class NullDebugManager:
     """Fallback manager used when Panda3D is unavailable."""
 
@@ -84,7 +85,11 @@ class DebugManager:
             pass
 
     def _drag_task(self, task):
-        if self.window is None or self._drag_start is None or self._orig_pos is None:
+        if (
+            self.window is None
+            or self._drag_start is None
+            or self._orig_pos is None
+        ):
             return task.done
         try:
             from direct.showbase.ShowBaseGlobal import base
@@ -107,7 +112,6 @@ class DebugManager:
         except Exception:
             pass
 
-
     def _stats(self):
         try:
             from direct.showbase.ShowBaseGlobal import base, render
@@ -123,7 +127,10 @@ class DebugManager:
 
     def dump_console(self):
         regions, geoms = self._stats()
-        print(f"{datetime.datetime.now().isoformat()} regions={regions} geoms={geoms}")
+        print(
+            f"{datetime.datetime.now().isoformat()} regions={regions} "
+            f"geoms={geoms}"
+        )
 
     def dump_file(self):
         regions, geoms = self._stats()
@@ -131,7 +138,9 @@ class DebugManager:
             ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             self.log_file = Path(f"debug_{ts}.txt")
         with self.log_file.open("a") as f:
-            f.write(f"{datetime.datetime.now().isoformat()} {regions} {geoms}\n")
+            f.write(
+                f"{datetime.datetime.now().isoformat()} {regions} {geoms}\n"
+            )
 
     def toggle_pstats(self):
         try:
@@ -165,7 +174,8 @@ class DebugManager:
                 new_region.node.reparentTo(parent)
                 new_region.node.setPos(rx * REGION_SIZE, ry * REGION_SIZE, 0)
             world.region_manager.loaded[(rx, ry)] = new_region
-        except Exception: pass
+        except Exception:
+            pass
 
     def get_avatar_speed(self) -> float:
         try:
@@ -233,6 +243,7 @@ class DebugManager:
         base.accept('f1', self.window.toggleVisible)
 
         print('[DebugManager] F1 bound')
+
 
 _debug_instance: Optional[DebugManager] = None
 

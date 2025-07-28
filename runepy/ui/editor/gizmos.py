@@ -34,4 +34,5 @@ class SelectionGizmo(DirectFrame):
         except Exception:
             pass
 
+
 __all__ = ["SelectionGizmo"]

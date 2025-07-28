@@ -18,7 +18,9 @@ class BaseApp(ShowBase):
         self.disableMouse()
         self.initialize()
         self.loading_screen.update(100, "Done")
-        self.taskMgr.doMethodLater(1.0, self._remove_loading_screen, "hideLoading")
+        self.taskMgr.doMethodLater(
+            1.0, self._remove_loading_screen, "hideLoading"
+        )
         return task.done
 
     def initialize(self):

@@ -1,11 +1,20 @@
-#Character.py
+# Character.py
 from panda3d.core import Vec3
 from direct.interval.IntervalGlobal import Func, LerpPosInterval, Sequence
 from runepy.world import world_to_region
 
+
 class Character:
 
-    def __init__(self, render, loader, position=Vec3(0, 0, 0), scale=1, debug=False, world=None):
+    def __init__(
+        self,
+        render,
+        loader,
+        position=Vec3(0, 0, 0),
+        scale=1,
+        debug=False,
+        world=None,
+    ):
         self.debug = debug
         self.model = loader.loadModel("models/smiley")
         self.model.reparentTo(render)
@@ -16,7 +25,10 @@ class Character:
         self.speed = 1.0
         self.world = world
         if world is not None:
-            self._current_region = world_to_region(int(position.getX()), int(position.getY()))
+            self._current_region = world_to_region(
+                int(position.getX()),
+                int(position.getY()),
+            )
         else:
             self._current_region = None
 
@@ -27,8 +39,13 @@ class Character:
             print(*args, **kwargs)
 
     def move_to(self, target_pos, duration, after_step=None):
-        """Create a movement interval towards ``target_pos`` taking ``duration`` seconds."""
-        move_interval = LerpPosInterval(self.model, duration=duration, pos=target_pos)
+        """Create a movement interval toward ``target_pos``
+        taking ``duration`` seconds."""
+        move_interval = LerpPosInterval(
+            self.model,
+            duration=duration,
+            pos=target_pos,
+        )
         if after_step:
             return Sequence(move_interval, Func(after_step), Func(self.stop))
         return Sequence(move_interval, Func(self.stop))
@@ -40,10 +57,16 @@ class Character:
         if self.world is None:
             return
         pos = self.model.getPos()
-        rx, ry = world_to_region(int(pos.getX()), int(pos.getY()))
+        rx, ry = world_to_region(
+            int(pos.getX()),
+            int(pos.getY()),
+        )
         if (rx, ry) != self._current_region:
             self._current_region = (rx, ry)
-            self.world.update_streaming(int(pos.getX()), int(pos.getY()))
+            self.world.update_streaming(
+                int(pos.getX()),
+                int(pos.getY()),
+            )
 
     def stop(self):
         self.log("Movement finished")
@@ -51,7 +74,10 @@ class Character:
 
     def cancel_movement(self):
         """Stop the current movement without jumping to the end position."""
-        if self._active_sequence is not None and not self._active_sequence.isStopped():
+        if (
+            self._active_sequence is not None
+            and not self._active_sequence.isStopped()
+        ):
             self._active_sequence.pause()
         self._active_sequence = None
 

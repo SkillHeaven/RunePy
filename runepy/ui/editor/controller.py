@@ -70,12 +70,12 @@ class UIEditorController:
         if WindowProperties is not object and hasattr(base, "win"):
             try:
                 props = WindowProperties()
-                cursor=""
+                cursor = ""
                 if sys.platform.startswith("win"):
-                    root=os.environ.get("SystemRoot", r"C:\Windows")
-                    candidate=Path(root)/"Cursors"/"cross.cur"
+                    root = os.environ.get("SystemRoot", r"C:\Windows")
+                    candidate = Path(root) / "Cursors" / "cross.cur"
                     if candidate.exists():
-                        cursor=str(candidate)
+                        cursor = str(candidate)
                 if cursor:
                     props.setCursorFilename(cursor)
                 base.win.requestProperties(props)
@@ -121,7 +121,10 @@ class UIEditorController:
     def _on_mouse_move(self, task: "Task"):
         if base is None or not base.mouseWatcherNode.hasMouse():
             return task.cont
-        if base.mouseWatcherNode.is_button_down("mouse1") and self._drag_widget:
+        if (
+            base.mouseWatcherNode.is_button_down("mouse1")
+            and self._drag_widget
+        ):
             return self._update_drag(task)
         return task.cont
 
@@ -151,7 +154,10 @@ class UIEditorController:
                         right = offset[0] + fs[1]
                         bottom = offset[1] + fs[2]
                         top = offset[1] + fs[3]
-                        if left <= mpos[0] <= right and bottom <= mpos[1] <= top:
+                        if (
+                            left <= mpos[0] <= right
+                            and bottom <= mpos[1] <= top
+                        ):
                             return node
                     except Exception:
                         pass
@@ -180,14 +186,21 @@ class UIEditorController:
         base.taskMgr.add(self._update_drag, "ui-editor-drag")
 
     def _update_drag(self, task: "Task"):
-        if base is None or self._drag_widget is None or self._drag_start is None:
+        if (
+            base is None
+            or self._drag_widget is None
+            or self._drag_start is None
+        ):
             return task.done
         if not base.mouseWatcherNode.hasMouse():
             return task.cont
         cur = base.mouseWatcherNode.getMouse()
         dx = cur[0] - self._drag_start[0]
         dy = cur[1] - self._drag_start[1]
-        if self._widget_start is not None and hasattr(self._drag_widget, "setPos"):
+        if (
+            self._widget_start is not None
+            and hasattr(self._drag_widget, "setPos")
+        ):
             self._drag_widget.setPos(
                 self._widget_start[0] + dx,
                 0,
@@ -224,5 +237,6 @@ class UIEditorController:
             print("layout saved")
         except Exception as exc:  # pragma: no cover - can't save
             print(f"failed to save layout: {exc}")
+
 
 __all__ = ["UIEditorController"]

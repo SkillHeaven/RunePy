@@ -121,7 +121,6 @@ class UIEditorController:
     def _on_mouse_move(self, task: "Task"):
         if base is None or not base.mouseWatcherNode.hasMouse():
             return task.cont
-        mpos = base.mouseWatcherNode.getMouse()
         if base.mouseWatcherNode.is_button_down("mouse1") and self._drag_widget:
             return self._update_drag(task)
         return task.cont

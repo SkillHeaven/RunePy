@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 """Standalone UI editing application."""
 
 try:
@@ -10,6 +11,8 @@ except Exception:  # pragma: no cover - Panda3D may be missing
 from pathlib import Path
 from runepy.ui.editor import UIEditorController, dump_layout
 from runepy.debug import get_debug
+
+logger = logging.getLogger(__name__)
 
 
 class UIEditorApp(ShowBase):
@@ -34,9 +37,9 @@ class UIEditorApp(ShowBase):
         path = Path("debug_layout.json")
         try:
             dump_layout(get_debug().window, path)  # type: ignore[arg-type]
-            print(f"Layout saved to {path}")
+            logger.info(f"Layout saved to {path}")
         except Exception as exc:
-            print(f"Failed to save layout: {exc}")
+            logger.exception("Failed to save layout", exc_info=exc)
 
 
 def main() -> None:

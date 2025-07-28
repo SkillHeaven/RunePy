@@ -1,3 +1,4 @@
+import logging
 from panda3d.core import ModifierButtons, Vec3
 try:
     import direct.showbase.ShowBaseGlobal as sbg
@@ -7,6 +8,8 @@ from runepy.utils import get_mouse_tile_coords, get_tile_from_mouse
 from direct.interval.IntervalGlobal import Sequence, Func
 import math
 import argparse
+
+logger = logging.getLogger(__name__)
 
 from runepy.base_app import BaseApp
 
@@ -99,7 +102,7 @@ class Client(BaseApp):
 
     def log(self, *args, **kwargs):
         if self.debug:
-            print(*args, **kwargs)
+            logger.debug(*args, **kwargs)
 
     def update_tile_hover(self, task):
         mpos, tile_x, tile_y = get_mouse_tile_coords(
@@ -224,14 +227,14 @@ class Client(BaseApp):
     def save_map(self, filename="map.json"):
         """Save the current world grid to ``filename``."""
         self.editor.save_map()
-        print(f"Map saved to {filename}")
+        logger.info(f"Map saved to {filename}")
 
     def load_map(self, filename="map.json"):
         """Load a map from ``filename`` and rebuild the world."""
         self.editor.load_map()
         # World size may change during map load but pathfinding now stitches
         # regions dynamically so no cached grid is needed.
-        print(f"Map loaded from {filename}")
+        logger.info(f"Map loaded from {filename}")
 
     # ------------------------------------------------------------------
     # State persistence

@@ -134,6 +134,11 @@ manager.update(70, 20)  # moves into the next region triggering load/unload
 
 
 
+## Logging
+
+Logging is configured automatically when the package is imported.
+Messages are written to `runepy.log` with warnings in `warnings.log` and errors in `errors.log`.
+
 ## Utilities
 
 `utils.py` contains small helper functions used throughout the project. In particular

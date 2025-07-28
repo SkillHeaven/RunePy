@@ -6,6 +6,8 @@ module is unavailable.
 """
 
 from __future__ import annotations
+import logging
+logger = logging.getLogger(__name__)
 from pathlib import Path
 import datetime
 
@@ -127,7 +129,7 @@ class DebugManager:
 
     def dump_console(self):
         regions, geoms = self._stats()
-        print(
+        logger.info(
             f"{datetime.datetime.now().isoformat()} regions={regions} "
             f"geoms={geoms}"
         )
@@ -242,7 +244,7 @@ class DebugManager:
 
         base.accept('f1', self.window.toggleVisible)
 
-        print('[DebugManager] F1 bound')
+        logger.info('[DebugManager] F1 bound')
 
 
 _debug_instance: Optional[DebugManager] = None

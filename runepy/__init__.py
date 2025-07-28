@@ -1,5 +1,7 @@
 """RunePy package."""
 
+from . import logging_config  # noqa: F401
+
 from . import pathfinding
 from .array_map import RegionArrays
 from .map_manager import MapManager

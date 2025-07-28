@@ -34,7 +34,7 @@ class UIEditorApp(ShowBase):
         """Save the current UI layout."""
         if self.editor is None:
             return
-        path = Path("json/debug_layout.json")
+        path = Path("config/debug_layout.json")
         try:
             dump_layout(get_debug().window, path)  # type: ignore[arg-type]
             logger.info(f"Layout saved to {path}")

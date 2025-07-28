@@ -2,10 +2,10 @@ import json
 import os
 
 _ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
-JSON_DIR = os.path.join(_ROOT_DIR, "json")
-os.makedirs(JSON_DIR, exist_ok=True)
-DEFAULT_CONFIG_PATH = os.path.join(JSON_DIR, "config.json")
-DEFAULT_STATE_PATH = os.path.join(JSON_DIR, "state.json")
+CONFIG_DIR = os.path.join(_ROOT_DIR, "config")
+os.makedirs(CONFIG_DIR, exist_ok=True)
+DEFAULT_CONFIG_PATH = os.path.join(CONFIG_DIR, "config.json")
+DEFAULT_STATE_PATH = os.path.join(CONFIG_DIR, "state.json")
 
 
 def load_config(path: str = DEFAULT_CONFIG_PATH) -> dict:

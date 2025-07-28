@@ -22,21 +22,21 @@ RunePy is a small demonstration project built with [Panda3D](https://www.panda3d
 
 | File | Description |
 |------|-------------|
-| `runepy/client.py` | Entry point that opens the window. |
-| `runepy/world.py` | Map generation logic. |
-| `runepy/map_editor.py` | Utilities for editing tiles. |
-| `runepy/character.py` | Represents the player model and movement logic. |
-| `runepy/camera.py` | Manages the camera position and orientation. |
-| `runepy/controls.py` | Handles mouse wheel zooming and other input bindings. |
-| `runepy/collision.py` | Utilities for ray casting with Panda3D's collision system. |
-| `runepy/pathfinding.py` | Implementation of a basic A* search with optional weighted costs and movement patterns. |
-| `runepy/debuginfo.py` | Draws onscreen debug text such as mouse and tile coordinates. |
-| `runepy/utils.py` | Shared helpers like `get_mouse_tile_coords`. |
-| `runepy/debug/manager.py` | Toggleable debug window and related tools. |
-| `runepy/ui/builder.py` | Constructs GUI widgets from layout dictionaries. |
-| `runepy/ui/manager.py` | Simple manager for loading and showing UIs. |
-| `runepy/ui/editor` | Package providing the simple UI editor. |
-| `runepy/ui_editor.py` | Standalone UI editing window. |
+| `src/runepy/client.py` | Entry point that opens the window. |
+| `src/runepy/world.py` | Map generation logic. |
+| `src/runepy/map_editor.py` | Utilities for editing tiles. |
+| `src/runepy/character.py` | Represents the player model and movement logic. |
+| `src/runepy/camera.py` | Manages the camera position and orientation. |
+| `src/runepy/controls.py` | Handles mouse wheel zooming and other input bindings. |
+| `src/runepy/collision.py` | Utilities for ray casting with Panda3D's collision system. |
+| `src/runepy/pathfinding.py` | Implementation of a basic A* search with optional weighted costs and movement patterns. |
+| `src/runepy/debuginfo.py` | Draws onscreen debug text such as mouse and tile coordinates. |
+| `src/runepy/utils.py` | Shared helpers like `get_mouse_tile_coords`. |
+| `src/runepy/debug/manager.py` | Toggleable debug window and related tools. |
+| `src/runepy/ui/builder.py` | Constructs GUI widgets from layout dictionaries. |
+| `src/runepy/ui/manager.py` | Simple manager for loading and showing UIs. |
+| `src/runepy/ui/editor` | Package providing the simple UI editor. |
+| `src/runepy/ui_editor.py` | Standalone UI editing window. |
 
 ## Requirements
 
@@ -95,7 +95,7 @@ sliders have been removed while the feature is being reworked.
 
 ## Configuration
 
-Default key bindings are defined in ``json/config.json``. Edit this file to customize the controls that are initially loaded by both the game and the editor.
+Default key bindings are defined in ``config/config.json``. Edit this file to customize the controls that are initially loaded by both the game and the editor.
 
 ## License
 

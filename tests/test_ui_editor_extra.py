@@ -132,3 +132,68 @@ def test_enable_disable(monkeypatch):
     assert root["frameColor"] == original_color
     assert base.taskMgr.removed == "ui-editor-move"
 
+
+def test_enable_disable_drag_task(monkeypatch):
+    class _MW:
+        def hasMouse(self):
+            return False
+
+    class _TM:
+        def __init__(self):
+            self.tasks: list[str] = []
+        def add(self, func, name):  # pragma: no cover - stub
+            self.tasks.append(name)
+        def remove(self, name):  # pragma: no cover - stub
+            if name in self.tasks:
+                self.tasks.remove(name)
+
+    class _Base:
+        def __init__(self):
+            self.mouseWatcherNode = _MW()
+            self.taskMgr = _TM()
+            self.accepted = {}
+        def accept(self, evt, func):
+            self.accepted[evt] = func
+        def ignore(self, evt):
+            self.accepted.pop(evt, None)
+
+    class _Widget:
+        def __init__(self, color=(1,1,1,1)):
+            self._pos = [0,0,0]
+            self._frame = (-0.5,0.5,-0.5,0.5)
+            self._color = color
+        def getChildren(self):
+            return []
+        def __getitem__(self, key):
+            if key == "frameSize":
+                return self._frame
+            if key == "frameColor":
+                return self._color
+            raise KeyError(key)
+        def __setitem__(self, key, value):
+            if key == "frameColor":
+                self._color = value
+            else:
+                raise KeyError(key)
+        def getPythonTag(self, tag):
+            return tag == "debug_gui"
+
+    base = _Base()
+    monkeypatch.setattr(ctr, "base", base)
+    root = _Widget()
+    editor = ctr.UIEditorController(root)
+
+    orig_color = root["frameColor"]
+    editor.enable()
+    # ensure move task added
+    assert "ui-editor-move" in base.taskMgr.tasks
+
+    gizmo = FakeGizmo(root)
+    editor._gizmo = gizmo
+
+    editor.disable()
+    assert gizmo.destroyed
+    assert editor._gizmo is None
+    assert root["frameColor"] == orig_color
+    assert "ui-editor-move" not in base.taskMgr.tasks
+    assert "ui-editor-drag" not in base.taskMgr.tasks

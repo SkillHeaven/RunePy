@@ -43,3 +43,30 @@ def get_tile_from_mouse(mouse_watcher: "MouseWatcher", camera, render):
     """Return just the tile coordinates from the mouse position."""
     _, tile_x, tile_y = get_mouse_tile_coords(mouse_watcher, camera, render)
     return tile_x, tile_y
+
+def update_tile_hover(
+    mouse_watcher: "MouseWatcher",
+    camera,
+    render,
+    world,
+    debug=None,
+) -> tuple:
+    """Highlight the tile under the mouse and optionally update debug info."""
+
+    mpos, tile_x, tile_y = get_mouse_tile_coords(mouse_watcher, camera, render)
+
+    if mpos:
+        if debug is not None:
+            debug.update_tile_info(mpos, tile_x, tile_y)
+
+        if (
+            -world.radius <= tile_x <= world.radius
+            and -world.radius <= tile_y <= world.radius
+        ):
+            world.highlight_tile(tile_x, tile_y)
+        else:
+            world.clear_highlight()
+    else:
+        world.clear_highlight()
+
+    return mpos, tile_x, tile_y

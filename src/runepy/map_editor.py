@@ -3,6 +3,7 @@ from runepy.utils import get_tile_from_mouse
 from runepy.world import world_to_region, local_tile
 from runepy.terrain import FLAG_BLOCKED
 from constants import REGION_SIZE
+from runepy.texture_editor import TextureEditor
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,7 @@ class MapEditor:
         self.client = client
         self.world = world
         self.mode = "tile"
+        self.texture_editor = TextureEditor(client, world)
 
     def register_bindings(self, key_manager):
         """Register editor actions with ``key_manager``."""
@@ -89,6 +91,18 @@ class MapEditor:
                 region.ry * REGION_SIZE,
                 0,
             )
+    def open_texture_editor(self):
+        if self.client.options_menu.visible:
+            return
+        tile_x, tile_y = get_tile_from_mouse(
+            self.client.mouseWatcherNode,
+            self.client.camera,
+            self.client.render,
+        )
+        if tile_x is None:
+            return
+        self.texture_editor.open(tile_x, tile_y)
+
 
     # ------------------------------------------------------------------
     # Persistence helpers

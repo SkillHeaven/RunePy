@@ -29,6 +29,8 @@ class FakeEditor:
         self.saved = True
     def load_map(self):
         self.loaded = True
+    def open_texture_editor(self):
+        pass
 
 class FakeBase:
     pass

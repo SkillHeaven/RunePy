@@ -8,15 +8,15 @@ class StubFrame:
         self.destroyed = True
 
 class StubMenu:
-    def __init__(self, parent=None, items=None, command=None, **kw):
-        self.items = items
-        self.command = command
+    def __init__(self, **kw):
+        self.command = kw.get('command')
         self.kw = kw
 
-class StubButton:
-    def __init__(self, parent=None, text='', command=None, **kw):
-        self.command = command
-        self.kw = kw
+
+def fake_create_ui(layout, manager=None, parent=None):
+    frame = StubFrame()
+    widgets = {'mode_menu': StubMenu(command=manager._set_mode)}
+    return frame, widgets
 
 class FakeEditor:
     def __init__(self):
@@ -37,10 +37,7 @@ class FakeBase:
 
 
 def test_toolbar_basic(monkeypatch):
-    monkeypatch.setattr('runepy.editor_toolbar.DirectFrame', StubFrame)
-    monkeypatch.setattr('runepy.editor_toolbar.DirectOptionMenu', StubMenu)
-    monkeypatch.setattr('runepy.editor_toolbar.DirectButton', StubButton)
-
+    monkeypatch.setattr('runepy.editor_toolbar.create_ui', fake_create_ui)
     editor = FakeEditor()
     tb = EditorToolbar(FakeBase(), editor)
     tb._set_mode('Interactable')

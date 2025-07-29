@@ -28,7 +28,7 @@ class TextureEditor:
         self._orig_click_handler = None
         if DirectFrame is not object:
             self.frame = DirectFrame(
-                frameColor=(0, 0, 0, 0.7),
+                frameColor=(0, 0, 0, 1),
                 frameSize=(-0.6, 0.6, -0.6, 0.6),
                 pos=(0, 0, 0.2),
             )

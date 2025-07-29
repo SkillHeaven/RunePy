@@ -38,11 +38,14 @@ class _FakeBase:
         self.taskMgr = _FakeTaskMgr()
         self.accepted: dict[str, callable] = {}
         self.ignored: list[str] = []
+        def click():
+            self.clicked = getattr(self, 'clicked', 0) + 1
+        self.tile_click_event = click
 
     def accept(self, evt: str, func):  # pragma: no cover - stub
         self.accepted[evt] = func
 
-    def ignore(self, evt: str):  # pragma: no cover - stub
+    def ignore(self, evt: str, func=None):  # pragma: no cover - stub
         self.ignored.append(evt)
 
 

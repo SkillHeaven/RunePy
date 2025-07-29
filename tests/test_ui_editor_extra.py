@@ -86,8 +86,12 @@ def test_enable_disable(monkeypatch):
             self.accepted = {}
         def accept(self, evt, func):
             self.accepted[evt] = func
-        def ignore(self, evt):
-            self.accepted.pop(evt, None)
+        def ignore(self, evt, func=None):
+            if func is None:
+                self.accepted.pop(evt, None)
+            else:
+                if evt in self.accepted and self.accepted[evt] is func:
+                    self.accepted.pop(evt)
 
     class _Widget:
         def __init__(self, color=(1,1,1,1)):
@@ -154,8 +158,12 @@ def test_enable_disable_drag_task(monkeypatch):
             self.accepted = {}
         def accept(self, evt, func):
             self.accepted[evt] = func
-        def ignore(self, evt):
-            self.accepted.pop(evt, None)
+        def ignore(self, evt, func=None):
+            if func is None:
+                self.accepted.pop(evt, None)
+            else:
+                if evt in self.accepted and self.accepted[evt] is func:
+                    self.accepted.pop(evt)
 
     class _Widget:
         def __init__(self, color=(1,1,1,1)):

@@ -9,7 +9,7 @@ class FakeBase:
     def accept(self, evt: str, func):
         self.accepted.append((evt, func))
 
-    def ignore(self, evt: str):
+    def ignore(self, evt: str, func=None):
         self.ignored.append(evt)
 
 

@@ -5,12 +5,17 @@ from runepy.texture_editor import TextureEditor
 class _FakeBase:
     def __init__(self):
         self.accepted = {}
+        def click():
+            self.clicked = getattr(self, 'clicked', 0) + 1
+        self.tile_click_event = click
     def accept(self, evt, func):
         self.accepted[evt] = func
-    def ignore(self, evt):
-        self.accepted.pop(evt, None)
-    def tile_click_event(self):
-        self.clicked = getattr(self, 'clicked', 0) + 1
+    def ignore(self, evt, func=None):
+        if func is None:
+            self.accepted.pop(evt, None)
+        else:
+            if evt in self.accepted and self.accepted[evt] is func:
+                self.accepted.pop(evt)
 
 
 def test_texture_editor_ignores_game_click(monkeypatch, tmp_path):

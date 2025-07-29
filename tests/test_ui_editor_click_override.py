@@ -25,13 +25,17 @@ class _FakeBase:
         self.mouseWatcherNode = _FakeMouseWatcher()
         self.taskMgr = _FakeTaskMgr()
         self.accepted = {}
+        def click():
+            self.clicked = getattr(self, 'clicked', 0) + 1
+        self.tile_click_event = click
     def accept(self, evt, func):
         self.accepted[evt] = func
-    def ignore(self, evt):
-        self.accepted.pop(evt, None)
-    # game click handler
-    def tile_click_event(self):
-        self.clicked = getattr(self, 'clicked', 0) + 1
+    def ignore(self, evt, func=None):
+        if func is None:
+            self.accepted.pop(evt, None)
+        else:
+            if evt in self.accepted and self.accepted[evt] is func:
+                self.accepted.pop(evt)
 
 class _FakeWidget:
     def __init__(self, pos=(0,0,0), frame=(-1,1,-1,1)):

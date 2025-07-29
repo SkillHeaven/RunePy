@@ -4,9 +4,7 @@ try:
     import direct.showbase.ShowBaseGlobal as sbg
 except Exception:  # pragma: no cover - Panda3D may be missing
     sbg = None
-from runepy.utils import get_mouse_tile_coords, get_tile_from_mouse, update_tile_hover as util_update_tile_hover
-from direct.interval.IntervalGlobal import Sequence, Func
-import math
+from runepy.utils import update_tile_hover as util_update_tile_hover
 import argparse
 
 logger = logging.getLogger(__name__)
@@ -19,9 +17,9 @@ from runepy.camera import CameraControl
 from runepy.controls import Controls
 from runepy.world.world import World
 from constants import REGION_SIZE, VIEW_RADIUS
-from runepy.pathfinding import a_star
+from runepy.pathfinding import Pathfinder
+from runepy.input_binder import InputBinder
 from runepy.collision import CollisionControl
-from runepy.options_menu import KeyBindingManager, OptionsMenu
 from runepy.config import load_state, save_state
 import atexit
 
@@ -83,19 +81,10 @@ class Client(BaseApp):
             self.camera_control.update_camera_focus()
         self.controls = Controls(self, self.camera_control, self.character)
         self.collision_control = CollisionControl(self.camera, self.render)
-        self.key_manager = KeyBindingManager(self, {"open_menu": "escape"})
-        self.options_menu = OptionsMenu(self, self.key_manager)
-        self.key_manager.bind("open_menu", self.options_menu.toggle)
-
-        # Store the bound click handler so it can be reliably removed by
-        # other tools (like the texture editor) without relying on the
-        # ephemeral bound method object returned by attribute access.
-        self.tile_click_event_ref = self.tile_click_event
-        self.accept("mouse1", self.tile_click_event_ref)
-        self.accept("f3", self.debug_info.toggle_region_info)
+        self.pathfinder = Pathfinder(self.character, self.world, self.camera_control, debug=self.debug)
+        self.input_binder = InputBinder(self, self.pathfinder, self.debug_info)
 
         self.loading_screen.update(80, "Finalizing")
-
         # Set a pleasant sky blue background
         self.setBackgroundColor(0.53, 0.81, 0.92)
         if cam_h is None:
@@ -119,104 +108,7 @@ class Client(BaseApp):
         return task.cont
 
     def tile_click_event(self):
-        if self.options_menu.visible:
-            return
-        self.log("Tile clicked!")
-        if self.mouseWatcherNode.hasMouse():
-            mpos = self.mouseWatcherNode.getMouse()
-            tile_x, tile_y = get_tile_from_mouse(
-                self.mouseWatcherNode, self.camera, self.render
-            )
-            self.log(f"Mouse position detected: {mpos}")
-            self.log(f"Clicked tile coords: {(tile_x, tile_y)}")
-        else:
-            self.log("No mouse detected.")
-            return
-
-        self.camera.setH(0)
-        self.collision_control.update_ray(self.camNode, mpos)
-        self.log("Before traversing for collisions...")
-        self.collision_control.traverser.traverse(self.render)
-        self.log("After traversing for collisions.")
-
-        collided_obj, pickedPos = self.collision_control.get_collided_object(
-            self.render
-        )
-
-        if collided_obj:
-            self.log("Collided with:", collided_obj.getName())
-
-            snapped_x = round(pickedPos.getX())
-            snapped_y = round(pickedPos.getY())
-            target_pos = Vec3(snapped_x, snapped_y, 0.5)
-
-            if (self.character.get_position() - target_pos).length() > 0.1:
-                # Stop any movement so the path starts from the exact
-                # current position
-                self.character.cancel_movement()
-                current_pos = self.character.get_position()
-                current_x, current_y = (
-                    int(current_pos.getX()),
-                    int(current_pos.getY()),
-                )
-
-                stitched, off_x, off_y = self.world.walkable_window(
-                    current_x,
-                    current_y,
-                )
-                start_idx = (current_x - off_x, current_y - off_y)
-                end_idx = (snapped_x - off_x, snapped_y - off_y)
-
-                path = a_star(stitched, start_idx, end_idx)
-                self.log("Calculated Path:", path)
-
-                if path:
-                    # Skip the starting tile so movement begins from the
-                    # character's actual position without resetting to the
-                    # rounded tile coordinate.
-                    if path and path[0] == start_idx:
-                        path = path[1:]
-
-                    if not path:
-                        self.log("Already at destination")
-                        return
-
-                    intervals = []
-                    prev_world_x, prev_world_y = (
-                        current_pos.getX(),
-                        current_pos.getY(),
-                    )
-                    for step in path:
-                        world_x = step[0] + off_x
-                        world_y = step[1] + off_y
-                        self.log(f"Moving character to {(world_x, world_y)}")
-                        distance = math.sqrt(
-                            (world_x - prev_world_x) ** 2
-                            + (world_y - prev_world_y) ** 2
-                        )
-                        duration = distance / self.character.speed
-                        move_interval = self.character.move_to(
-                            Vec3(world_x, world_y, 0.5),
-                            duration,
-                        )
-                        intervals.append(move_interval)
-                        prev_world_x, prev_world_y = world_x, world_y
-
-                    move_sequence = Sequence(
-                        *intervals,
-                        Func(self.camera_control.update_camera_focus),
-                    )
-                    self.character.start_sequence(move_sequence)
-                    self.log(f"Moved to {(world_x, world_y)}")
-
-                    self.log(f"After Update: Camera Hpr: {self.camera.getHpr()}")
-                    self.log(
-                        f"After Update: Character Pos: {self.character.get_position()}"
-                    )
-
-        self.collision_control.cleanup()
-
-    # ------------------------------------------------------------------
+        self.input_binder.on_click()
     # Editor helpers
     # ------------------------------------------------------------------
     def save_map(self, filename="map.json"):

@@ -7,6 +7,8 @@ from .array_map import RegionArrays
 from .map_manager import MapManager
 from .terrain import TerrainTile, FLAG_BLOCKED
 from .ui.manager import UIManager
+from .pathfinding import Pathfinder
+from .input_binder import InputBinder
 
 try:
     from .base_app import BaseApp
@@ -21,4 +23,6 @@ __all__ = [
     "TerrainTile",
     "FLAG_BLOCKED",
     "UIManager",
+    "Pathfinder",
+    "InputBinder",
 ]

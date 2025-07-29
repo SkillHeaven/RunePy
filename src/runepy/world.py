@@ -256,30 +256,39 @@ class Region:
     base: np.ndarray
     overlay: np.ndarray
     flags: np.ndarray
+    textures: np.ndarray
     node: "NodePath" | None = None
 
-    FILE_VERSION: ClassVar[int] = 1
+    FILE_VERSION: ClassVar[int] = 2
 
     @classmethod
     def load(cls, rx: int, ry: int) -> "Region":
         """Load region ``(rx, ry)`` from disk or create a new one."""
         path = Path("maps") / f"region_{rx}_{ry}.bin"
         size = REGION_SIZE * REGION_SIZE
+        texels = 16 * 16
         if path.exists():
             with gzip.open(path, "rb") as f:
                 version = int.from_bytes(f.read(2), "little")
-                if version != cls.FILE_VERSION:
+                if version not in {1, cls.FILE_VERSION}:
                     raise ValueError(f"Unsupported region version {version}")
                 height = np.frombuffer(f.read(size * 2), dtype=np.int16).reshape(REGION_SIZE, REGION_SIZE).copy()
                 base = np.frombuffer(f.read(size), dtype=np.uint8).reshape(REGION_SIZE, REGION_SIZE).copy()
                 overlay = np.frombuffer(f.read(size), dtype=np.uint8).reshape(REGION_SIZE, REGION_SIZE).copy()
                 flags = np.frombuffer(f.read(size), dtype=np.uint8).reshape(REGION_SIZE, REGION_SIZE).copy()
+                if version >= 2:
+                    textures = np.frombuffer(
+                        f.read(size * texels), dtype=np.uint8
+                    ).reshape(REGION_SIZE, REGION_SIZE, 16, 16).copy()
+                else:
+                    textures = np.zeros((REGION_SIZE, REGION_SIZE, 16, 16), dtype=np.uint8)
         else:
             height = np.zeros((REGION_SIZE, REGION_SIZE), dtype=np.int16)
             base = np.zeros((REGION_SIZE, REGION_SIZE), dtype=np.uint8)
             overlay = np.zeros((REGION_SIZE, REGION_SIZE), dtype=np.uint8)
             flags = np.zeros((REGION_SIZE, REGION_SIZE), dtype=np.uint8)
-        return cls(rx, ry, height, base, overlay, flags)
+            textures = np.zeros((REGION_SIZE, REGION_SIZE, 16, 16), dtype=np.uint8)
+        return cls(rx, ry, height, base, overlay, flags, textures)
 
     def save(self) -> None:
         """Write this region back to disk."""
@@ -291,6 +300,7 @@ class Region:
             f.write(self.base.astype(np.uint8).tobytes())
             f.write(self.overlay.astype(np.uint8).tobytes())
             f.write(self.flags.astype(np.uint8).tobytes())
+            f.write(self.textures.astype(np.uint8).tobytes())
 
     def make_mesh(self):
         """Create or refresh a mesh for this region."""

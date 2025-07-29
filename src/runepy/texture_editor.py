@@ -37,12 +37,12 @@ class TextureEditor:
             for i, val in enumerate(palette):
                 btn = DirectButton(
                     parent=self.frame,
-                    text=str(val),
+                    text="",
+                    frameColor=(val/255.0, val/255.0, val/255.0, 1),
                     scale=0.05,
                     pos=(-0.55 + i * step, 0, 0.45),
                     command=lambda v=val: self.set_color(v),
                 )
-                btn['text_fg'] = (val / 255.0,) * 3 + (1,)
             # 16x16 grid of buttons for painting
             self._grid_buttons = []
             gstep = 0.07

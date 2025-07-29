@@ -94,6 +94,9 @@ class MapEditor:
     def open_texture_editor(self):
         if self.client.options_menu.visible:
             return
+        if self.texture_editor.region is not None:
+            self.texture_editor.close()
+            return
         tile_x, tile_y = get_tile_from_mouse(
             self.client.mouseWatcherNode,
             self.client.camera,

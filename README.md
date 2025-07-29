@@ -91,6 +91,7 @@ layout looks like:
 ```
 
 Use the palette buttons at the top to select a color and click the grid to apply it to tiles.
+Click the button again or press **Close** in the editor to hide the texture window.
 
 To open the standalone UI editor, run:
 

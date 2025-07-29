@@ -77,7 +77,7 @@ class TextureEditor:
         if hasattr(self.base, "tile_click_event"):
             try:
                 self._orig_click_handler = self.base.tile_click_event
-                self.base.ignore("mouse1")
+                self.base.ignore("mouse1", self._orig_click_handler)
             except Exception:
                 self._orig_click_handler = None
         rx, ry = world_to_region(tile_x, tile_y)

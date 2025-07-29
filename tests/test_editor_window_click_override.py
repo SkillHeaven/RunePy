@@ -10,10 +10,17 @@ class _FakeBase:
         self.camera = NodePath('camera')
         self.taskMgr = types.SimpleNamespace(add=lambda *a, **k: None)
         self.mouseWatcherNode = None
+        def click():
+            self.clicked = getattr(self, 'clicked', 0) + 1
+        self.tile_click_event = click
     def accept(self, evt, func):
         self.accepted[evt] = func
-    def ignore(self, evt):
-        self.accepted.pop(evt, None)
+    def ignore(self, evt, func=None):
+        if func is None:
+            self.accepted.pop(evt, None)
+        else:
+            if evt in self.accepted and self.accepted[evt] is func:
+                self.accepted.pop(evt)
     def disableMouse(self):
         pass
     def setBackgroundColor(self, *a, **k):

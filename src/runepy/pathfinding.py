@@ -2,42 +2,48 @@
 
 import heapq
 from dataclasses import dataclass
+from typing import Iterable, Tuple, Union
+
+import numpy as np
 
 
 @dataclass(order=True)
-class Node:
+class Node:  # pragma: no cover - retained for API compatibility
     position: tuple
     parent: "Node" = None
-    g: float = 0  # Cost from start to current node
-    h: float = 0  # Estimated cost from current node to goal
-    f: float = 0  # Total cost (g + h)
+    g: float = 0
+    h: float = 0
+    f: float = 0
 
 
-def a_star(grid, start, end, neighbor_offsets=None, weighted=False):
-    """Perform A* pathfinding on a grid using 0 based indices.
+def a_star(
+    grid: Union[list, np.ndarray],
+    start: Tuple[int, int],
+    end: Tuple[int, int],
+    neighbor_offsets: Iterable[Tuple[int, int]] | None = None,
+    weighted: bool = False,
+):
+    """Perform A* pathfinding on ``grid`` and return the path as a list.
 
-    ``grid`` is expected to be a list-of-lists where ``1`` indicates a
-    walkable tile. ``start`` and ``end`` should already be translated into
-    grid coordinates starting at ``(0, 0)``. Negative coordinates are not
-    considered valid and will be ignored.
-
-    ``neighbor_offsets`` allows customizing movement directions. It should
-    be a list of ``(dx, dy)`` tuples. If omitted, movement is allowed in all
-    8 directions. When ``weighted`` is ``True`` the values in ``grid`` are
-    treated as movement costs instead of booleans.
+    ``grid`` may be a list-of-lists or :class:`numpy.ndarray` with ``1`` values
+    indicating walkable tiles. ``start`` and ``end`` are grid coordinates using
+    ``(x, y)`` ordering starting at ``(0, 0)``.
     """
 
-    # Create start and end node
-    start_node = Node(start)
-    end_node = Node(end)
+    def heuristic(a: Tuple[int, int], b: Tuple[int, int]) -> int:
+        return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
-    # Initialize the start node's heuristic
-    start_node.h = abs(start_node.position[0] - end_node.position[0]) + abs(
-        start_node.position[1] - end_node.position[1])
-    start_node.f = start_node.h
+    if isinstance(grid, np.ndarray):
+        height, width = grid.shape[:2]
 
-    height = len(grid)
-    width = len(grid[0]) if height > 0 else 0
+        def value(x: int, y: int):
+            return grid[y, x]
+    else:
+        height = len(grid)
+        width = len(grid[0]) if height > 0 else 0
+
+        def value(x: int, y: int):
+            return grid[y][x]
 
     if neighbor_offsets is None:
         neighbor_offsets = [
@@ -51,73 +57,49 @@ def a_star(grid, start, end, neighbor_offsets=None, weighted=False):
             (1, -1),
         ]
 
-    open_heap = []
-    open_dict = {}
-    closed_set = set()
+    open_heap: list[tuple[float, Tuple[int, int]]] = []
+    open_dict: dict[Tuple[int, int], tuple[float, Tuple[int, int] | None]] = {}
+    closed_set: set[Tuple[int, int]] = set()
 
-    heapq.heappush(open_heap, (start_node.f, start_node))
-    open_dict[start_node.position] = start_node
+    start_h = heuristic(start, end)
+    open_dict[start] = (0.0, None)
+    heapq.heappush(open_heap, (start_h, start))
 
     while open_heap:
-        # Get the current node with the lowest f value
-        _, current_node = heapq.heappop(open_heap)
-        if current_node.position in closed_set:
+        current_f, current = heapq.heappop(open_heap)
+        data = open_dict.get(current)
+        if data is None:
             continue
-        # This node may have been superseded by a better path
-        if open_dict.get(current_node.position) is not current_node:
+        g, parent = data
+        if current in closed_set:
             continue
-        del open_dict[current_node.position]
-        closed_set.add(current_node.position)
-
-        # Check if we've reached our destination
-        if current_node.position == end_node.position:
+        if current == end:
             path = []
-            while current_node:
-                path.append(current_node.position)
-                current_node = current_node.parent
-            return path[::-1]  # Return reversed path
+            pos = current
+            while pos is not None:
+                path.append(pos)
+                pos = open_dict[pos][1]
+            return path[::-1]
 
-        # Get the neighbors
-        neighbors = []
-        for offset in neighbor_offsets:
-            node_position = (
-                current_node.position[0] + offset[0],
-                current_node.position[1] + offset[1],
-            )
+        closed_set.add(current)
 
-            # Skip positions outside the grid
-            if not (0 <= node_position[0] < width and 0 <= node_position[1] < height):
+        for dx, dy in neighbor_offsets:
+            nx, ny = current[0] + dx, current[1] + dy
+            if not (0 <= nx < width and 0 <= ny < height):
                 continue
-
-            # Check if the position is walkable
-            tile_value = grid[node_position[1]][node_position[0]]
-            if tile_value == 0:
+            tile_val = value(nx, ny)
+            if tile_val == 0:
                 continue
-
-            neighbors.append((Node(node_position, current_node), tile_value))
-
-        # Loop through the neighbors
-        for neighbor, tile_value in neighbors:
-            # Skip if the neighbor was already evaluated
-            if neighbor.position in closed_set:
+            step_cost = tile_val if weighted else 1
+            g_score = g + step_cost
+            neighbor = (nx, ny)
+            if neighbor in closed_set:
                 continue
+            h_score = heuristic(neighbor, end)
+            existing = open_dict.get(neighbor)
+            if existing is not None and g_score >= existing[0]:
+                continue
+            open_dict[neighbor] = (g_score, current)
+            heapq.heappush(open_heap, (g_score + h_score, neighbor))
 
-            # Create the f, g, and h values
-            step_cost = tile_value if weighted else 1
-            neighbor.g = current_node.g + step_cost
-            neighbor.h = abs(neighbor.position[0] - end_node.position[0]) + abs(
-                neighbor.position[1] - end_node.position[1])
-            neighbor.f = neighbor.g + neighbor.h
-
-            # Only add the neighbor if it improves a known path
-            if add_to_open(open_dict, neighbor):
-                heapq.heappush(open_heap, (neighbor.f, neighbor))
-
-
-def add_to_open(open_dict, neighbor):
-    existing = open_dict.get(neighbor.position)
-    if existing is not None and neighbor.g >= existing.g:
-        return False
-    open_dict[neighbor.position] = neighbor
-    return True
-
+    return None

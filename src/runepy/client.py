@@ -167,7 +167,7 @@ class Client(BaseApp):
                 start_idx = (current_x - off_x, current_y - off_y)
                 end_idx = (snapped_x - off_x, snapped_y - off_y)
 
-                path = a_star(stitched.tolist(), start_idx, end_idx)
+                path = a_star(stitched, start_idx, end_idx)
                 self.log("Calculated Path:", path)
 
                 if path:

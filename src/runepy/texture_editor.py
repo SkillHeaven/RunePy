@@ -74,10 +74,13 @@ class TextureEditor:
     # ------------------------------------------------------------------
     def open(self, tile_x: int, tile_y: int) -> None:
         """Open the editor for the given tile."""
-        if hasattr(self.base, "tile_click_event"):
+        if hasattr(self.base, "tile_click_event") or hasattr(self.base, "tile_click_event_ref"):
             try:
-                self._orig_click_handler = self.base.tile_click_event
-                self.base.ignore("mouse1", self._orig_click_handler)
+                handler = getattr(self.base, "tile_click_event_ref", None)
+                if handler is None:
+                    handler = self.base.tile_click_event
+                self._orig_click_handler = handler
+                self.base.ignore("mouse1", handler)
             except Exception:
                 self._orig_click_handler = None
         rx, ry = world_to_region(tile_x, tile_y)

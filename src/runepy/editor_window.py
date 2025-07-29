@@ -51,8 +51,10 @@ class EditorWindow(BaseApp):
         self.key_manager.bind("open_menu", self.options_menu.toggle)
         self.editor.register_bindings(self.key_manager)
         self.toolbar = EditorToolbar(self, self.editor)
-        self.tile_click_event = self.editor.handle_click
-        self.accept("mouse1", self.tile_click_event)
+        # Store the bound click handler so the texture editor can reliably
+        # remove it without depending on ephemeral bound method objects.
+        self.tile_click_event_ref = self.editor.handle_click
+        self.accept("mouse1", self.tile_click_event_ref)
         self.key_manager.bind(
             "move_left",
             lambda: self.camera_control.set_move("left", True),

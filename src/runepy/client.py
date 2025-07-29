@@ -87,7 +87,11 @@ class Client(BaseApp):
         self.options_menu = OptionsMenu(self, self.key_manager)
         self.key_manager.bind("open_menu", self.options_menu.toggle)
 
-        self.accept("mouse1", self.tile_click_event)
+        # Store the bound click handler so it can be reliably removed by
+        # other tools (like the texture editor) without relying on the
+        # ephemeral bound method object returned by attribute access.
+        self.tile_click_event_ref = self.tile_click_event
+        self.accept("mouse1", self.tile_click_event_ref)
         self.accept("f3", self.debug_info.toggle_region_info)
 
         self.loading_screen.update(80, "Finalizing")

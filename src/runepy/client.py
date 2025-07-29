@@ -4,7 +4,7 @@ try:
     import direct.showbase.ShowBaseGlobal as sbg
 except Exception:  # pragma: no cover - Panda3D may be missing
     sbg = None
-from runepy.utils import get_mouse_tile_coords, get_tile_from_mouse
+from runepy.utils import get_mouse_tile_coords, get_tile_from_mouse, update_tile_hover as util_update_tile_hover
 from direct.interval.IntervalGlobal import Sequence, Func
 import math
 import argparse
@@ -109,22 +109,13 @@ class Client(BaseApp):
             logger.debug(*args, **kwargs)
 
     def update_tile_hover(self, task):
-        mpos, tile_x, tile_y = get_mouse_tile_coords(
+        util_update_tile_hover(
             self.mouseWatcherNode,
             self.camera,
             self.render,
+            self.world,
+            debug=self.debug_info,
         )
-        if mpos:
-            self.debug_info.update_tile_info(mpos, tile_x, tile_y)
-            if (
-                -self.world.radius <= tile_x <= self.world.radius
-                and -self.world.radius <= tile_y <= self.world.radius
-            ):
-                self.world.highlight_tile(tile_x, tile_y)
-            else:
-                self.world.clear_highlight()
-        else:
-            self.world.clear_highlight()
         return task.cont
 
     def tile_click_event(self):

@@ -7,7 +7,7 @@ from runepy.editor_toolbar import EditorToolbar
 from runepy.camera import FreeCameraControl
 from runepy.options_menu import KeyBindingManager, OptionsMenu
 from runepy.controls import Controls
-from runepy.utils import get_mouse_tile_coords
+from runepy.utils import update_tile_hover as util_update_tile_hover
 from runepy.debug import get_debug
 
 logger = logging.getLogger(__name__)
@@ -87,19 +87,9 @@ class EditorWindow(BaseApp):
         self.taskMgr.add(self.update_tile_hover, "updateTileHoverTask")
 
     def update_tile_hover(self, task):
-        mpos, tile_x, tile_y = get_mouse_tile_coords(
-            self.mouseWatcherNode, self.camera, self.render
+        util_update_tile_hover(
+            self.mouseWatcherNode, self.camera, self.render, self.world
         )
-        if mpos:
-            if (
-                -self.world.radius <= tile_x <= self.world.radius
-                and -self.world.radius <= tile_y <= self.world.radius
-            ):
-                self.world.highlight_tile(tile_x, tile_y)
-            else:
-                self.world.clear_highlight()
-        else:
-            self.world.clear_highlight()
         return task.cont
 
     def save_map(self):

@@ -13,6 +13,7 @@ class MapEditor:
     def __init__(self, client, world):
         self.client = client
         self.world = world
+        self.mode = "tile"
 
     def register_bindings(self, key_manager):
         """Register editor actions with ``key_manager``."""
@@ -20,6 +21,16 @@ class MapEditor:
         key_manager.bind("toggle_interactable", self.toggle_interactable)
         key_manager.bind("save_map", self._hotkey_save)
         key_manager.bind("load_map", self._hotkey_load)
+
+    def set_mode(self, mode: str) -> None:
+        self.mode = mode
+
+    def handle_click(self) -> None:
+        if self.mode == "tile":
+            self.toggle_tile()
+        elif self.mode == "interactable":
+            self.toggle_interactable()
+
 
     def toggle_tile(self):
         if self.client.options_menu.visible:

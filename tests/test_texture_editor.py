@@ -11,7 +11,7 @@ class StubFrame:
         self.hidden = False
 
 class StubButton:
-    def __init__(self, parent=None, text="", scale=0.0, pos=(0,0,0), command=None):
+    def __init__(self, parent=None, text="", scale=0.0, pos=(0,0,0), command=None, **kw):
         self.command = command
     def __setitem__(self, key, val):
         pass

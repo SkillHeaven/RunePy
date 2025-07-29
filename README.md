@@ -10,7 +10,7 @@ RunePy is a small demonstration project built with [Panda3D](https://www.panda3d
 - Debug overlay displaying tile information
 - Simple collision and ray casting
 - Camera zoom limits keep the view between a minimum and maximum height
-- Built-in map editor with hotkeys for saving and loading maps
+- Built-in map editor with hotkeys for saving and loading maps and a color palette for painting tiles
 - Tiles support custom metadata loaded from map files
 - Individual tiles darken slightly when hovered to show the current mouse position
 - Loading screen displays progress messages during startup
@@ -77,6 +77,9 @@ To launch the map editor instead of the game, run:
 ```bash
 runepy --mode editor
 ```
+
+The editor toolbar includes a **Texture** button that opens a simple painting tool.
+Use the palette buttons at the top to select a color and click the grid to apply it to tiles.
 
 To open the standalone UI editor, run:
 

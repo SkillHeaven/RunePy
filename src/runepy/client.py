@@ -17,7 +17,7 @@ from runepy.character import Character
 from runepy.debuginfo import DebugInfo
 from runepy.camera import CameraControl
 from runepy.controls import Controls
-from runepy.world import World
+from runepy.world.world import World
 from constants import REGION_SIZE, VIEW_RADIUS
 from runepy.pathfinding import a_star
 from runepy.collision import CollisionControl

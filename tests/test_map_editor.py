@@ -8,7 +8,7 @@ for mod in modules:
     importlib.import_module(mod)
 
 from runepy.map_editor import MapEditor
-from runepy.world import World
+from runepy.world.world import World
 from runepy.terrain import FLAG_BLOCKED
 
 

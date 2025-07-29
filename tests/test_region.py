@@ -1,5 +1,5 @@
 import numpy as np
-from runepy.world import Region
+from runepy.world.region import Region
 from constants import REGION_SIZE
 
 

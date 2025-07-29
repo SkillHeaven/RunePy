@@ -1,6 +1,6 @@
 import logging
 from runepy.base_app import BaseApp
-from runepy.world import World
+from runepy.world.world import World
 from constants import REGION_SIZE, VIEW_RADIUS
 from runepy.map_editor import MapEditor
 from runepy.editor_toolbar import EditorToolbar

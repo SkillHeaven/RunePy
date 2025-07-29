@@ -13,7 +13,7 @@ from runepy.ui.layouts import TEXTURE_EDITOR_LAYOUT
 from typing import Any
 
 from constants import REGION_SIZE
-from runepy.world import world_to_region, local_tile
+from runepy.world.region import world_to_region, local_tile
 
 
 class TextureEditor:

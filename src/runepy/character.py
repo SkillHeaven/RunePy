@@ -2,7 +2,7 @@
 import logging
 from panda3d.core import Vec3
 from direct.interval.IntervalGlobal import Func, LerpPosInterval, Sequence
-from runepy.world import world_to_region
+from runepy.world.region import world_to_region
 
 logger = logging.getLogger(__name__)
 

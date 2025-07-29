@@ -1,6 +1,6 @@
 import numpy as np
 from constants import REGION_SIZE
-from runepy.world import World
+from runepy.world.world import World
 from runepy.terrain import FLAG_BLOCKED
 
 

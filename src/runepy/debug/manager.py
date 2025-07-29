@@ -158,8 +158,8 @@ class DebugManager:
     def reload_region(self):
         try:
             from direct.showbase.ShowBaseGlobal import base
-            from runepy.world import world_to_region, Region, REGION_SIZE
-            world = getattr(base, "world", None)
+            from runepy.world.region import world_to_region, Region
+            from constants import REGION_SIZE
             char = getattr(base, "character", None)
             if world is None or char is None:
                 return

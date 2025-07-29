@@ -1,5 +1,5 @@
 from constants import REGION_SIZE
-from runepy.world import World
+from runepy.world.world import World
 
 
 def test_streaming_consistency(tmp_path, monkeypatch):

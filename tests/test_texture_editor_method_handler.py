@@ -1,5 +1,5 @@
 import types
-from runepy.world import World
+from runepy.world.world import World
 from runepy.texture_editor import TextureEditor
 
 class _MethodBase:

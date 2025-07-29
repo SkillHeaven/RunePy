@@ -79,6 +79,17 @@ runepy --mode editor
 ```
 
 The editor toolbar includes a **Texture** button that opens a simple painting tool.
+The main area of this window is a 16×16 grid of texture cells. Each cell represents a
+layer of the selected tile that can be painted individually. A simplified view of the
+layout looks like:
+
+```
+[0,0] [1,0] ... [15,0]
+[0,1] [1,1] ... [15,1]
+  ...
+[0,15] ... [15,15]
+```
+
 Use the palette buttons at the top to select a color and click the grid to apply it to tiles.
 
 To open the standalone UI editor, run:

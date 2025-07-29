@@ -58,3 +58,20 @@ def test_save_and_load_map(tmp_path, monkeypatch):
     editor.load_map()
     loaded = world.region_manager.loaded[(0, 0)]
     assert loaded.overlay[1, 1] == 1
+
+def test_handle_click(monkeypatch):
+    world = World(view_radius=1)
+    client = _FakeClient()
+    editor = MapEditor(client, world)
+
+    called = {"tile": 0, "inter": 0}
+    monkeypatch.setattr(editor, "toggle_tile", lambda: called.__setitem__("tile", called["tile"] + 1))
+    monkeypatch.setattr(editor, "toggle_interactable", lambda: called.__setitem__("inter", called["inter"] + 1))
+
+    editor.set_mode("tile")
+    editor.handle_click()
+    assert called["tile"] == 1
+
+    editor.set_mode("interactable")
+    editor.handle_click()
+    assert called["inter"] == 1

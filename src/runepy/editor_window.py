@@ -3,6 +3,7 @@ from runepy.base_app import BaseApp
 from runepy.world import World
 from constants import REGION_SIZE, VIEW_RADIUS
 from runepy.map_editor import MapEditor
+from runepy.editor_toolbar import EditorToolbar
 from runepy.camera import FreeCameraControl
 from runepy.options_menu import KeyBindingManager, OptionsMenu
 from runepy.controls import Controls
@@ -49,6 +50,8 @@ class EditorWindow(BaseApp):
 
         self.key_manager.bind("open_menu", self.options_menu.toggle)
         self.editor.register_bindings(self.key_manager)
+        self.toolbar = EditorToolbar(self, self.editor)
+        self.accept("mouse1", self.editor.handle_click)
         self.key_manager.bind(
             "move_left",
             lambda: self.camera_control.set_move("left", True),

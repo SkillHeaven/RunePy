@@ -60,6 +60,14 @@ class TextureEditor:
                     )
                     row.append(btn)
                 self._grid_buttons.append(row)
+            # optional close button
+            DirectButton(
+                parent=self.frame,
+                text="Close",
+                scale=0.05,
+                pos=(0, 0, -0.55),
+                command=self.close,
+            )
         else:  # pragma: no cover - tests
             self._grid_buttons = [[None for _ in range(16)] for _ in range(16)]
 

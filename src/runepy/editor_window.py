@@ -51,7 +51,8 @@ class EditorWindow(BaseApp):
         self.key_manager.bind("open_menu", self.options_menu.toggle)
         self.editor.register_bindings(self.key_manager)
         self.toolbar = EditorToolbar(self, self.editor)
-        self.accept("mouse1", self.editor.handle_click)
+        self.tile_click_event = self.editor.handle_click
+        self.accept("mouse1", self.tile_click_event)
         self.key_manager.bind(
             "move_left",
             lambda: self.camera_control.set_move("left", True),

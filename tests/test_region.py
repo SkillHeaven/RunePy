@@ -10,6 +10,7 @@ def test_region_edit_round_trip(tmp_path, monkeypatch):
     r.base[1, 1] = 2
     r.overlay[2, 2] = 3
     r.flags[3, 3] = 4
+    r.textures[0, 0, 0, 0] = 128
     r.save()
 
     loaded = Region.load(0, 0)
@@ -17,3 +18,4 @@ def test_region_edit_round_trip(tmp_path, monkeypatch):
     assert np.array_equal(r.base, loaded.base)
     assert np.array_equal(r.overlay, loaded.overlay)
     assert np.array_equal(r.flags, loaded.flags)
+    assert np.array_equal(r.textures, loaded.textures)

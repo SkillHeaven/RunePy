@@ -10,6 +10,8 @@ try:
         DirectSlider,
         DirectLabel,
         DirectEntry,
+        DirectOptionMenu,
+        DirectWaitBar,
     )
 except Exception:  # pragma: no cover - Panda3D may be missing
     DirectFrame = None  # type: ignore
@@ -17,6 +19,8 @@ except Exception:  # pragma: no cover - Panda3D may be missing
     DirectSlider = None  # type: ignore
     DirectLabel = None  # type: ignore
     DirectEntry = None  # type: ignore
+    DirectOptionMenu = None  # type: ignore
+    DirectWaitBar = None  # type: ignore
 
 
 class StubWidget:
@@ -52,6 +56,8 @@ _WIDGETS = {
     "button": DirectButton or StubWidget,
     "slider": DirectSlider or StubWidget,
     "entry": DirectEntry or StubWidget,
+    "option_menu": DirectOptionMenu or StubWidget,
+    "wait_bar": DirectWaitBar or StubWidget,
 }
 
 
@@ -133,6 +139,12 @@ def build_ui(
             if cmd is not None:
                 params["command"] = cmd
             widget = _make_widget("button", parent_node, **params)
+        elif kind == "option_menu":
+            cmd_name = node.get("command")
+            cmd = (getattr(manager, cmd_name) if manager and cmd_name and hasattr(manager, cmd_name) else None)
+            if cmd is not None:
+                params["command"] = cmd
+            widget = _make_widget("option_menu", parent_node, **params)
         elif kind == "slider":
             label_text = node.get("label") or node.get("text")
             label_pos = node.get("label_pos")
@@ -171,6 +183,8 @@ def build_ui(
                 if value is not None:
                     params.setdefault("value", value)
                 widget = _make_widget("slider", parent_node, **params)
+        elif kind == "wait_bar":
+            widget = _make_widget("wait_bar", parent_node, **params)
         elif kind == "entry":
             widget = _make_widget("entry", parent_node, **params)
         elif kind == "label":

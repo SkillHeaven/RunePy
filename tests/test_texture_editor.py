@@ -11,10 +11,26 @@ class StubFrame:
         self.hidden = False
 
 class StubButton:
-    def __init__(self, parent=None, text="", scale=0.0, pos=(0,0,0), command=None, **kw):
-        self.command = command
+    def __init__(self, **kw):
+        self.command = kw.get('command')
     def __setitem__(self, key, val):
         pass
+
+
+def fake_create_ui(layout, manager=None, parent=None):
+    frame = StubFrame()
+    widgets = {}
+    def walk(node):
+        name = node.get('name')
+        typ = node.get('type')
+        if typ == 'button':
+            widgets[name] = StubButton()
+        elif name:
+            widgets[name] = object()
+        for child in node.get('children', []):
+            walk(child)
+    walk(layout)
+    return frame, widgets
 
 class _FakeClient:
     def __init__(self):
@@ -28,12 +44,11 @@ class _FakeClient:
 
 def test_texture_paint(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr('runepy.texture_editor.DirectFrame', StubFrame)
-    monkeypatch.setattr('runepy.texture_editor.DirectButton', StubButton)
+    monkeypatch.setattr('runepy.texture_editor.create_ui', fake_create_ui)
     world = World(view_radius=1)
     client = _FakeClient()
     editor = MapEditor(client, world)
-    monkeypatch.setattr('runepy.map_editor.get_tile_from_mouse', lambda *a: (0, 0))
+    monkeypatch.setattr('runepy.map_editor.get_tile_from_mouse', lambda *a: (0,0))
 
     editor.open_texture_editor()
     editor.texture_editor.set_color(123)

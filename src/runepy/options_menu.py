@@ -6,6 +6,8 @@ from direct.gui.DirectGui import (
 )
 from panda3d.core import TextNode
 from direct.showbase.DirectObject import DirectObject
+from runepy.ui.common import create_ui
+from runepy.ui.layouts import OPTIONS_MENU_LAYOUT
 
 
 class KeyBindingManager(DirectObject):
@@ -61,45 +63,17 @@ class OptionsMenu:
         if self.visible:
             return
         self.visible = True
-        self.frame = DirectFrame(
-            frameColor=(0, 0, 0, 0.7),
-            frameSize=(-0.7, 0.7, -0.6, 0.6),
-        )
+        layout = dict(OPTIONS_MENU_LAYOUT)
+        children = list(layout.get("children", []))
         y = 0.5
         self.entries = {}
         for action, key in self.manager.bindings.items():
-            DirectLabel(
-                text=action,
-                pos=(-0.6, 0, y),
-                scale=0.05,
-                parent=self.frame,
-                text_align=TextNode.ALeft,
-            )
-            entry = DirectEntry(
-                initialText=key,
-                pos=(0.0, 0, y),
-                scale=0.05,
-                width=10,
-                numLines=1,
-                focus=0,
-                parent=self.frame,
-            )
-            self.entries[action] = entry
+            children.append({"type": "label", "text": action, "pos": (-0.6, 0, y), "scale": 0.05, "text_align": TextNode.ALeft})
+            children.append({"type": "entry", "name": f"entry_{action}", "initialText": key, "pos": (0.0, 0, y), "scale": 0.05, "width": 10, "numLines": 1, "focus": 0})
             y -= 0.1
-        DirectButton(
-            text="Save",
-            command=self.apply,
-            pos=(-0.2, 0, -0.5),
-            scale=0.05,
-            parent=self.frame,
-        )
-        DirectButton(
-            text="Close",
-            command=self.close,
-            pos=(0.2, 0, -0.5),
-            scale=0.05,
-            parent=self.frame,
-        )
+        layout["children"] = children
+        self.frame, widgets = create_ui(layout, self)
+        self.entries = {a: widgets.get(f"entry_{a}") for a in self.manager.bindings}
 
     def apply(self):
         for action, entry in self.entries.items():

@@ -12,32 +12,34 @@ class FakeBase:
     def ignore(self, evt: str, func=None):
         self.ignored.append(evt)
 
-
 class StubFrame:
     def __init__(self, **kw):
         self.kw = kw
         self.destroyed = False
-
     def destroy(self):
         self.destroyed = True
 
-
-class StubLabel:
-    def __init__(self, **kw):
-        pass
-
-
 class StubEntry:
-    def __init__(self, initialText='', **kw):
+    def __init__(self, initialText="", **kw):
         self.text = initialText
-
     def get(self):
         return self.text
 
 
-class StubButton:
-    def __init__(self, text='', command=None, **kw):
-        self.command = command
+def fake_create_ui(layout, manager=None, parent=None):
+    frame = StubFrame()
+    widgets = {}
+    def walk(node):
+        name = node.get("name")
+        typ = node.get("type")
+        if typ == "entry":
+            widgets[name] = StubEntry(node.get("initialText", ""))
+        elif name:
+            widgets[name] = object()
+        for child in node.get("children", []):
+            walk(child)
+    walk(layout)
+    return frame, widgets
 
 
 def test_open_apply_close(monkeypatch):
@@ -45,10 +47,7 @@ def test_open_apply_close(monkeypatch):
     mgr = KeyBindingManager(base, {"jump": "space"})
     menu = OptionsMenu(base, mgr)
 
-    monkeypatch.setattr("runepy.options_menu.DirectFrame", StubFrame)
-    monkeypatch.setattr("runepy.options_menu.DirectLabel", StubLabel)
-    monkeypatch.setattr("runepy.options_menu.DirectEntry", StubEntry)
-    monkeypatch.setattr("runepy.options_menu.DirectButton", StubButton)
+    monkeypatch.setattr("runepy.options_menu.create_ui", fake_create_ui)
 
     menu.open()
     assert menu.visible

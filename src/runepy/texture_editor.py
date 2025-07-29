@@ -8,6 +8,8 @@ except Exception:  # pragma: no cover - Panda3D may be missing
     DirectFrame = object  # type: ignore
     DirectButton = object  # type: ignore
 
+from runepy.ui.common import create_ui
+from runepy.ui.layouts import TEXTURE_EDITOR_LAYOUT
 from typing import Any
 
 from constants import REGION_SIZE
@@ -20,56 +22,27 @@ class TextureEditor:
     def __init__(self, base: Any, world) -> None:
         self.base = base
         self.world = world
-        self.frame = None
         self.selected_color = 0
         self.region = None
         self.lx = None
         self.ly = None
         self._orig_click_handler = None
-        if DirectFrame is not object:
-            self.frame = DirectFrame(
-                frameColor=(0, 0, 0, 1),
-                frameSize=(-0.6, 0.6, -0.6, 0.6),
-                pos=(0, 0, 0.2),
-            )
+        self.frame, widgets = create_ui(TEXTURE_EDITOR_LAYOUT, self)
+        if hasattr(self.frame, "hide"):
             self.frame.hide()
-            palette = [0, 64, 128, 192, 255]
-            step = 0.24
-            for i, val in enumerate(palette):
-                btn = DirectButton(
-                    parent=self.frame,
-                    text="",
-                    frameColor=(val/255.0, val/255.0, val/255.0, 1),
-                    scale=0.05,
-                    pos=(-0.55 + i * step, 0, 0.45),
-                    command=lambda v=val: self.set_color(v),
-                )
-            # 16x16 grid of buttons for painting
-            self._grid_buttons = []
-            gstep = 0.07
-            start = -0.5
-            for y in range(16):
-                row = []
-                for x in range(16):
-                    btn = DirectButton(
-                        parent=self.frame,
-                        text="",
-                        scale=0.03,
-                        pos=(start + x * gstep, 0, 0.35 - y * gstep),
-                        command=lambda xx=x, yy=y: self.paint(xx, yy),
-                    )
-                    row.append(btn)
-                self._grid_buttons.append(row)
-            # optional close button
-            DirectButton(
-                parent=self.frame,
-                text="Close",
-                scale=0.05,
-                pos=(0, 0, -0.55),
-                command=self.close,
-            )
-        else:  # pragma: no cover - tests
-            self._grid_buttons = [[None for _ in range(16)] for _ in range(16)]
+        self._grid_buttons = [[widgets.get(f"cell_{x}_{y}") for x in range(16)] for y in range(16)]
+        for i, val in enumerate([0, 64, 128, 192, 255]):
+            btn = widgets.get(f"palette_{i}")
+            if btn is not None and hasattr(btn, "__setitem__"):
+                btn["command"] = lambda v=val: self.set_color(v)
+        for y in range(16):
+            for x in range(16):
+                btn = widgets.get(f"cell_{x}_{y}")
+                if btn is not None and hasattr(btn, "__setitem__"):
+                    btn["command"] = lambda xx=x, yy=y: self.paint(xx, yy)
+        close_btn = widgets.get("close_btn")
+        if close_btn is not None and hasattr(close_btn, "__setitem__"):
+            close_btn["command"] = self.close
 
     # ------------------------------------------------------------------
     def open(self, tile_x: int, tile_y: int) -> None:

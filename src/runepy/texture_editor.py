@@ -25,6 +25,7 @@ class TextureEditor:
         self.region = None
         self.lx = None
         self.ly = None
+        self._orig_click_handler = None
         if DirectFrame is not object:
             self.frame = DirectFrame(
                 frameColor=(0, 0, 0, 0.7),
@@ -65,6 +66,12 @@ class TextureEditor:
     # ------------------------------------------------------------------
     def open(self, tile_x: int, tile_y: int) -> None:
         """Open the editor for the given tile."""
+        if hasattr(self.base, "tile_click_event"):
+            try:
+                self._orig_click_handler = self.base.tile_click_event
+                self.base.ignore("mouse1")
+            except Exception:
+                self._orig_click_handler = None
         rx, ry = world_to_region(tile_x, tile_y)
         region = self.world.region_manager.loaded.get((rx, ry))
         if region is None:
@@ -89,6 +96,12 @@ class TextureEditor:
     def close(self) -> None:
         if self.frame is not None:
             self.frame.hide()
+        if self._orig_click_handler is not None:
+            try:
+                self.base.accept("mouse1", self._orig_click_handler)
+            except Exception:
+                pass
+            self._orig_click_handler = None
         self.region = None
         self.lx = None
         self.ly = None

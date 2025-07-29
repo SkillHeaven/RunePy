@@ -40,6 +40,13 @@ class EditorToolbar:
         )
         DirectButton(
             parent=self.frame,
+            text="Texture",
+            scale=0.05,
+            pos=(0.5, 0, 0),
+            command=self.editor.open_texture_editor,
+        )
+        DirectButton(
+            parent=self.frame,
             text="Load",
             scale=0.05,
             pos=(0.8, 0, 0),

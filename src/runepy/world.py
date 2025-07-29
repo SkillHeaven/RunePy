@@ -158,7 +158,9 @@ class World:
         coord = (x, y)
         if self._hovered == coord:
             return
-        self.highlight_quad.setPos(x * self.tile_size, y * self.tile_size, 0.05)
+        self.highlight_quad.setPos(
+            (x + 0.5) * self.tile_size, (y + 0.5) * self.tile_size, 0.05
+        )
         self.highlight_quad.show()
         self._hovered = coord
 

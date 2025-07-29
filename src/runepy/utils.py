@@ -1,5 +1,6 @@
 # Utility functions shared across modules
 from panda3d.core import MouseWatcher, Plane, Point3, Vec3
+import math
 
 
 def get_mouse_tile_coords(
@@ -32,8 +33,8 @@ def get_mouse_tile_coords(
         plane = Plane(Vec3(0, 0, 1), Point3(0, 0, 0))
         intersection = Point3()
         if plane.intersectsLine(intersection, near_world, far_world):
-            tile_x = round(intersection.getX())
-            tile_y = round(intersection.getY())
+            tile_x = math.floor(intersection.getX())
+            tile_y = math.floor(intersection.getY())
             return mpos, tile_x, tile_y
     return None, None, None
 

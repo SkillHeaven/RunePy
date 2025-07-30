@@ -51,4 +51,5 @@ def disable() -> None:
     sys.settrace(None)
     root = logging.getLogger()
     root.removeHandler(_verbose_handler)
+    root.setLevel(logging.INFO)
     _enabled = False

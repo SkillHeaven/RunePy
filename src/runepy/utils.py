@@ -84,7 +84,7 @@ def suspend_mouse_click(base):
             handler = getattr(base, "tile_click_event", None)
         if handler is not None:
             try:
-                base.ignore("mouse1", handler)
+                base.ignore("mouse1")
             except Exception:  # pragma: no cover - ignore failures
                 handler = None
     try:

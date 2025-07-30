@@ -1,6 +1,6 @@
 import gzip
-from pathlib import Path
 
+from runepy.paths import MAPS_DIR
 import numpy as np
 from runepy.world.region import Region
 from constants import REGION_SIZE
@@ -27,7 +27,7 @@ def test_region_round_trip(tmp_path, monkeypatch):
 
 def test_region_load_v1(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
-    path = Path("maps") / "region_0_0.bin"
+    path = MAPS_DIR / "region_0_0.bin"
     path.parent.mkdir(parents=True)
 
     size = REGION_SIZE * REGION_SIZE

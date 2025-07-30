@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import gzip
 from dataclasses import dataclass
-from pathlib import Path
 from typing import ClassVar, Tuple
 
 import numpy as np
+from runepy.paths import MAPS_DIR
 
 from constants import REGION_SIZE
 
@@ -53,7 +53,7 @@ class Region:
     @classmethod
     def load(cls, rx: int, ry: int) -> "Region":
         """Load region ``(rx, ry)`` from disk or create a new one."""
-        path = Path("maps") / f"region_{rx}_{ry}.bin"
+        path = MAPS_DIR / f"region_{rx}_{ry}.bin"
         size = REGION_SIZE * REGION_SIZE
         texels = 16 * 16
         if path.exists():
@@ -81,7 +81,7 @@ class Region:
 
     def save(self) -> None:
         """Write this region back to disk."""
-        path = Path("maps") / f"region_{self.rx}_{self.ry}.bin"
+        path = MAPS_DIR / f"region_{self.rx}_{self.ry}.bin"
         path.parent.mkdir(parents=True, exist_ok=True)
         with gzip.open(path, "wb") as f:
             f.write(self.FILE_VERSION.to_bytes(2, "little"))

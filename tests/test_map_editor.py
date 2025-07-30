@@ -8,6 +8,7 @@ for mod in modules:
     importlib.import_module(mod)
 
 from runepy.map_editor import MapEditor
+from runepy.paths import MAPS_DIR
 from runepy.world.world import World
 from runepy.terrain import FLAG_BLOCKED
 
@@ -51,7 +52,7 @@ def test_save_and_load_map(tmp_path, monkeypatch):
 
     region.overlay[1, 1] = 1
     editor.save_map()
-    map_file = tmp_path / 'maps' / 'region_0_0.bin'
+    map_file = tmp_path / MAPS_DIR / 'region_0_0.bin'
     assert map_file.exists()
 
     region.overlay[1, 1] = 0

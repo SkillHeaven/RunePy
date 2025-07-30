@@ -17,6 +17,17 @@ class MapEditor:
         self.mode = "tile"
         self.texture_editor = TextureEditor(client, world)
 
+    def _get_mouse_tile(self):
+        """Return the tile coordinates under the mouse or ``None``."""
+        tile_x, tile_y = get_tile_from_mouse(
+            self.client.mouseWatcherNode,
+            self.client.camera,
+            self.client.render,
+        )
+        if tile_x is None:
+            return None
+        return tile_x, tile_y
+
     def register_bindings(self, key_manager):
         """Register editor actions with ``key_manager``."""
         key_manager.bind("toggle_tile", self.toggle_tile)
@@ -59,25 +70,19 @@ class MapEditor:
     def toggle_tile(self):
         if self.client.options_menu.visible:
             return
-        tile_x, tile_y = get_tile_from_mouse(
-            self.client.mouseWatcherNode,
-            self.client.camera,
-            self.client.render,
-        )
-        if tile_x is None:
+        pos = self._get_mouse_tile()
+        if pos is None:
             return
+        tile_x, tile_y = pos
         self._toggle_region_value(tile_x, tile_y, "flags")
 
     def toggle_interactable(self):
         if self.client.options_menu.visible:
             return
-        tile_x, tile_y = get_tile_from_mouse(
-            self.client.mouseWatcherNode,
-            self.client.camera,
-            self.client.render,
-        )
-        if tile_x is None:
+        pos = self._get_mouse_tile()
+        if pos is None:
             return
+        tile_x, tile_y = pos
         self._toggle_region_value(tile_x, tile_y, "overlay")
     def open_texture_editor(self):
         if self.client.options_menu.visible:
@@ -85,13 +90,10 @@ class MapEditor:
         if self.texture_editor.region is not None:
             self.texture_editor.close()
             return
-        tile_x, tile_y = get_tile_from_mouse(
-            self.client.mouseWatcherNode,
-            self.client.camera,
-            self.client.render,
-        )
-        if tile_x is None:
+        pos = self._get_mouse_tile()
+        if pos is None:
             return
+        tile_x, tile_y = pos
         self.texture_editor.open(tile_x, tile_y)
 
 

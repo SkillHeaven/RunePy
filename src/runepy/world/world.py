@@ -212,15 +212,17 @@ class World:
         # Ensure regions around the center are present
         self.region_manager.ensure(center_x, center_y)
 
-        stitched = np.block(
-            [
-                [
-                    ((self.region_manager.loaded[(rx + i, ry + j)].flags & FLAG_BLOCKED) == 0)
-                    for i in (-1, 0, 1)
-                ]
-                for j in (-1, 0, 1)
-            ]
-        )
+        size = REGION_SIZE
+        stitched = np.empty((size * 3, size * 3), dtype=bool)
+
+        for row, j in enumerate((-1, 0, 1)):
+            for col, i in enumerate((-1, 0, 1)):
+                flags = self.region_manager.loaded[(rx + i, ry + j)].flags
+                region_mask = (flags & FLAG_BLOCKED) == 0
+                stitched[
+                    row * size : (row + 1) * size,
+                    col * size : (col + 1) * size,
+                ] = region_mask
 
         offset_x = (rx - 1) * REGION_SIZE
         offset_y = (ry - 1) * REGION_SIZE

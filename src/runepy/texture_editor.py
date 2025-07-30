@@ -26,7 +26,7 @@ class TextureEditor:
         self.region = None
         self.lx = None
         self.ly = None
-        self._orig_click_handler = None
+        self._click_ctx = None
         self.frame, widgets = create_ui(TEXTURE_EDITOR_LAYOUT, self)
         if hasattr(self.frame, "hide"):
             self.frame.hide()
@@ -47,15 +47,10 @@ class TextureEditor:
     # ------------------------------------------------------------------
     def open(self, tile_x: int, tile_y: int) -> None:
         """Open the editor for the given tile."""
-        if hasattr(self.base, "tile_click_event") or hasattr(self.base, "tile_click_event_ref"):
-            try:
-                handler = getattr(self.base, "tile_click_event_ref", None)
-                if handler is None:
-                    handler = self.base.tile_click_event
-                self._orig_click_handler = handler
-                self.base.ignore("mouse1", handler)
-            except Exception:
-                self._orig_click_handler = None
+        from runepy.utils import suspend_mouse_click
+        if self._click_ctx is None:
+            self._click_ctx = suspend_mouse_click(self.base)
+            self._click_ctx.__enter__()
         rx, ry = world_to_region(tile_x, tile_y)
         region = self.world.region_manager.loaded.get((rx, ry))
         if region is None:
@@ -80,12 +75,9 @@ class TextureEditor:
     def close(self) -> None:
         if self.frame is not None:
             self.frame.hide()
-        if self._orig_click_handler is not None:
-            try:
-                self.base.accept("mouse1", self._orig_click_handler)
-            except Exception:
-                pass
-            self._orig_click_handler = None
+        if self._click_ctx is not None:
+            self._click_ctx.__exit__(None, None, None)
+            self._click_ctx = None
         self.region = None
         self.lx = None
         self.ly = None

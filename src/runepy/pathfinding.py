@@ -1,7 +1,6 @@
 # pathfinding.py
 
 import heapq
-from dataclasses import dataclass
 from typing import Iterable, Tuple, Union
 
 import logging
@@ -12,15 +11,6 @@ from direct.interval.IntervalGlobal import Sequence, Func
 import numpy as np
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass(order=True)
-class Node:  # pragma: no cover - retained for API compatibility
-    position: tuple
-    parent: "Node" = None
-    g: float = 0
-    h: float = 0
-    f: float = 0
 
 
 def a_star(

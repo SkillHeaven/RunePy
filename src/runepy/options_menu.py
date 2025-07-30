@@ -8,6 +8,7 @@ from panda3d.core import TextNode
 from direct.showbase.DirectObject import DirectObject
 from runepy.ui.common import create_ui
 from runepy.ui.layouts import OPTIONS_MENU_LAYOUT
+import copy
 
 
 class KeyBindingManager(DirectObject):
@@ -63,7 +64,7 @@ class OptionsMenu:
         if self.visible:
             return
         self.visible = True
-        layout = dict(OPTIONS_MENU_LAYOUT)
+        layout = copy.deepcopy(OPTIONS_MENU_LAYOUT)
         children = list(layout.get("children", []))
         y = 0.5
         self.entries = {}

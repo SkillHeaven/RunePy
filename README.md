@@ -105,6 +105,8 @@ python -m runepy.ui_editor
 
 A window will open containing a grid of tiles. The world loads 64×64 regions dynamically as you explore, letting the map expand as needed. Clicking on a tile moves the smiley‑face character to that location using pathfinding. Use the mouse wheel to zoom the camera in or out.
 
+Enabling the editor also displays a small side panel listing the properties of the currently selected widget. Fields such as ``pos.x`` and ``scale`` can be updated in this panel and any changes take effect as soon as you press **Enter**.
+
 Zooming is always handled by the mouse wheel and cannot be changed. In the editor the camera pans up/down with ``W`` and ``S`` while the ``A`` and ``D`` keys for left/right movement remain rebindable.
 
 Press ``Esc`` in either mode to open an options menu where you can rebind the available controls, including the editor's side movement and save/load shortcuts. When this menu is visible, gameplay clicks are ignored so you can't interact with the world through the menu.

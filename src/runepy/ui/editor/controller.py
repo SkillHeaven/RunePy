@@ -39,18 +39,16 @@ class UIEditorController:
         self._widget_start = None
         self._gizmo: SelectionGizmo | None = None
         self._orig_color = None
-        self._orig_click_handler = None
+        self._click_ctx = None
 
     # ------------------------------------------------------------------
     def enable(self) -> None:
         if base is None:
             return
-        if hasattr(base, "tile_click_event"):
-            try:
-                self._orig_click_handler = base.tile_click_event
-                base.ignore("mouse1")
-            except Exception:
-                self._orig_click_handler = None
+        from runepy.utils import suspend_mouse_click
+        if hasattr(base, "tile_click_event") or hasattr(base, "tile_click_event_ref"):
+            self._click_ctx = suspend_mouse_click(base)
+            self._click_ctx.__enter__()
         base.accept("control-s", self._save)
         base.accept("arrow_up", lambda: self._nudge(0, 0.01))
         base.accept("arrow_down", lambda: self._nudge(0, -0.01))
@@ -92,12 +90,9 @@ class UIEditorController:
             base.ignore(key)
         base.ignore("mouse1")
         base.ignore("mouse1-up")
-        if self._orig_click_handler is not None:
-            try:
-                base.accept("mouse1", self._orig_click_handler)
-            except Exception:
-                pass
-            self._orig_click_handler = None
+        if self._click_ctx is not None:
+            self._click_ctx.__exit__(None, None, None)
+            self._click_ctx = None
         base.taskMgr.remove("ui-editor-move")
         if self._gizmo is not None:
             try:

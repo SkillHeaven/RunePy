@@ -1,6 +1,7 @@
 # Utility functions shared across modules
 from panda3d.core import MouseWatcher, Plane, Point3, Vec3
 import math
+from contextlib import contextmanager
 
 
 def get_mouse_tile_coords(
@@ -70,3 +71,27 @@ def update_tile_hover(
         world.clear_highlight()
 
     return mpos, tile_x, tile_y
+
+
+@contextmanager
+def suspend_mouse_click(base):
+    """Temporarily disable the base ``mouse1`` handler."""
+
+    handler = None
+    if base is not None:
+        handler = getattr(base, "tile_click_event_ref", None)
+        if handler is None:
+            handler = getattr(base, "tile_click_event", None)
+        if handler is not None:
+            try:
+                base.ignore("mouse1", handler)
+            except Exception:  # pragma: no cover - ignore failures
+                handler = None
+    try:
+        yield
+    finally:
+        if base is not None and handler is not None:
+            try:
+                base.accept("mouse1", handler)
+            except Exception:  # pragma: no cover - ignore failures
+                pass

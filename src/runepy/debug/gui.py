@@ -17,7 +17,7 @@ class DebugWindow(DirectFrame):
         super().__init__()
         self.manager = manager
         self.widgets = build_ui(self, L, manager)
-        self._orig_click_handler = None
+        self._click_ctx = None
         # Keep children clipped inside the window frame
         if hasattr(self, "setClipFrame") and "frameSize" in self:
             try:
@@ -28,36 +28,17 @@ class DebugWindow(DirectFrame):
 
     # ------------------------------------------------------------------
     def toggleVisible(self):
+        from runepy.utils import suspend_mouse_click
         if self.isHidden():
             self.show()
-            self._suspend_click()
+            base = getattr(self.manager, "base", None)
+            self._click_ctx = suspend_mouse_click(base)
+            self._click_ctx.__enter__()
         else:
             self.hide()
-            self._restore_click()
-
-    def _suspend_click(self) -> None:
-        base = getattr(self.manager, "base", None)
-        handler = None
-        if base is not None:
-            handler = getattr(base, "tile_click_event_ref", None)
-            if handler is None:
-                handler = getattr(base, "tile_click_event", None)
-            if handler is not None:
-                try:
-                    base.ignore("mouse1", handler)
-                except Exception:
-                    handler = None
-        self._orig_click_handler = handler
-
-    def _restore_click(self) -> None:
-        base = getattr(self.manager, "base", None)
-        handler = self._orig_click_handler
-        if base is not None and handler is not None:
-            try:
-                base.accept("mouse1", handler)
-            except Exception:
-                pass
-        self._orig_click_handler = None
+            if self._click_ctx is not None:
+                self._click_ctx.__exit__(None, None, None)
+                self._click_ctx = None
 
     def refresh_task(self, task: "Task"):
         if "stats" not in self.widgets:

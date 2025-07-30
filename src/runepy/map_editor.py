@@ -34,6 +34,28 @@ class MapEditor:
             self.toggle_interactable()
 
 
+    def _toggle_region_value(self, tile_x: int, tile_y: int, array_name: str) -> None:
+        """Toggle a value within a region array and refresh the mesh."""
+        rx, ry = world_to_region(tile_x, tile_y)
+        region = self.world.region_manager.loaded.get((rx, ry))
+        if region is None:
+            self.world.region_manager.ensure(tile_x, tile_y)
+            region = self.world.region_manager.loaded.get((rx, ry))
+            if region is None:
+                return
+        lx, ly = local_tile(tile_x, tile_y)
+        array = getattr(region, array_name)
+        array[ly, lx] ^= 1
+        region.make_mesh()
+        if region.node is not None:
+            parent = getattr(self.client, "tile_root", self.client.render)
+            region.node.reparentTo(parent)
+            region.node.setPos(
+                region.rx * REGION_SIZE,
+                region.ry * REGION_SIZE,
+                0,
+            )
+
     def toggle_tile(self):
         if self.client.options_menu.visible:
             return
@@ -44,24 +66,7 @@ class MapEditor:
         )
         if tile_x is None:
             return
-        rx, ry = world_to_region(tile_x, tile_y)
-        region = self.world.region_manager.loaded.get((rx, ry))
-        if region is None:
-            self.world.region_manager.ensure(tile_x, tile_y)
-            region = self.world.region_manager.loaded.get((rx, ry))
-            if region is None:
-                return
-        lx, ly = local_tile(tile_x, tile_y)
-        region.flags[ly, lx] ^= FLAG_BLOCKED
-        region.make_mesh()
-        if region.node is not None:
-            parent = getattr(self.client, "tile_root", self.client.render)
-            region.node.reparentTo(parent)
-            region.node.setPos(
-                region.rx * REGION_SIZE,
-                region.ry * REGION_SIZE,
-                0,
-            )
+        self._toggle_region_value(tile_x, tile_y, "flags")
 
     def toggle_interactable(self):
         if self.client.options_menu.visible:
@@ -73,24 +78,7 @@ class MapEditor:
         )
         if tile_x is None:
             return
-        rx, ry = world_to_region(tile_x, tile_y)
-        region = self.world.region_manager.loaded.get((rx, ry))
-        if region is None:
-            self.world.region_manager.ensure(tile_x, tile_y)
-            region = self.world.region_manager.loaded.get((rx, ry))
-            if region is None:
-                return
-        lx, ly = local_tile(tile_x, tile_y)
-        region.overlay[ly, lx] ^= 1
-        region.make_mesh()
-        if region.node is not None:
-            parent = getattr(self.client, "tile_root", self.client.render)
-            region.node.reparentTo(parent)
-            region.node.setPos(
-                region.rx * REGION_SIZE,
-                region.ry * REGION_SIZE,
-                0,
-            )
+        self._toggle_region_value(tile_x, tile_y, "overlay")
     def open_texture_editor(self):
         if self.client.options_menu.visible:
             return

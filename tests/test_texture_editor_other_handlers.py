@@ -22,7 +22,7 @@ class _MultiBase:
         self.other = getattr(self, 'other', 0) + 1
 
 
-def test_other_handlers_survive(monkeypatch, tmp_path):
+def test_other_handlers_removed(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     base = _MultiBase()
     world = World(view_radius=1)
@@ -39,14 +39,15 @@ def test_other_handlers_survive(monkeypatch, tmp_path):
     base.other = 0
 
     editor.open(0, 0)
+    assert 'mouse1' not in base.accepted
     if 'mouse1' in base.accepted:
         for f in list(base.accepted['mouse1']):
             f()
     assert base.clicked == 0
-    assert base.other == 1
+    assert base.other == 0
 
     editor.close()
     for f in list(base.accepted['mouse1']):
         f()
     assert base.clicked == 1
-    assert base.other == 2
+    assert base.other == 0

@@ -11,9 +11,11 @@ except Exception:  # pragma: no cover - Panda3D may be missing
     Task = object  # type: ignore
 
 try:
-    from direct.gui.DirectGui import DirectFrame
+    from direct.gui.DirectGui import DirectFrame, DirectEntry, DirectLabel
 except Exception:  # pragma: no cover - Panda3D may be missing
     DirectFrame = object  # type: ignore
+    DirectEntry = object  # type: ignore
+    DirectLabel = object  # type: ignore
 
 from pathlib import Path
 from typing import Any
@@ -40,11 +42,50 @@ class UIEditorController:
         self._gizmo: SelectionGizmo | None = None
         self._orig_color = None
         self._click_ctx = None
+        self._inspector = None
+        self._inspector_x = None
+        self._inspector_scale = None
 
     # ------------------------------------------------------------------
     def enable(self) -> None:
         if base is None:
             return
+        if self._inspector is None and DirectFrame is not object:
+            try:
+                self._inspector = DirectFrame(frameColor=(0, 0, 0, 0.3), frameSize=(-0.25, 0.25, -0.1, 0.1))
+                if hasattr(self._inspector, "setBin"):
+                    try:
+                        self._inspector.setBin("fixed", 100)
+                    except Exception:
+                        pass
+                DirectLabel(parent=self._inspector, text="pos.x", pos=(-0.22, 0, 0.05), scale=0.05)
+                self._inspector_x = DirectEntry(
+                    parent=self._inspector,
+                    pos=(-0.05, 0, 0.05),
+                    scale=0.05,
+                    width=8,
+                    numLines=1,
+                    focus=0,
+                )
+                if hasattr(self._inspector_x, "__setitem__"):
+                    self._inspector_x["command"] = self._on_prop_change
+                    self._inspector_x["extraArgs"] = ["pos.x"]
+                DirectLabel(parent=self._inspector, text="scale", pos=(-0.22, 0, -0.05), scale=0.05)
+                self._inspector_scale = DirectEntry(
+                    parent=self._inspector,
+                    pos=(-0.05, 0, -0.05),
+                    scale=0.05,
+                    width=8,
+                    numLines=1,
+                    focus=0,
+                )
+                if hasattr(self._inspector_scale, "__setitem__"):
+                    self._inspector_scale["command"] = self._on_prop_change
+                    self._inspector_scale["extraArgs"] = ["scale"]
+            except Exception:
+                self._inspector = None
+                self._inspector_x = None
+                self._inspector_scale = None
         from runepy.utils import suspend_mouse_click
         if hasattr(base, "tile_click_event") or hasattr(base, "tile_click_event_ref"):
             self._click_ctx = suspend_mouse_click(base)
@@ -172,6 +213,7 @@ class UIEditorController:
         self._drag_start = mpos
         if hasattr(widget, "getPos"):
             self._widget_start = widget.getPos()
+        self._update_inspector(widget)
         if self._gizmo is None:
             try:
                 self._gizmo = SelectionGizmo(widget)
@@ -226,6 +268,53 @@ class UIEditorController:
         pos = widget.getPos()
         widget.setPos(pos[0] + dx, 0, pos[2] + dz)
         self._gizmo.update()
+
+    def _update_inspector(self, widget: Any) -> None:
+        if self._inspector_x is not None and hasattr(widget, "getPos"):
+            try:
+                pos = widget.getPos()
+                if hasattr(self._inspector_x, "enterText"):
+                    self._inspector_x.enterText(f"{pos[0]:.3f}")
+                elif hasattr(self._inspector_x, "set"):
+                    self._inspector_x.set(f"{pos[0]:.3f}")
+                else:
+                    self._inspector_x["text"] = f"{pos[0]:.3f}"  # type: ignore[index]
+            except Exception:
+                pass
+        if self._inspector_scale is not None and hasattr(widget, "getScale"):
+            try:
+                scale = widget.getScale()
+                if hasattr(scale, "__getitem__"):
+                    scale = scale[0]
+                if hasattr(self._inspector_scale, "enterText"):
+                    self._inspector_scale.enterText(f"{float(scale):.3f}")
+                elif hasattr(self._inspector_scale, "set"):
+                    self._inspector_scale.set(f"{float(scale):.3f}")
+                else:
+                    self._inspector_scale["text"] = f"{float(scale):.3f}"  # type: ignore[index]
+            except Exception:
+                pass
+
+    def _on_prop_change(self, value: str, prop: str) -> None:
+        if self._gizmo is None:
+            return
+        widget = self._gizmo.target
+        if widget is None:
+            return
+        try:
+            val = float(value)
+        except Exception:
+            return
+        if prop == "pos.x" and hasattr(widget, "getPos") and hasattr(widget, "setPos"):
+            pos = widget.getPos()
+            widget.setPos(val, 0, pos[2])
+        elif prop == "scale" and hasattr(widget, "setScale"):
+            widget.setScale(val)
+        if self._gizmo is not None:
+            try:
+                self._gizmo.update()
+            except Exception:
+                pass
 
     def _save(self, path: str | Path = Path("config/debug_layout.json")) -> None:
         path = Path(path)

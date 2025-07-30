@@ -1,5 +1,6 @@
 import logging
 import sys
+import atexit
 from types import FrameType
 from .logging_config import LOG_DIR
 
@@ -15,12 +16,17 @@ def _trace(frame: FrameType, event: str, arg):
         code = frame.f_code
         name = f"{code.co_filename}:{code.co_name}:{frame.f_lineno}"
         if event == "call":
-            logger.debug("CALL %s", name)
+            if logger:
+                logger.debug("CALL %s", name)
         elif event == "return":
-            logger.debug("RETURN %s", name)
+            if logger:
+                logger.debug("RETURN %s", name)
         elif event == "exception":
             exc_type, exc_val, _ = arg
-            logger.debug("EXCEPTION %s %s: %s", name, exc_type.__name__, exc_val)
+            if logger:
+                logger.debug(
+                    "EXCEPTION %s %s: %s", name, exc_type.__name__, exc_val
+                )
     return _trace
 
 
@@ -33,6 +39,7 @@ def enable() -> None:
     root.setLevel(logging.DEBUG)
     root.addHandler(_verbose_handler)
     sys.settrace(_trace)
+    atexit.register(disable)
     _enabled = True
 
 

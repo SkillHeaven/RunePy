@@ -157,9 +157,11 @@ manager.update(70, 20)  # moves into the next region triggering load/unload
 ## Logging
 
 Logging is configured automatically when the package is imported.
-Messages are written to `logs/runepy.log` with warnings in `logs/warnings.log` and errors in `logs/errors.log`.
+Messages are written to `logs/runepy.log` while warnings and errors are routed
+to `logs/warnings.log` and `logs/errors.log` respectively. Only records for the
+matching level are written to these warning and error files.
 Passing `--verbose` to the command line entry point enables tracing of all
-function calls and writes them to `logs/verbose.log`.
+function calls and writes them exclusively to `logs/verbose.log`.
 
 ## Utilities
 

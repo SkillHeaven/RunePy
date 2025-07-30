@@ -20,9 +20,10 @@ class NullDebugManager:
 
     def __init__(self) -> None:
         self.window = None
+        self.base = None
 
     def attach(self, base: Any | None = None) -> None:
-        pass
+        self.base = base
 
     def enable(self) -> None:
         pass
@@ -54,11 +55,10 @@ class DebugManager:
         self._orig_pos = None
 
     def enable(self) -> None:
-        if self.window is None:
+        if self.window is None or self.base is None:
             return
         try:
-            from direct.showbase.ShowBaseGlobal import taskMgr
-            taskMgr.doMethodLater(0.5, self.window.refresh_task, "dbg-refresh")
+            self.base.taskMgr.doMethodLater(0.5, self.window.refresh_task, "dbg-refresh")
         except Exception:
             pass
 
@@ -70,14 +70,10 @@ class DebugManager:
             self.window.show()
         else:
             self.window.hide()
-
     def _start_drag(self, _evt: Any | None = None) -> None:
-        if self.window is None:
+        if self.window is None or self.base is None:
             return
-        try:
-            from direct.showbase.ShowBaseGlobal import base
-        except Exception:
-            return
+        base = self.base
         if not base.mouseWatcherNode.hasMouse():
             return
         self._drag_start = base.mouseWatcherNode.getMouse()
@@ -92,12 +88,10 @@ class DebugManager:
             self.window is None
             or self._drag_start is None
             or self._orig_pos is None
+            or self.base is None
         ):
             return task.done
-        try:
-            from direct.showbase.ShowBaseGlobal import base
-        except Exception:
-            return task.done
+        base = self.base
         if not base.mouseWatcherNode.hasMouse():
             return task.cont
         cur = base.mouseWatcherNode.getMouse()
@@ -105,25 +99,25 @@ class DebugManager:
         dy = cur[1] - self._drag_start[1]
         self.window.setPos(self._orig_pos[0] + dx, 0, self._orig_pos[2] + dy)
         return task.cont
-
     def _end_drag(self, _evt: Any | None = None) -> None:
         self._drag_start = None
         self._orig_pos = None
         try:
-            from direct.showbase.ShowBaseGlobal import base
-            base.taskMgr.remove("debug-drag")
+            if self.base:
+                self.base.taskMgr.remove("debug-drag")
         except Exception:
             pass
-
     def _stats(self):
         try:
-            from direct.showbase.ShowBaseGlobal import base, render
+            base = self.base
+            if base is None:
+                return 0, 0
             world = getattr(base, "world", None)
             if world is None:
                 return 0, 0
             rm = world.region_manager
             regions = len(rm.loaded)
-            geoms = render.findAllMatches("**/+GeomNode").getNumPaths()
+            geoms = base.render.findAllMatches("**/+GeomNode").getNumPaths()
             return regions, geoms
         except Exception:
             return 0, 0
@@ -147,19 +141,21 @@ class DebugManager:
 
     def toggle_pstats(self):
         try:
-            from direct.showbase.ShowBaseGlobal import base
-            if getattr(base, "pstats", None):
-                base.stopPStats()
-            else:
-                base.startPStats("localhost", 5185)
+            if self.base and getattr(self.base, "pstats", None):
+                self.base.stopPStats()
+            elif self.base:
+                self.base.startPStats("localhost", 5185)
         except Exception:
             pass
 
     def reload_region(self):
         try:
-            from direct.showbase.ShowBaseGlobal import base
+            if self.base is None:
+                return
+            base = self.base
             from runepy.world.region import world_to_region, Region
             from constants import REGION_SIZE
+            world = getattr(base, "world", None)
             char = getattr(base, "character", None)
             if world is None or char is None:
                 return
@@ -182,7 +178,9 @@ class DebugManager:
 
     def get_avatar_speed(self) -> float:
         try:
-            from direct.showbase.ShowBaseGlobal import base
+            base = self.base
+            if base is None:
+                return 0.0
             return base.player.walk_speed
         except Exception:
             try:
@@ -192,7 +190,9 @@ class DebugManager:
 
     def set_avatar_speed(self, value: float) -> None:
         try:
-            from direct.showbase.ShowBaseGlobal import base
+            base = self.base
+            if base is None:
+                return
             if hasattr(base.player, "set_speed"):
                 base.player.set_speed(value)
             elif hasattr(base.character, "speed"):
@@ -202,29 +202,30 @@ class DebugManager:
 
     def get_cam_pan_speed(self) -> float:
         try:
-            from direct.showbase.ShowBaseGlobal import base
+            base = self.base
+            if base is None:
+                return 0.0
             return base.camera_ctl.pan_speed
         except Exception:
             return 0.0
 
     def set_cam_pan_speed(self, value: float) -> None:
         try:
-            from direct.showbase.ShowBaseGlobal import base
-            base.camera_ctl.set_pan_speed(value)
+            if self.base:
+                self.base.camera_ctl.set_pan_speed(value)
         except Exception:
             pass
 
     def get_zoom_step(self) -> float:
         try:
-            from direct.showbase.ShowBaseGlobal import base
-            return base.camera_ctl.zoom_step
+            return self.base.camera_ctl.zoom_step if self.base else 0.0
         except Exception:
             return 0.0
 
     def set_zoom_step(self, value: float) -> None:
         try:
-            from direct.showbase.ShowBaseGlobal import base
-            base.camera_ctl.set_zoom_step(value)
+            if self.base:
+                self.base.camera_ctl.set_zoom_step(value)
         except Exception:
             pass
 

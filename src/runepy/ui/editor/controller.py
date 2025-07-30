@@ -231,9 +231,9 @@ class UIEditorController:
         path = Path(path)
         try:
             dump_layout(self.root, path)
-            print("layout saved")
+            logger.info("Layout saved")
         except Exception as exc:  # pragma: no cover - can't save
-            print(f"failed to save layout: {exc}")
+            logger.exception("Failed to save layout", exc_info=exc)
 
 
 __all__ = ["UIEditorController"]

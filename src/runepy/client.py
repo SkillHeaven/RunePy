@@ -6,6 +6,7 @@ except Exception:  # pragma: no cover - Panda3D may be missing
     sbg = None
 from runepy.utils import update_tile_hover as util_update_tile_hover
 import argparse
+from runepy import verbose
 
 logger = logging.getLogger(__name__)
 
@@ -150,7 +151,15 @@ def main(args=None):
         default="game",
         help="Start in regular game mode or map editor",
     )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Enable verbose logging of all function calls",
+    )
     parsed = parser.parse_args(args)
+
+    if parsed.verbose:
+        verbose.enable()
 
     if parsed.mode == "editor":
         from runepy.editor_window import EditorWindow

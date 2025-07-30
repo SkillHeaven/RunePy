@@ -9,6 +9,7 @@ from .terrain import TerrainTile, FLAG_BLOCKED
 from .ui.manager import UIManager
 from .pathfinding import Pathfinder
 from .input_binder import InputBinder
+from . import verbose
 
 try:
     from .base_app import BaseApp
@@ -25,4 +26,5 @@ __all__ = [
     "UIManager",
     "Pathfinder",
     "InputBinder",
+    "verbose",
 ]

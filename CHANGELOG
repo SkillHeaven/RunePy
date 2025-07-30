@@ -1,2 +1,3 @@
 Add F1 Debug Window with live stats, actions, and variable tweaks
 Add data-driven debug window builder
+Add optional verbose logging via --verbose flag

@@ -43,9 +43,8 @@ class DebugWindow(DirectFrame):
     def refresh_task(self, task: "Task"):
         if "stats" not in self.widgets:
             return task.again
-        try:
-            from direct.showbase.ShowBaseGlobal import base, render
-        except Exception:
+        base = getattr(self.manager, "base", None)
+        if base is None:
             return task.again
         world = getattr(base, "world", None)
         if world is not None:
@@ -53,7 +52,7 @@ class DebugWindow(DirectFrame):
             regions = len(rm.loaded)
         else:
             regions = 0
-        geoms = render.findAllMatches("**/+GeomNode").getNumPaths()
+        geoms = base.render.findAllMatches("**/+GeomNode").getNumPaths()
         self.widgets["stats"]["text"] = (
             f"Regions: {regions:2d}\nGeoms:   {geoms:3d}"
         )

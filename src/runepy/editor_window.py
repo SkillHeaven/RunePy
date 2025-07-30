@@ -6,6 +6,7 @@ from runepy.map_editor import MapEditor
 from runepy.editor_toolbar import EditorToolbar
 from runepy.camera import FreeCameraControl
 from runepy.options_menu import KeyBindingManager, OptionsMenu
+from runepy.ui.editor import UIEditorController
 from runepy.controls import Controls
 from runepy.utils import update_tile_hover as util_update_tile_hover
 from runepy.debug import get_debug
@@ -40,6 +41,7 @@ class EditorWindow(BaseApp):
             "open_menu": "escape",
             "save_map": "control-s",
             "load_map": "control-l",
+            "toggle_ui_editor": "control-e",
             "toggle_tile": "mouse3",
             "toggle_interactable": "i",
             "move_left": "a",
@@ -49,8 +51,12 @@ class EditorWindow(BaseApp):
         self.options_menu = OptionsMenu(self, self.key_manager)
 
         self.key_manager.bind("open_menu", self.options_menu.toggle)
+        self.key_manager.bind("toggle_ui_editor", self._toggle_ui_editor)
         self.editor.register_bindings(self.key_manager)
         self.toolbar = EditorToolbar(self, self.editor)
+        toolbar_frame = getattr(self.toolbar, "frame", None)
+        self.ui_editor = UIEditorController(toolbar_frame)
+        self._ui_editor_enabled = False
         # Store the bound click handler so the texture editor can reliably
         # remove it without depending on ephemeral bound method objects.
         self.tile_click_event_ref = self.editor.handle_click
@@ -99,6 +105,14 @@ class EditorWindow(BaseApp):
     def load_map(self):
         self.editor.load_map()
         logger.info("Map loaded from map.json")
+
+    # ------------------------------------------------------------------
+    def _toggle_ui_editor(self) -> None:
+        if self._ui_editor_enabled:
+            self.ui_editor.disable()
+        else:
+            self.ui_editor.enable()
+        self._ui_editor_enabled = not self._ui_editor_enabled
 
 
 if __name__ == "__main__":

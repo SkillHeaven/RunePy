@@ -15,7 +15,8 @@ RunePy is a small demonstration project built with [Panda3D](https://www.panda3d
 - Individual tiles darken slightly when hovered to show the current mouse position
 - Loading screen displays progress messages during startup
 - Map regions stream in on demand as the player moves
-- Placeholder debug window toggled with ``F1``
+- Configurable controls managed by ``InputBinder`` and an in-game options menu
+- Debug window toggled with ``F1`` showing runtime stats and debug actions
 - Centralized UI manager for loading and toggling interfaces
 
 ## Repository Layout
@@ -23,18 +24,21 @@ RunePy is a small demonstration project built with [Panda3D](https://www.panda3d
 | File | Description |
 |------|-------------|
 | `src/runepy/client.py` | Entry point that opens the window. |
-| `src/runepy/world.py` | Map generation logic. |
+| `src/runepy/world/world.py` | Map generation logic. |
 | `src/runepy/map_editor.py` | Utilities for editing tiles. |
 | `src/runepy/character.py` | Represents the player model and movement logic. |
 | `src/runepy/camera.py` | Manages the camera position and orientation. |
 | `src/runepy/controls.py` | Handles mouse wheel zooming and other input bindings. |
+| `src/runepy/input_binder.py` | Binds keys and mouse events through the options menu. |
 | `src/runepy/collision.py` | Utilities for ray casting with Panda3D's collision system. |
 | `src/runepy/pathfinding.py` | Implementation of a basic A* search with optional weighted costs and movement patterns. |
+| `src/runepy/map_manager.py` | Loads and unloads 64×64 regions around the player. |
 | `src/runepy/debuginfo.py` | Draws onscreen debug text such as mouse and tile coordinates. |
 | `src/runepy/utils.py` | Shared helpers like `get_mouse_tile_coords`. |
 | `src/runepy/debug/manager.py` | Toggleable debug window and related tools. |
 | `src/runepy/ui/builder.py` | Constructs GUI widgets from layout dictionaries. |
 | `src/runepy/ui/manager.py` | Simple manager for loading and showing UIs. |
+| `src/runepy/options_menu.py` | Runtime menu for editing key bindings. |
 | `src/runepy/ui/editor` | Package providing the simple UI editor. |
 | `src/runepy/ui_editor.py` | Standalone UI editing window. |
 
@@ -105,8 +109,9 @@ Zooming is always handled by the mouse wheel and cannot be changed. In the edito
 
 Press ``Esc`` in either mode to open an options menu where you can rebind the available controls, including the editor's side movement and save/load shortcuts. When this menu is visible, gameplay clicks are ignored so you can't interact with the world through the menu.
 
-Press ``F1`` at any time to toggle a minimal debug window. The old stats and
-sliders have been removed while the feature is being reworked.
+Press ``F1`` at any time to toggle the debug window. This overlay is built using
+the UI builder and displays live region and geometry counts along with buttons
+for common debug actions.
 
 ## Configuration
 

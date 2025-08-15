@@ -30,6 +30,11 @@ class RegionManager(BaseRegionManager):
         if async_load:
             self._executor = ThreadPoolExecutor(max_workers=1)
 
+    
+    def clear_cache(self) -> None:
+        """Empty the region cache."""
+        self._cache.clear()
+
     # ------------------------------------------------------------------
     # Region helpers
     # ------------------------------------------------------------------

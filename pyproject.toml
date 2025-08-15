@@ -11,6 +11,11 @@ dependencies = [
     "numpy",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest-benchmark",
+]
+
 [project.scripts]
 runepy = "runepy.client:main"
 

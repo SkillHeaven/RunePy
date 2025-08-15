@@ -24,11 +24,14 @@ def a_star(
 
     ``grid`` may be a list-of-lists or :class:`numpy.ndarray` with ``1`` values
     indicating walkable tiles. ``start`` and ``end`` are grid coordinates using
-    ``(x, y)`` ordering starting at ``(0, 0)``.
+    ``(x, y)`` ordering starting at ``(0, 0)``. If no path exists, ``None`` is
+    returned.
     """
 
     def heuristic(a: Tuple[int, int], b: Tuple[int, int]) -> int:
-        return abs(a[0] - b[0]) + abs(a[1] - b[1])
+        dx = abs(a[0] - b[0])
+        dy = abs(a[1] - b[1])
+        return max(dx, dy)
 
     # Use numpy for fast indexing regardless of the initial grid type.
     grid = np.asarray(grid)

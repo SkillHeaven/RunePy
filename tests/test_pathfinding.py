@@ -64,3 +64,22 @@ def test_a_star_prefers_cheaper_diagonal():
     )
     assert path == [(0, 0), (1, 1), (2, 2)]
     assert (1, 0) not in path and (0, 1) not in path
+
+
+def test_a_star_no_path_exists():
+    grid = [
+        [1, 0],
+        [0, 1],
+    ]
+    path = pathfinding.a_star(grid, (0, 0), (1, 1))
+    assert path is None
+
+
+def test_a_star_diagonal_optimal_path():
+    grid = [
+        [1, 1, 1],
+        [1, 1, 1],
+        [1, 1, 1],
+    ]
+    path = pathfinding.a_star(grid, (0, 0), (2, 2))
+    assert path == [(0, 0), (1, 1), (2, 2)]

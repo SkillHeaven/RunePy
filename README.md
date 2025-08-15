@@ -144,6 +144,13 @@ view radius remain loaded. Region coordinates are computed with ``Rx = x //
 When the player crosses a region boundary, adjacent regions are loaded and old
 ones are unloaded automatically.
 
+The `RegionManager` now maintains a simple in-memory cache of previously loaded regions. Reloading a region that was unloaded is quicker because its tile data is reused from this cache. The cache has no size limit by default, but a maximum number of entries may be specified with the ``cache_size`` parameter::
+
+    from runepy.world.manager import RegionManager
+    mgr = RegionManager(view_radius=1, cache_size=128)
+
+Setting ``cache_size`` to ``None`` (the default) leaves the cache unbounded. Region loading times for profiling are recorded in ``Region.LOAD_TIMES``.
+
 ```python
 from runepy import MapManager
 

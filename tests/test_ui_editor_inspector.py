@@ -1,4 +1,5 @@
 import importlib
+import logging
 
 from runepy.ui.editor import controller as ctr
 
@@ -164,3 +165,26 @@ def test_inspector_updates_and_prop_changes(monkeypatch):
     assert child.getScale() == 2.0
 
     editor.disable()
+
+
+def test_inspector_widgets_survive_failures(monkeypatch, caplog):
+    class FailFrame(FakeFrame):
+        def setBin(self, *args):
+            raise RuntimeError("boom")
+
+    base = FakeBase()
+    monkeypatch.setattr(ctr, "base", base)
+    monkeypatch.setattr(ctr, "DirectFrame", FailFrame)
+    monkeypatch.setattr(ctr, "DirectLabel", FakeLabel)
+    monkeypatch.setattr(ctr, "DirectEntry", FakeEntry)
+
+    root = FakeWidget(frame=(-1, 1, -1, 1))
+    editor = ctr.UIEditorController(root)
+    caplog.set_level(logging.ERROR)
+
+    editor.enable()
+
+    assert isinstance(editor._inspector, FailFrame)
+    assert isinstance(editor._inspector_x, FakeEntry)
+    assert isinstance(editor._inspector_scale, FakeEntry)
+    assert "Failed to set inspector bin" in caplog.text

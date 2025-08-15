@@ -52,40 +52,68 @@ class UIEditorController:
             return
         if self._inspector is None and DirectFrame is not object:
             try:
-                self._inspector = DirectFrame(frameColor=(0, 0, 0, 0.3), frameSize=(-0.25, 0.25, -0.1, 0.1))
+                self._inspector = DirectFrame(
+                    frameColor=(0, 0, 0, 0.3), frameSize=(-0.25, 0.25, -0.1, 0.1)
+                )
+            except Exception:
+                logger.exception("Failed to create inspector frame")
+                self._inspector = None
+            else:
                 if hasattr(self._inspector, "setBin"):
                     try:
                         self._inspector.setBin("fixed", 100)
                     except Exception:
-                        pass
-                DirectLabel(parent=self._inspector, text="pos.x", pos=(-0.22, 0, 0.05), scale=0.05)
-                self._inspector_x = DirectEntry(
-                    parent=self._inspector,
-                    pos=(-0.05, 0, 0.05),
-                    scale=0.05,
-                    width=8,
-                    numLines=1,
-                    focus=0,
-                )
-                if hasattr(self._inspector_x, "__setitem__"):
-                    self._inspector_x["command"] = self._on_prop_change
-                    self._inspector_x["extraArgs"] = ["pos.x"]
-                DirectLabel(parent=self._inspector, text="scale", pos=(-0.22, 0, -0.05), scale=0.05)
-                self._inspector_scale = DirectEntry(
-                    parent=self._inspector,
-                    pos=(-0.05, 0, -0.05),
-                    scale=0.05,
-                    width=8,
-                    numLines=1,
-                    focus=0,
-                )
-                if hasattr(self._inspector_scale, "__setitem__"):
-                    self._inspector_scale["command"] = self._on_prop_change
-                    self._inspector_scale["extraArgs"] = ["scale"]
-            except Exception:
-                self._inspector = None
-                self._inspector_x = None
-                self._inspector_scale = None
+                        logger.exception("Failed to set inspector bin")
+                try:
+                    DirectLabel(
+                        parent=self._inspector, text="pos.x", pos=(-0.22, 0, 0.05), scale=0.05
+                    )
+                except Exception:
+                    logger.exception("Failed to create inspector position label")
+                try:
+                    self._inspector_x = DirectEntry(
+                        parent=self._inspector,
+                        pos=(-0.05, 0, 0.05),
+                        scale=0.05,
+                        width=8,
+                        numLines=1,
+                        focus=0,
+                    )
+                except Exception:
+                    logger.exception("Failed to create inspector x entry")
+                    self._inspector_x = None
+                else:
+                    if hasattr(self._inspector_x, "__setitem__"):
+                        try:
+                            self._inspector_x["command"] = self._on_prop_change
+                            self._inspector_x["extraArgs"] = ["pos.x"]
+                        except Exception:
+                            logger.exception("Failed to configure inspector x entry")
+                try:
+                    DirectLabel(
+                        parent=self._inspector, text="scale", pos=(-0.22, 0, -0.05), scale=0.05
+                    )
+                except Exception:
+                    logger.exception("Failed to create inspector scale label")
+                try:
+                    self._inspector_scale = DirectEntry(
+                        parent=self._inspector,
+                        pos=(-0.05, 0, -0.05),
+                        scale=0.05,
+                        width=8,
+                        numLines=1,
+                        focus=0,
+                    )
+                except Exception:
+                    logger.exception("Failed to create inspector scale entry")
+                    self._inspector_scale = None
+                else:
+                    if hasattr(self._inspector_scale, "__setitem__"):
+                        try:
+                            self._inspector_scale["command"] = self._on_prop_change
+                            self._inspector_scale["extraArgs"] = ["scale"]
+                        except Exception:
+                            logger.exception("Failed to configure inspector scale entry")
         from runepy.utils import suspend_mouse_click
         if hasattr(base, "tile_click_event") or hasattr(base, "tile_click_event_ref"):
             self._click_ctx = suspend_mouse_click(base)

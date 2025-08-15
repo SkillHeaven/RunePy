@@ -5,6 +5,10 @@ multiple times directly versus loading through ``RegionManager`` which caches
 previously loaded regions in memory.
 """
 
+import pytest
+
+pytest.importorskip("pytest_benchmark")
+
 from runepy.world.region import Region
 from runepy.world.manager import RegionManager
 

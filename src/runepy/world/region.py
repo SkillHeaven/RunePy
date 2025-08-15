@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import gzip
+import logging
+import time
+from collections import defaultdict
 from dataclasses import dataclass
-from typing import ClassVar, Tuple
+from typing import ClassVar, Dict, List, Tuple
 
 import numpy as np
 from runepy.paths import MAPS_DIR
@@ -23,6 +26,9 @@ except Exception:  # pragma: no cover - Panda3D may be missing during tests
     Geom = GeomNode = GeomTriangles = None
     GeomVertexData = GeomVertexFormat = GeomVertexWriter = None
     NodePath = None
+
+logger = logging.getLogger(__name__)
+LOAD_TIMES: Dict[Tuple[int, int], List[float]] = defaultdict(list)
 
 
 def world_to_region(x: int, y: int) -> Tuple[int, int]:
@@ -53,6 +59,7 @@ class Region:
     @classmethod
     def load(cls, rx: int, ry: int) -> "Region":
         """Load region ``(rx, ry)`` from disk or create a new one."""
+        start = time.perf_counter()
         path = MAPS_DIR / f"region_{rx}_{ry}.bin"
         size = REGION_SIZE * REGION_SIZE
         texels = 16 * 16
@@ -77,7 +84,17 @@ class Region:
             overlay = np.zeros((REGION_SIZE, REGION_SIZE), dtype=np.uint8)
             flags = np.zeros((REGION_SIZE, REGION_SIZE), dtype=np.uint8)
             textures = np.zeros((REGION_SIZE, REGION_SIZE, 16, 16), dtype=np.uint8)
-        return cls(rx, ry, height, base, overlay, flags, textures)
+        region = cls(rx, ry, height, base, overlay, flags, textures)
+        duration = time.perf_counter() - start
+        LOAD_TIMES[(rx, ry)].append(duration)
+        logger.debug(
+            "Loaded region (%s, %s) in %.6f s (access #%d)",
+            rx,
+            ry,
+            duration,
+            len(LOAD_TIMES[(rx, ry)]),
+        )
+        return region
 
     def save(self) -> None:
         """Write this region back to disk."""

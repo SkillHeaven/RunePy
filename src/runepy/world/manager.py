@@ -20,11 +20,13 @@ logger = logging.getLogger(__name__)
 class RegionManager(BaseRegionManager):
     """Manage loading and unloading of :class:`Region` objects around a player."""
 
-    def __init__(self, view_radius: int = VIEW_RADIUS, async_load: bool = False) -> None:
+    def __init__(self, view_radius: int = VIEW_RADIUS, async_load: bool = False, cache_size: int | None = None) -> None:
         super().__init__(region_size=REGION_SIZE, view_radius=view_radius)
         self.async_load = async_load
         self._executor: ThreadPoolExecutor | None = None
         self._pending: Dict[Tuple[int, int], Future[Region]] = {}
+        self.cache_size = cache_size
+        self._cache: Dict[Tuple[int, int], Region] = {}
         if async_load:
             self._executor = ThreadPoolExecutor(max_workers=1)
 
@@ -42,8 +44,14 @@ class RegionManager(BaseRegionManager):
         return region
 
     def load_region(self, rx: int, ry: int) -> Region:
-        """Synchronously load a region from disk."""
-        region = Region.load(rx, ry)
+        """Synchronously load a region from disk, using the region cache if possible."""
+        key = (rx, ry)
+        region = self._cache.get(key)
+        if region is None:
+            region = Region.load(rx, ry)
+            self._cache[key] = region
+            if self.cache_size is not None and len(self._cache) > self.cache_size:
+                self._cache.pop(next(iter(self._cache)))
         return self._setup_region(region)
 
     def unload_region(self, rx: int, ry: int) -> None:

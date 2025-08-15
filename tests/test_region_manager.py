@@ -24,3 +24,13 @@ def test_region_manager_loading(tmp_path, monkeypatch):
     assert (1, 1) in mgr.loaded
     assert len(mgr.loaded) <= 9
     assert (0, -1) not in mgr.loaded
+
+
+
+def test_clear_cache(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    mgr = RegionManager(view_radius=1)
+    mgr.ensure(0, 0)
+    assert mgr._cache
+    mgr.clear_cache()
+    assert mgr._cache == {}

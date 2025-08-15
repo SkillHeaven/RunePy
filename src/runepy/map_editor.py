@@ -108,6 +108,7 @@ class MapEditor:
     def load_map(self):
         """Load map data by clearing and reloading regions from disk."""
         self.world.region_manager.loaded.clear()
+        self.world.region_manager.clear_cache()
         self.world.region_manager.ensure(0, 0)
 
     # ------------------------------------------------------------------

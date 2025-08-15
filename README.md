@@ -180,11 +180,11 @@ tile coordinates using the camera and render nodes. Pass the current camera and
 ## Pre-commit hooks
 
 This project uses [pre-commit](https://pre-commit.com/) to run linters and
-other checks before each commit. Install the hooks after cloning the
-repository:
+other checks before each commit. Install the development dependencies and
+hooks after cloning the repository:
 
 ```bash
-pip install pre-commit
+pip install -r requirements-dev.txt
 pre-commit install
 ```
 
@@ -196,11 +196,13 @@ pre-commit run --all-files
 
 ## Tests
 
-Install the Python dependencies listed in `requirements.txt` and run the
-test suite with `pytest -q` from the repository root:
+Install the Python dependencies listed in `requirements.txt` and the
+development tools before running the test suite with `pytest -q` from the
+repository root:
 
 ```bash
 pip install -r requirements.txt
+pip install -r requirements-dev.txt
 pytest -q
 ```
 

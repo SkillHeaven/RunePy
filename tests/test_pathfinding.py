@@ -41,3 +41,26 @@ def test_a_star_weighted_tiles():
     )
     assert path[0] == (0, 1) and path[-1] == (2, 1)
     assert (1, 1) not in path
+
+
+def test_a_star_prefers_cheaper_diagonal():
+    grid = [
+        [1, 5, 1],
+        [5, 1, 5],
+        [1, 5, 1],
+    ]
+    offsets = [
+        (0, -1),
+        (1, 0),
+        (0, 1),
+        (-1, 0),
+        (1, -1),
+        (1, 1),
+        (-1, 1),
+        (-1, -1),
+    ]
+    path = pathfinding.a_star(
+        grid, (0, 0), (2, 2), neighbor_offsets=offsets, weighted=True
+    )
+    assert path == [(0, 0), (1, 1), (2, 2)]
+    assert (1, 0) not in path and (0, 1) not in path

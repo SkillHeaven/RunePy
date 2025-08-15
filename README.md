@@ -1,4 +1,5 @@
 # RunePy
+[![CI](https://github.com/<OWNER>/RunePy/actions/workflows/ci.yml/badge.svg)](https://github.com/<OWNER>/RunePy/actions/workflows/ci.yml)
 
 RunePy is a small demonstration project built with [Panda3D](https://www.panda3d.org/). It generates a tiled world where a simple character moves using A* pathfinding. Regions stream in dynamically as you explore and the project provides a basic camera and control system to experiment with Panda3D's API.
 

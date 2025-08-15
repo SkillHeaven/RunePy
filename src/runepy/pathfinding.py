@@ -30,17 +30,9 @@ def a_star(
     def heuristic(a: Tuple[int, int], b: Tuple[int, int]) -> int:
         return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
-    if isinstance(grid, np.ndarray):
-        height, width = grid.shape[:2]
-
-        def value(x: int, y: int):
-            return grid[y, x]
-    else:
-        height = len(grid)
-        width = len(grid[0]) if height > 0 else 0
-
-        def value(x: int, y: int):
-            return grid[y][x]
+    # Use numpy for fast indexing regardless of the initial grid type.
+    grid = np.asarray(grid)
+    height, width = grid.shape[:2]
 
     if neighbor_offsets is None:
         neighbor_offsets = [
@@ -53,6 +45,8 @@ def a_star(
             (-1, 1),
             (1, -1),
         ]
+
+    offsets_arr = np.asarray(list(neighbor_offsets), dtype=int)
 
     open_heap: list[tuple[float, Tuple[int, int]]] = []
     open_dict: dict[Tuple[int, int], tuple[float, Tuple[int, int] | None]] = {}
@@ -80,18 +74,31 @@ def a_star(
 
         closed_set.add(current)
 
-        for dx, dy in neighbor_offsets:
-            nx, ny = current[0] + dx, current[1] + dy
-            if not (0 <= nx < width and 0 <= ny < height):
-                continue
-            tile_val = value(nx, ny)
-            if tile_val == 0:
-                continue
-            step_cost = tile_val if weighted else 1
-            g_score = g + step_cost
-            neighbor = (nx, ny)
+        cx, cy = current
+        nx = cx + offsets_arr[:, 0]
+        ny = cy + offsets_arr[:, 1]
+        valid = (0 <= nx) & (nx < width) & (0 <= ny) & (ny < height)
+        nx, ny = nx[valid], ny[valid]
+        tile_vals = grid[ny, nx]
+        if weighted:
+            step_costs = tile_vals
+        else:
+            step_costs = np.ones_like(tile_vals)
+        walkable = tile_vals != 0
+        nx, ny, step_costs = nx[walkable], ny[walkable], step_costs[walkable]
+
+        for nx_i, ny_i, step_cost in zip(nx, ny, step_costs):
+            dx = int(nx_i - cx)
+            dy = int(ny_i - cy)
+            if dx and dy:
+                # Prune diagonals that cut corners.
+                if grid[cy, nx_i] == 0 or grid[ny_i, cx] == 0:
+                    continue
+
+            neighbor = (int(nx_i), int(ny_i))
             if neighbor in closed_set:
                 continue
+            g_score = g + int(step_cost)
             h_score = heuristic(neighbor, end)
             existing = open_dict.get(neighbor)
             if existing is not None and g_score >= existing[0]:
@@ -100,6 +107,7 @@ def a_star(
             heapq.heappush(open_heap, (g_score + h_score, neighbor))
 
     return None
+
 
 class Pathfinder:
     """Helper to compute paths and move a character along them."""
@@ -152,4 +160,3 @@ class Pathfinder:
 
         seq = Sequence(*intervals, Func(self.camera_control.update_camera_focus))
         self.character.start_sequence(seq)
-

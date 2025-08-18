@@ -15,12 +15,14 @@ class Character:
         self,
         render,
         loader,
-        position=Vec3(0, 0, 0),
+        position: Vec3 | None = None,
         scale=1,
         debug=False,
         world=None,
     ):
         self.debug = debug
+        if position is None:
+            position = Vec3(0, 0, 0)
         self.model = loader.loadModel("models/smiley")
         self.model.reparentTo(render)
         self.model.setPos(position)

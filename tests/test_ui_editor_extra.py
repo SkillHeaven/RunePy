@@ -1,4 +1,3 @@
-import importlib
 from pathlib import Path
 
 from runepy.ui.editor import controller as ctr

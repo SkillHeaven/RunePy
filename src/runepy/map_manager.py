@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Tuple
 
 from .array_map import RegionArrays
 from .world.base_manager import BaseRegionManager

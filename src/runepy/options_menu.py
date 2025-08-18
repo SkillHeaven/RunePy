@@ -1,11 +1,5 @@
 import copy
 
-from direct.gui.DirectGui import (
-    DirectButton,
-    DirectEntry,
-    DirectFrame,
-    DirectLabel,
-)
 from direct.showbase.DirectObject import DirectObject
 from panda3d.core import TextNode
 

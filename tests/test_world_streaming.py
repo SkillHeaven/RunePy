@@ -1,4 +1,3 @@
-import numpy as np
 
 from constants import REGION_SIZE
 from runepy.terrain import FLAG_BLOCKED

@@ -1,4 +1,3 @@
-import types
 
 from runepy.options_menu import KeyBindingManager
 

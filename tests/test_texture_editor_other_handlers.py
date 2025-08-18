@@ -1,4 +1,3 @@
-import types
 
 from runepy.texture_editor import TextureEditor
 from runepy.world.world import World

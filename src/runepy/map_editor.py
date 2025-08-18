@@ -1,7 +1,6 @@
 import logging
 
 from constants import REGION_SIZE
-from runepy.terrain import FLAG_BLOCKED
 from runepy.texture_editor import TextureEditor
 from runepy.utils import get_tile_from_mouse
 from runepy.world.region import local_tile, world_to_region

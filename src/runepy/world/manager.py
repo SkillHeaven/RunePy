@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from concurrent.futures import Future, ThreadPoolExecutor
-from typing import Dict, Set, Tuple
+from typing import Dict, Tuple
 
 from constants import REGION_SIZE, VIEW_RADIUS
 

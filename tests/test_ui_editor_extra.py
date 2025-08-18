@@ -3,6 +3,7 @@ from pathlib import Path
 
 from runepy.ui.editor import controller as ctr
 
+
 class FakeWidget:
     def __init__(self, pos=(0,0,0), frame=(-0.5,0.5,-0.5,0.5)):
         self._pos = list(pos)

@@ -1,15 +1,16 @@
 import logging
-from runepy.base_app import BaseApp
-from runepy.world.world import World
+
 from constants import REGION_SIZE, VIEW_RADIUS
-from runepy.map_editor import MapEditor
-from runepy.editor_toolbar import EditorToolbar
+from runepy.base_app import BaseApp
 from runepy.camera import FreeCameraControl
+from runepy.controls import Controls
+from runepy.debug import get_debug
+from runepy.editor_toolbar import EditorToolbar
+from runepy.map_editor import MapEditor
 from runepy.options_menu import KeyBindingManager, OptionsMenu
 from runepy.ui.editor import UIEditorController
-from runepy.controls import Controls
 from runepy.utils import update_tile_hover as util_update_tile_hover
-from runepy.debug import get_debug
+from runepy.world.world import World
 
 logger = logging.getLogger(__name__)
 

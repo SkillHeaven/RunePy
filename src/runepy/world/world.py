@@ -5,11 +5,12 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
-from .manager import RegionManager
-from .region import world_to_region, local_tile
 
 from constants import REGION_SIZE
 from runepy.terrain import FLAG_BLOCKED
+
+from .manager import RegionManager
+from .region import local_tile, world_to_region
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,7 @@ class TileData:
         return tile
 
 try:
+    import direct.showbase.ShowBaseGlobal as sbg
     from panda3d.core import (
         BitMask32,
         CardMaker,
@@ -65,13 +67,12 @@ try:
         GeomVertexData,
         GeomVertexFormat,
         GeomVertexWriter,
+        LineSegs,
+        NodePath,
         Plane,
         Point3,
         Vec3,
-        LineSegs,
-        NodePath,
     )
-    import direct.showbase.ShowBaseGlobal as sbg
 except Exception:  # pragma: no cover - Panda3D may be missing during tests
     BitMask32 = CardMaker = CollisionNode = CollisionPlane = Plane = None
     Point3 = Vec3 = LineSegs = NodePath = None

@@ -1,6 +1,9 @@
 import types
-from runepy.texture_editor import TextureEditor
+
 from panda3d.core import NodePath
+
+from runepy.texture_editor import TextureEditor
+
 
 class _MethodBase:
     def __init__(self):

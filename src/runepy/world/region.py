@@ -8,9 +8,9 @@ from dataclasses import dataclass
 from typing import ClassVar, Dict, List, Tuple
 
 import numpy as np
-from runepy.paths import MAPS_DIR
 
 from constants import REGION_SIZE
+from runepy.paths import MAPS_DIR
 
 try:
     from panda3d.core import (

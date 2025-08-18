@@ -1,5 +1,6 @@
 from runepy.ui import builder
 
+
 class FakeWidget:
     def __init__(self, **kw):
         self.kw = kw

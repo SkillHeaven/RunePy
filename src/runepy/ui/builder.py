@@ -5,12 +5,12 @@ from typing import Any, Dict
 
 try:
     from direct.gui.DirectGui import (
-        DirectFrame,
         DirectButton,
-        DirectSlider,
-        DirectLabel,
         DirectEntry,
+        DirectFrame,
+        DirectLabel,
         DirectOptionMenu,
+        DirectSlider,
         DirectWaitBar,
     )
 except Exception:  # pragma: no cover - Panda3D may be missing

@@ -1,5 +1,7 @@
 from panda3d.core import NodePath
+
 from runepy.controls import Controls
+
 
 class CamControl:
     def __init__(self, camera):

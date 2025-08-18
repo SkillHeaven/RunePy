@@ -1,5 +1,7 @@
 import os
+
 import numpy as np
+
 from runepy.array_map import RegionArrays
 
 

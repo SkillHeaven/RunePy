@@ -1,9 +1,9 @@
 # collision.py
 from panda3d.core import (
-    CollisionRay,
+    BitMask32,
     CollisionHandlerQueue,
     CollisionNode,
-    BitMask32,
+    CollisionRay,
     CollisionTraverser,
 )
 

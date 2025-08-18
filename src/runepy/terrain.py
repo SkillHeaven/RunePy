@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Tuple
 
-
 #: Tile flag bitmask for a blocked or non-walkable tile
 FLAG_BLOCKED = 0x1
 

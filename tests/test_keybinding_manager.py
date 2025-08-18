@@ -1,5 +1,7 @@
 import types
+
 from runepy.options_menu import KeyBindingManager
+
 
 class FakeBase:
     def __init__(self):

@@ -1,7 +1,8 @@
 # Utility functions shared across modules
-from panda3d.core import MouseWatcher, Plane, Point3, Vec3
 import math
 from contextlib import contextmanager
+
+from panda3d.core import MouseWatcher, Plane, Point3, Vec3
 
 
 def get_mouse_tile_coords(

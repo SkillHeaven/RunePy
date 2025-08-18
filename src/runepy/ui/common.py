@@ -1,10 +1,10 @@
-from __future__ import annotations
-
 """Shared UI helpers."""
+
+from __future__ import annotations
 
 from typing import Any, Dict
 
-from .builder import build_ui, StubWidget
+from .builder import StubWidget, build_ui
 
 try:
     from direct.gui.DirectGui import DirectFrame

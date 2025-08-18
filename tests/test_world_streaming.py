@@ -1,7 +1,8 @@
 import numpy as np
+
 from constants import REGION_SIZE
-from runepy.world.world import World
 from runepy.terrain import FLAG_BLOCKED
+from runepy.world.world import World
 
 
 def test_update_streaming_calls_ensure(tmp_path, monkeypatch):

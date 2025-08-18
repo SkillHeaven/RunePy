@@ -1,5 +1,6 @@
 from runepy.editor_toolbar import EditorToolbar
 
+
 class StubFrame:
     def __init__(self, **kw):
         self.kw = kw

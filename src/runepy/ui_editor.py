@@ -1,19 +1,19 @@
+"""Standalone UI editing application."""
+
 from __future__ import annotations
 
 import logging
-"""Standalone UI editing application."""
+from pathlib import Path
 
 try:
     from direct.showbase.ShowBase import ShowBase
 except Exception:  # pragma: no cover - Panda3D may be missing
     ShowBase = object  # type: ignore
 
-from pathlib import Path
-from runepy.ui.editor import UIEditorController, dump_layout
 from runepy.debug import get_debug
+from runepy.ui.editor import UIEditorController, dump_layout
 
 logger = logging.getLogger(__name__)
-
 
 class UIEditorApp(ShowBase):
     """Minimal window for editing UI layouts."""

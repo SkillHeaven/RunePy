@@ -1,6 +1,8 @@
 import types
-from runepy.world.world import World
+
 from runepy.map_editor import MapEditor
+from runepy.world.world import World
+
 
 class StubFrame:
     def __init__(self, **kw):

@@ -1,7 +1,7 @@
-from pathlib import Path
 import json
-from runepy.ui.debug_layout import LAYOUT as DEBUG_LAYOUT
+from pathlib import Path
 
+from runepy.ui.debug_layout import LAYOUT as DEBUG_LAYOUT
 from runepy.ui.manager import UIManager
 
 

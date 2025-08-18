@@ -1,14 +1,13 @@
 # pathfinding.py
 
 import heapq
-from typing import Iterable, Tuple, Union
-
 import logging
 import math
-from panda3d.core import Vec3
-from direct.interval.IntervalGlobal import Sequence, Func
+from typing import Iterable, Tuple, Union
 
 import numpy as np
+from direct.interval.IntervalGlobal import Func, Sequence
+from panda3d.core import Vec3
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,6 @@
 from runepy.world.world import TileData
 
+
 def test_tiledata_round_trip_custom_props():
     tile = TileData(walkable=False, description="foo", properties={"cost": 5})
     data = tile.to_dict()

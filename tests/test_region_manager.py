@@ -1,7 +1,8 @@
 import numpy as np
+
+from constants import REGION_SIZE
 from runepy.world.manager import RegionManager
 from runepy.world.region import Region
-from constants import REGION_SIZE
 
 
 def test_region_manager_loading(tmp_path, monkeypatch):

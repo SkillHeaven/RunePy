@@ -6,14 +6,15 @@ module is unavailable.
 """
 
 from __future__ import annotations
-from runepy.logging_config import LOG_DIR
-import logging
-logger = logging.getLogger(__name__)
-from pathlib import Path
+
 import datetime
+import logging
+from pathlib import Path
+from typing import Any, Optional
 
-from typing import Optional, Any
+from runepy.logging_config import LOG_DIR
 
+logger = logging.getLogger(__name__)
 
 class NullDebugManager:
     """Fallback manager used when Panda3D is unavailable."""
@@ -153,8 +154,8 @@ class DebugManager:
             if self.base is None:
                 return
             base = self.base
-            from runepy.world.region import world_to_region, Region
             from constants import REGION_SIZE
+            from runepy.world.region import Region, world_to_region
             world = getattr(base, "world", None)
             char = getattr(base, "character", None)
             if world is None or char is None:

@@ -1,17 +1,16 @@
-import types
 import importlib
+import types
+
+from runepy.map_editor import MapEditor
+from runepy.paths import MAPS_DIR
+from runepy.terrain import FLAG_BLOCKED
+from runepy.world.world import World
 
 modules = [
     'runepy.map_editor',
 ]
 for mod in modules:
     importlib.import_module(mod)
-
-from runepy.map_editor import MapEditor
-from runepy.paths import MAPS_DIR
-from runepy.world.world import World
-from runepy.terrain import FLAG_BLOCKED
-
 
 class _FakeClient:
     def __init__(self):

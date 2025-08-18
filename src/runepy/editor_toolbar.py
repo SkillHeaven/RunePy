@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 try:
-    from direct.gui.DirectGui import DirectFrame, DirectOptionMenu, DirectButton
+    from direct.gui.DirectGui import DirectButton, DirectFrame, DirectOptionMenu
 except Exception:  # pragma: no cover - Panda3D may be missing
     DirectFrame = object  # type: ignore
     DirectOptionMenu = object  # type: ignore

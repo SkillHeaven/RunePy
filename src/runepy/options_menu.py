@@ -1,14 +1,16 @@
+import copy
+
 from direct.gui.DirectGui import (
+    DirectButton,
+    DirectEntry,
     DirectFrame,
     DirectLabel,
-    DirectEntry,
-    DirectButton,
 )
-from panda3d.core import TextNode
 from direct.showbase.DirectObject import DirectObject
+from panda3d.core import TextNode
+
 from runepy.ui.common import create_ui
 from runepy.ui.layouts import OPTIONS_MENU_LAYOUT
-import copy
 
 
 class KeyBindingManager(DirectObject):

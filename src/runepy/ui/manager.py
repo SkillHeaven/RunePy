@@ -1,19 +1,18 @@
-from __future__ import annotations
-
 """Simple UI manager for loading and toggling interface layouts."""
 
-from pathlib import Path
+from __future__ import annotations
+
 import importlib
 import json
+from pathlib import Path
 from typing import Any, Dict
 
-from .builder import build_ui, StubWidget
+from .builder import StubWidget, build_ui
 
 try:
     from direct.gui.DirectGui import DirectFrame
 except Exception:  # pragma: no cover - Panda3D may be missing
     DirectFrame = StubWidget  # type: ignore
-
 
 class UIManager:
     """Manage GUI layouts and their root frames."""

@@ -1,20 +1,19 @@
-from __future__ import annotations
-
 """Simple per-tile texture editor."""
 
-try:
-    from direct.gui.DirectGui import DirectFrame, DirectButton
-except Exception:  # pragma: no cover - Panda3D may be missing
-    DirectFrame = object  # type: ignore
-    DirectButton = object  # type: ignore
+from __future__ import annotations
 
-from runepy.ui.common import create_ui
-from runepy.ui.layouts import TEXTURE_EDITOR_LAYOUT
 from typing import Any
 
 from constants import REGION_SIZE
-from runepy.world.region import world_to_region, local_tile
+from runepy.ui.common import create_ui
+from runepy.ui.layouts import TEXTURE_EDITOR_LAYOUT
+from runepy.world.region import local_tile, world_to_region
 
+try:
+    from direct.gui.DirectGui import DirectButton, DirectFrame
+except Exception:  # pragma: no cover - Panda3D may be missing
+    DirectFrame = object  # type: ignore
+    DirectButton = object  # type: ignore
 
 class TextureEditor:
     """Lightweight tool for editing per-tile textures."""

@@ -1,7 +1,11 @@
 """UI editing controller."""
 from __future__ import annotations
+
 import logging
-logger = logging.getLogger(__name__)
+import os
+import sys
+from pathlib import Path
+from typing import Any
 
 try:
     from direct.showbase.ShowBaseGlobal import base
@@ -11,25 +15,21 @@ except Exception:  # pragma: no cover - Panda3D may be missing
     Task = object  # type: ignore
 
 try:
-    from direct.gui.DirectGui import DirectFrame, DirectEntry, DirectLabel
+    from direct.gui.DirectGui import DirectEntry, DirectFrame, DirectLabel
 except Exception:  # pragma: no cover - Panda3D may be missing
     DirectFrame = object  # type: ignore
     DirectEntry = object  # type: ignore
     DirectLabel = object  # type: ignore
-
-from pathlib import Path
-from typing import Any
-import os
-import sys
 
 try:
     from panda3d.core import WindowProperties
 except Exception:  # pragma: no cover - Panda3D may be missing
     WindowProperties = object  # type: ignore
 
-from .serializer import dump_layout
 from .gizmos import SelectionGizmo
+from .serializer import dump_layout
 
+logger = logging.getLogger(__name__)
 
 class UIEditorController:
     """Basic UI layout editor."""

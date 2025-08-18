@@ -1,29 +1,29 @@
+import argparse
+import atexit
 import logging
+
 from panda3d.core import ModifierButtons, Vec3
+
 try:
     import direct.showbase.ShowBaseGlobal as sbg
 except Exception:  # pragma: no cover - Panda3D may be missing
     sbg = None
-from runepy.utils import update_tile_hover as util_update_tile_hover
-import argparse
-from runepy import verbose
 
-logger = logging.getLogger(__name__)
-
-from runepy.base_app import BaseApp
-
-from runepy.character import Character
-from runepy.debuginfo import DebugInfo
-from runepy.camera import CameraControl
-from runepy.controls import Controls
-from runepy.world.world import World
 from constants import REGION_SIZE, VIEW_RADIUS
-from runepy.pathfinding import Pathfinder
-from runepy.input_binder import InputBinder
+from runepy import verbose
+from runepy.base_app import BaseApp
+from runepy.camera import CameraControl
+from runepy.character import Character
 from runepy.collision import CollisionControl
 from runepy.config import load_state, save_state
-import atexit
+from runepy.controls import Controls
+from runepy.debuginfo import DebugInfo
+from runepy.input_binder import InputBinder
+from runepy.pathfinding import Pathfinder
+from runepy.utils import update_tile_hover as util_update_tile_hover
+from runepy.world.world import World
 
+logger = logging.getLogger(__name__)
 
 class Client(BaseApp):
     """Application entry point that opens the game window."""

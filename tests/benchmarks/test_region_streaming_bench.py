@@ -9,8 +9,8 @@ import pytest
 
 pytest.importorskip("pytest_benchmark")
 
-from runepy.world.region import Region
 from runepy.world.manager import RegionManager
+from runepy.world.region import Region
 
 
 def _prepare_region(tmp_path):

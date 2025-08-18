@@ -1,9 +1,10 @@
 import gzip
 
-from runepy.paths import MAPS_DIR
 import numpy as np
-from runepy.world.region import Region
+
 from constants import REGION_SIZE
+from runepy.paths import MAPS_DIR
+from runepy.world.region import Region
 
 
 def test_region_round_trip(tmp_path, monkeypatch):

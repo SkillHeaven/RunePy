@@ -1,5 +1,6 @@
 import sys
-from runepy.verbose import enable, disable
+
+from runepy.verbose import disable, enable
 
 
 def test_verbose_enable_disable():

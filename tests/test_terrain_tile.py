@@ -1,4 +1,4 @@
-from runepy.terrain import TerrainTile, FLAG_BLOCKED
+from runepy.terrain import FLAG_BLOCKED, TerrainTile
 
 
 def test_terrain_tile_flags_and_values():

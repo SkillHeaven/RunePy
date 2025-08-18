@@ -1,6 +1,6 @@
 import logging
-from runepy.options_menu import KeyBindingManager, OptionsMenu
 
+from runepy.options_menu import KeyBindingManager, OptionsMenu
 
 logger = logging.getLogger(__name__)
 

@@ -1,4 +1,4 @@
-from panda3d.core import Vec3, ClockObject
+from panda3d.core import ClockObject, Vec3
 
 # Initialize the global clock for time-based movement
 globalClock = ClockObject.getGlobalClock()

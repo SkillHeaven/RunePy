@@ -1,7 +1,8 @@
+import atexit
 import logging
 import sys
-import atexit
 from types import FrameType
+
 from .logging_config import LOG_DIR
 
 logger = logging.getLogger("runepy.verbose")

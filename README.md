@@ -1,5 +1,4 @@
 # RunePy
-[![CI](https://github.com/<OWNER>/RunePy/actions/workflows/ci.yml/badge.svg)](https://github.com/<OWNER>/RunePy/actions/workflows/ci.yml)
 
 RunePy is a small demonstration project built with [Panda3D](https://www.panda3d.org/). It generates a tiled world where a simple character moves using A* pathfinding. Regions stream in dynamically as you explore and the project provides a basic camera and control system to experiment with Panda3D's API.
 
@@ -178,22 +177,6 @@ function calls and writes them exclusively to `logs/verbose.log`.
 tile coordinates using the camera and render nodes. Pass the current camera and
 `render` root when calling these helpers.
 
-## Pre-commit hooks
-
-This project uses [pre-commit](https://pre-commit.com/) to run linters and
-other checks before each commit. Install the development dependencies and
-hooks after cloning the repository:
-
-```bash
-pip install -r requirements-dev.txt
-pre-commit install
-```
-
-Run the hooks against all files at any time with:
-
-```bash
-pre-commit run --all-files
-```
 
 ## Tests
 

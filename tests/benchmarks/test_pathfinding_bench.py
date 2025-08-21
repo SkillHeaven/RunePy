@@ -14,6 +14,7 @@ optimisation):
 
 import numpy as np
 import pytest
+
 from runepy.pathfinding import a_star
 
 pytest.importorskip("pytest_benchmark")

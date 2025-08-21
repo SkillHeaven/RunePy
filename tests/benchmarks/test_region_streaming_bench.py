@@ -6,6 +6,7 @@ previously loaded regions in memory.
 """
 
 import pytest
+
 from runepy.world.manager import RegionManager
 from runepy.world.region import Region
 

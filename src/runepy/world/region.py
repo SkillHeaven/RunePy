@@ -9,9 +9,6 @@ from typing import ClassVar, Dict, List, Tuple
 
 import numpy as np
 
-from constants import REGION_SIZE
-from runepy.paths import MAPS_DIR
-
 try:
     from panda3d.core import (
         Geom,
@@ -26,6 +23,9 @@ except Exception:  # pragma: no cover - Panda3D may be missing during tests
     Geom = GeomNode = GeomTriangles = None
     GeomVertexData = GeomVertexFormat = GeomVertexWriter = None
     NodePath = None
+
+from constants import REGION_SIZE
+from runepy.paths import MAPS_DIR
 
 logger = logging.getLogger(__name__)
 LOAD_TIMES: Dict[Tuple[int, int], List[float]] = defaultdict(list)

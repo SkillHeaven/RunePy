@@ -31,7 +31,6 @@ def test_region_load_v1(tmp_path, monkeypatch):
     path = MAPS_DIR / "region_0_0.bin"
     path.parent.mkdir(parents=True)
 
-    size = REGION_SIZE * REGION_SIZE
     height = np.zeros((REGION_SIZE, REGION_SIZE), dtype=np.int16)
     base = np.zeros((REGION_SIZE, REGION_SIZE), dtype=np.uint8)
     overlay = np.zeros((REGION_SIZE, REGION_SIZE), dtype=np.uint8)
@@ -46,5 +45,8 @@ def test_region_load_v1(tmp_path, monkeypatch):
 
     loaded = Region.load(0, 0)
     assert loaded.height[1, 1] == 1
+    assert np.array_equal(loaded.base, base)
+    assert np.array_equal(loaded.overlay, overlay)
+    assert np.array_equal(loaded.flags, flags)
     assert loaded.textures.shape == (REGION_SIZE, REGION_SIZE, 16, 16)
     assert np.all(loaded.textures == 0)

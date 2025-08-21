@@ -232,5 +232,3 @@ class World:
     def shutdown(self) -> None:
         """Shut down the underlying :class:`RegionManager`."""
         self.region_manager.shutdown()
-
-

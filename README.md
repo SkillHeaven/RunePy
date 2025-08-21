@@ -178,22 +178,6 @@ function calls and writes them exclusively to `logs/verbose.log`.
 tile coordinates using the camera and render nodes. Pass the current camera and
 `render` root when calling these helpers.
 
-## Pre-commit hooks
-
-This project uses [pre-commit](https://pre-commit.com/) to run linters and
-other checks before each commit. Install the development dependencies and
-hooks after cloning the repository:
-
-```bash
-pip install -r requirements-dev.txt
-pre-commit install
-```
-
-Run the hooks against all files at any time with:
-
-```bash
-pre-commit run --all-files
-```
 
 ## Tests
 

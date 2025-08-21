@@ -1,6 +1,0 @@
-bandit
-black
-mypy
-pytest
-pytest-benchmark
-pytest-cov

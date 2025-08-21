@@ -6,11 +6,10 @@ previously loaded regions in memory.
 """
 
 import pytest
-
-pytest.importorskip("pytest_benchmark")
-
 from runepy.world.manager import RegionManager
 from runepy.world.region import Region
+
+pytest.importorskip("pytest_benchmark")
 
 
 def _prepare_region(tmp_path):

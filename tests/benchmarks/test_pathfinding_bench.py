@@ -12,13 +12,11 @@ optimisation):
 - 200×200 grid: ~6.79 ms
 """
 
+import numpy as np
 import pytest
+from runepy.pathfinding import a_star
 
 pytest.importorskip("pytest_benchmark")
-
-import numpy as np
-
-from runepy.pathfinding import a_star
 
 
 def _run_a_star(size: int) -> None:

@@ -34,7 +34,7 @@ class UIManager:
                 module = importlib.import_module(layout)
                 if not hasattr(module, "LAYOUT"):
                     raise ValueError(f"No LAYOUT in {layout}")
-                data = getattr(module, "LAYOUT")
+                data = module.LAYOUT
         else:
             data = layout
 

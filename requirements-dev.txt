@@ -5,4 +5,3 @@ pre-commit
 pytest
 pytest-benchmark
 pytest-cov
-ruff==0.4.4

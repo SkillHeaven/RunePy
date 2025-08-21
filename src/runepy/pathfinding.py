@@ -89,7 +89,7 @@ def a_star(
         walkable = tile_vals != 0
         nx, ny, step_costs = nx[walkable], ny[walkable], step_costs[walkable]
 
-        for nx_i, ny_i, step_cost in zip(nx, ny, step_costs):
+        for nx_i, ny_i, step_cost in zip(nx, ny, step_costs, strict=True):
             dx = int(nx_i - cx)
             dy = int(ny_i - cy)
             if dx and dy:

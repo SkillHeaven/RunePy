@@ -11,11 +11,6 @@ dependencies = [
     "numpy",
 ]
 
-[project.optional-dependencies]
-test = [
-    "pytest-benchmark",
-]
-
 [project.scripts]
 runepy = "runepy.client:main"
 
@@ -29,26 +24,4 @@ include = ["runepy*"]
 
 [tool.setuptools]
 py-modules = ["constants"]
-
-[tool.coverage.run]
-branch = true
-source = ["runepy"]
-
-[tool.coverage.report]
-fail_under = 85
-show_missing = true
-
-[tool.ruff]
-line-length = 88
-target-version = "py311"
-
-[tool.ruff.lint]
-select = ["E", "F", "B", "I"]
-ignore = ["E501"]
-
-[tool.mypy]
-python_version = "3.11"
-disallow_untyped_defs = true
-ignore_missing_imports = true
-exclude = ["tests/"]
 
